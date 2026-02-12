@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mon Compte — ZENOCCAZ</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .account-container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    
+    .account-header {
+      background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05));
+      border: 1px solid rgba(16,185,129,0.2);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .account-info h1 {
+      margin: 0 0 8px;
+      color: var(--text);
+      font-size: 32px;
+    }
+    
+    .account-info p {
+      margin: 0;
+      color: var(--muted);
+    }
+    
+    .account-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .section-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+    
+    .section-title {
+      font-size: 24px;
+      color: var(--text);
+      margin: 0 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .demand-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: all 0.3s;
+    }
+    
+    .demand-card:hover {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(16,185,129,0.3);
+      transform: translateY(-2px);
+    }
+    
+    .demand-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    .demand-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 4px;
+    }
+    
+    .demand-date {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    
+    .demand-status {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    
+    .status-pending {
+      background: rgba(245,158,11,0.12);
+      color: #f59e0b;
+    }
+    
+    .status-in-progress {
+      background: rgba(59,130,246,0.12);
+      color: #3b82f6;
+    }
+    
+    .status-completed {
+      background: rgba(16,185,129,0.12);
+      color: #10b981;
+    }
+    
+    .demand-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .detail-label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .detail-value {
+      color: var(--text);
+      font-weight: 600;
+      font-size: 15px;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+    
+    .login-prompt {
+      background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05));
+      border: 2px solid rgba(16,185,129,0.3);
+      border-radius: 16px;
+      padding: 48px;
+      text-align: center;
+      max-width: 600px;
+      margin: 60px auto;
+    }
+    
+    .login-prompt h2 {
+      color: var(--text);
+      margin: 0 0 16px;
+      font-size: 28px;
+    }
+    
+    .login-prompt p {
+      color: var(--muted);
+      margin: 0 0 32px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="admin-header">
+      <div class="admin-title">
+        <h1 style="margin:0;font-size:28px;font-weight:700;"><span style="color:white;">zen</span> <span style="color:#10b981;">occaz</span> <span style="color:#f97316;">.fr</span></h1>
+        <p class="tag">Votre spécialiste en véhicules d'occasion premium</p>
+      </div>
+      <div class="admin-actions">
+        <a href="index.html" class="btn">accueil</a>
+        <a href="index.html#vehicules" class="btn">véhicules</a>
+        <a href="services.html" class="btn">services</a>
+        <a href="index.html#contact" class="btn">contact</a>
+        <a href="client-account.html" class="btn" style="background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;">mon compte</a>
+      </div>
+    </div>
+  </header>
+
+  <div id="login-prompt" class="login-prompt">
+    <div style="font-size:64px;margin-bottom:20px;">🔐</div>
+    <h2>Connectez-vous à votre compte</h2>
+    <p>Pour accéder à votre espace client et consulter vos demandes, veuillez vous connecter.</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <button onclick="openLoginModal()" class="btn primary" style="padding:14px 32px;font-size:16px;">Se connecter</button>
+      <a href="index.html" class="btn" style="padding:14px 32px;font-size:16px;text-decoration:none;">Retour à l'accueil</a>
+    </div>
+  </div>
+
+  <div id="account-content" class="account-container" style="display:none;">
+    <div class="account-header">
+      <div class="account-info">
+        <h1>👋 Bonjour <span id="client-name">Client</span></h1>
+        <p id="client-email">email@example.com</p>
+      </div>
+      <div class="account-actions">
+        <button onclick="logout()" class="btn" style="padding:12px 24px;">Déconnexion</button>
+      </div>
+    </div>
+
+    <!-- Section Demandes de Reprise -->
+    <div class="section-card">
+      <h2 class="section-title">
+        <span style="font-size:32px;">🚗</span>
+        Mes demandes de reprise
+      </h2>
+      <div id="reprises-list"></div>
+    </div>
+
+    <!-- Section Demandes ZenScan -->
+    <div class="section-card">
+      <h2 class="section-title">
+        <span style="font-size:32px;">🔍</span>
+        Mes demandes ZenScan
+      </h2>
+      <div id="zenscan-list"></div>
+    </div>
+
+    <!-- Section Avis publiés -->
+    <div class="section-card">
+      <h2 class="section-title">
+        <span style="font-size:32px;">⭐</span>
+        Mes avis
+      </h2>
+      <div id="reviews-list"></div>
+    </div>
+  </div>
+
+  <!-- Modal de connexion/inscription client -->
+  <div id="client-login-modal" class="modal hidden" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;z-index:10000;">
+    <div style="background:#1a1a2e;padding:40px;border-radius:16px;max-width:450px;width:90%;border:1px solid rgba(255,255,255,0.1);">
+      <div style="text-align:center;margin-bottom:32px;">
+        <h2 id="client-modal-title" style="margin:0 0 8px;color:var(--text);font-size:28px;">🔐 Connexion Client</h2>
+        <p style="color:var(--muted);font-size:14px;">Connectez-vous ou créez un compte pour accéder à votre espace</p>
+      </div>
+      
+      <!-- Onglets Connexion / Inscription -->
+      <div style="display:flex;gap:8px;margin-bottom:24px;">
+        <button id="tab-login" onclick="switchClientTab('login')" class="btn" style="flex:1;padding:12px;background:linear-gradient(135deg,#10b981,#059669);border:none;color:#fff;">Connexion</button>
+        <button id="tab-signup" onclick="switchClientTab('signup')" class="btn" style="flex:1;padding:12px;background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--text);">Inscription</button>
+      </div>
+      
+      <!-- Formulaire de connexion -->
+      <form id="client-login-form" style="display:flex;flex-direction:column;gap:20px;">
+        <div>
+          <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Email</label>
+          <input type="email" id="login-client-email" placeholder="votre@email.com" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+        </div>
+        
+        <div>
+          <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Mot de passe</label>
+          <input type="password" id="login-client-password" placeholder="••••••••" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+        </div>
+        
+        <button type="submit" class="btn primary" style="padding:14px;font-size:16px;font-weight:600;margin-top:8px;">✅ Se connecter</button>
+        <button type="button" onclick="closeLoginModal()" class="btn" style="padding:12px;font-size:14px;background:transparent;border:1px solid rgba(255,255,255,0.2);">Annuler</button>
+      </form>
+
+      <!-- Formulaire d'inscription -->
+      <form id="client-signup-form" style="display:none;flex-direction:column;gap:20px;">
+        <div>
+          <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Nom complet</label>
+          <input type="text" id="signup-client-name" placeholder="Jean Dupont" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+        </div>
+        
+        <div>
+          <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Email</label>
+          <input type="email" id="signup-client-email" placeholder="votre@email.com" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+        </div>
+        
+        <div>
+          <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Mot de passe</label>
+          <input type="password" id="signup-client-password" placeholder="••••••••" required minlength="6" style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+        </div>
+        
+        <div>
+          <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Confirmer le mot de passe</label>
+          <input type="password" id="signup-client-password-confirm" placeholder="••••••••" required minlength="6" style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+        </div>
+        
+        <button type="submit" class="btn primary" style="padding:14px;font-size:16px;font-weight:600;margin-top:8px;">✨ Créer mon compte</button>
+        <button type="button" onclick="closeLoginModal()" class="btn" style="padding:12px;font-size:14px;background:transparent;border:1px solid rgba(255,255,255,0.2);">Annuler</button>
+      </form>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    © ZENOCCAZ — Vente de véhicules d'occasion premium
+    <span style="margin:0 8px;">|</span>
+    <a href="mentions-legales.html" style="color:var(--muted);text-decoration:none;transition:color 0.2s;">Mentions légales</a>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Configuration Supabase
+    const SUPABASE_URL = 'https://zxnnzpzujmjzhnfqndle.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4bm56cHp1am1qemhuZnFuZGxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNjc5NzQsImV4cCI6MjA3Nzg0Mzk3NH0.rHvMKPDV_3H_vpt-9HUORANLrqQ_Yvq_y1GD2RGD8_k';
+    
+    let supabaseClient = null;
+    
+    // Initialiser Supabase
+    try {
+      const { createClient } = window.supabase || supabase;
+      supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      console.log('✅ Supabase initialisé');
+    } catch (error) {
+      console.error('❌ Erreur initialisation Supabase:', error);
+    }
+    
+    // Charger les données au chargement de la page
+    window.addEventListener('DOMContentLoaded', function() {
+      loadClientData();
+    });
+
+    // Vérifier si l'utilisateur est connecté
+    function checkAuth() {
+      const clientData = sessionStorage.getItem('clientData');
+      
+      if (!clientData) {
+        document.getElementById('login-prompt').style.display = 'block';
+        document.getElementById('account-content').style.display = 'none';
+        return null;
+      }
+      
+      const client = JSON.parse(clientData);
+      document.getElementById('login-prompt').style.display = 'none';
+      document.getElementById('account-content').style.display = 'block';
+      document.getElementById('client-name').textContent = client.name || 'Client';
+      document.getElementById('client-email').textContent = client.email || '';
+      
+      return client;
+    }
+
+    // Charger les demandes du client
+    async function loadClientData() {
+      const client = checkAuth();
+      if (!client) return;
+
+      try {
+        // Charger les demandes de reprise via contacts
+        await loadReprises(client.email);
+        
+        // Charger les demandes ZenScan via contacts
+        await loadZenScan(client.email);
+        
+        // Charger les avis du client
+        await loadReviews(client.email);
+        
+      } catch (error) {
+        console.error('❌ Erreur chargement données:', error);
+      }
+    }
+
+    // Charger les reprises du client
+    async function loadReprises(email) {
+      const reprisesDiv = document.getElementById('reprises-list');
+      
+      try {
+        // Chercher dans la table contacts
+        const { data: contacts, error: contactError } = await supabaseClient
+          .from('contacts')
+          .select('*')
+          .eq('email', email)
+          .eq('type', 'reprise');
+        
+        if (contactError) throw contactError;
+        
+        if (!contacts || contacts.length === 0) {
+          reprisesDiv.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">🚗</div>
+              <p style="font-size:16px;margin:0 0 8px;">Aucune demande de reprise</p>
+              <p style="font-size:14px;margin:0;">Vous n'avez pas encore fait de demande de reprise de véhicule.</p>
+              <a href="services.html" class="btn primary" style="margin-top:24px;display:inline-block;text-decoration:none;">Faire une demande</a>
+            </div>
+          `;
+          return;
+        }
+        
+        let html = '';
+        for (const contact of contacts) {
+          const date = new Date(contact.created_at).toLocaleDateString('fr-FR', { 
+            day: '2-digit', 
+            month: 'long', 
+            year: 'numeric' 
+          });
+          
+          // Déterminer le statut
+          let statusClass = 'status-pending';
+          let statusText = 'En attente';
+          
+          if (contact.status) {
+            if (contact.status.includes('traité') || contact.status.includes('complété')) {
+              statusClass = 'status-completed';
+              statusText = 'Traité';
+            } else if (contact.status.includes('cours')) {
+              statusClass = 'status-in-progress';
+              statusText = 'En cours';
+            }
+          }
+          
+          const plates = contact.plates && contact.plates.length > 0 ? contact.plates.join(', ') : 'Non renseignée';
+          
+          html += `
+            <div class="demand-card">
+              <div class="demand-header">
+                <div>
+                  <div class="demand-title">Demande de reprise</div>
+                  <div class="demand-date">Demandé le ${date}</div>
+                </div>
+                <span class="demand-status ${statusClass}">${statusText}</span>
+              </div>
+              <div class="demand-details">
+                <div class="detail-item">
+                  <span class="detail-label">Immatriculation</span>
+                  <span class="detail-value">${plates}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Téléphone</span>
+                  <span class="detail-value">${contact.phone || '—'}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Adresse</span>
+                  <span class="detail-value">${contact.address || '—'}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+        
+        reprisesDiv.innerHTML = html;
+        
+      } catch (error) {
+        console.error('❌ Erreur chargement reprises:', error);
+        reprisesDiv.innerHTML = `<div class="empty-state"><p style="color:#ef4444;">Erreur de chargement des demandes</p></div>`;
+      }
+    }
+
+    // Charger les demandes ZenScan
+    async function loadZenScan(email) {
+      const zenscanDiv = document.getElementById('zenscan-list');
+      
+      try {
+        const { data: contacts, error } = await supabaseClient
+          .from('contacts')
+          .select('*')
+          .eq('email', email)
+          .eq('type', 'zenscan');
+        
+        if (error) throw error;
+        
+        if (!contacts || contacts.length === 0) {
+          zenscanDiv.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">🔍</div>
+              <p style="font-size:16px;margin:0 0 8px;">Aucune demande ZenScan</p>
+              <p style="font-size:14px;margin:0;">Vous n'avez pas encore utilisé notre service ZenScan.</p>
+              <a href="services.html" class="btn primary" style="margin-top:24px;display:inline-block;text-decoration:none;">Demander un ZenScan</a>
+            </div>
+          `;
+          return;
+        }
+        
+        let html = '';
+        for (const contact of contacts) {
+          const date = new Date(contact.created_at).toLocaleDateString('fr-FR', { 
+            day: '2-digit', 
+            month: 'long', 
+            year: 'numeric' 
+          });
+          
+          let statusClass = 'status-pending';
+          let statusText = 'En attente';
+          
+          if (contact.status) {
+            if (contact.status.includes('traité') || contact.status.includes('complété')) {
+              statusClass = 'status-completed';
+              statusText = 'Traité';
+            } else if (contact.status.includes('cours')) {
+              statusClass = 'status-in-progress';
+              statusText = 'En cours';
+            }
+          }
+          
+          const plates = contact.plates && contact.plates.length > 0 ? contact.plates.join(', ') : 'Non renseignée';
+          
+          html += `
+            <div class="demand-card">
+              <div class="demand-header">
+                <div>
+                  <div class="demand-title">Demande ZenScan</div>
+                  <div class="demand-date">Demandé le ${date}</div>
+                </div>
+                <span class="demand-status ${statusClass}">${statusText}</span>
+              </div>
+              <div class="demand-details">
+                <div class="detail-item">
+                  <span class="detail-label">Immatriculation</span>
+                  <span class="detail-value">${plates}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Téléphone</span>
+                  <span class="detail-value">${contact.phone || '—'}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Adresse</span>
+                  <span class="detail-value">${contact.address || '—'}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+        
+        zenscanDiv.innerHTML = html;
+        
+      } catch (error) {
+        console.error('❌ Erreur chargement ZenScan:', error);
+        zenscanDiv.innerHTML = `<div class="empty-state"><p style="color:#ef4444;">Erreur de chargement des demandes</p></div>`;
+      }
+    }
+
+    // Charger les avis du client
+    async function loadReviews(email) {
+      const reviewsDiv = document.getElementById('reviews-list');
+      
+      try {
+        // Chercher par l'ID du client
+        const clientData = JSON.parse(sessionStorage.getItem('clientData'));
+        
+        const { data: reviews, error } = await supabaseClient
+          .from('reviews')
+          .select('*')
+          .eq('client_name', clientData.name)
+          .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        if (!reviews || reviews.length === 0) {
+          reviewsDiv.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">⭐</div>
+              <p style="font-size:16px;margin:0 0 8px;">Aucun avis publié</p>
+              <p style="font-size:14px;margin:0;">Vous n'avez pas encore laissé d'avis.</p>
+              <a href="index.html#avis" class="btn primary" style="margin-top:24px;display:inline-block;text-decoration:none;">Laisser un avis</a>
+            </div>
+          `;
+          return;
+        }
+        
+        let html = '';
+        for (const review of reviews) {
+          const date = new Date(review.created_at).toLocaleDateString('fr-FR', { 
+            day: '2-digit', 
+            month: 'long', 
+            year: 'numeric' 
+          });
+          
+          const stars = '⭐'.repeat(review.rating || 5);
+          
+          html += `
+            <div class="demand-card">
+              <div class="demand-header">
+                <div>
+                  <div class="demand-title">${stars}</div>
+                  <div class="demand-date">Publié le ${date}</div>
+                </div>
+              </div>
+              <div style="color:var(--text);margin-top:12px;line-height:1.6;">
+                ${review.comment || ''}
+              </div>
+            </div>
+          `;
+        }
+        
+        reviewsDiv.innerHTML = html;
+        
+      } catch (error) {
+        console.error('❌ Erreur chargement avis:', error);
+        reviewsDiv.innerHTML = `<div class="empty-state"><p style="color:#ef4444;">Erreur de chargement des avis</p></div>`;
+      }
+    }
+
+    // Déconnexion
+    window.logout = function() {
+      sessionStorage.removeItem('clientData');
+      window.location.href = 'index.html';
+    }
+
+    // Modal de connexion
+    window.openLoginModal = function() {
+      const loginModal = document.getElementById('client-login-modal');
+      loginModal.classList.remove('hidden');
+      loginModal.style.display = 'flex';
+      switchClientTab('login');
+    }
+
+    window.closeLoginModal = function() {
+      const loginModal = document.getElementById('client-login-modal');
+      loginModal.classList.add('hidden');
+      loginModal.style.display = 'none';
+    }
+
+    window.switchClientTab = function(tab) {
+      const tabLogin = document.getElementById('tab-login');
+      const tabSignup = document.getElementById('tab-signup');
+      const loginForm = document.getElementById('client-login-form');
+      const signupForm = document.getElementById('client-signup-form');
+      
+      if (tab === 'login') {
+        tabLogin.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+        tabLogin.style.color = '#fff';
+        tabLogin.style.border = 'none';
+        tabSignup.style.background = 'transparent';
+        tabSignup.style.color = 'var(--text)';
+        tabSignup.style.border = '1px solid rgba(255,255,255,0.2)';
+        loginForm.style.display = 'flex';
+        signupForm.style.display = 'none';
+      } else {
+        tabSignup.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+        tabSignup.style.color = '#fff';
+        tabSignup.style.border = 'none';
+        tabLogin.style.background = 'transparent';
+        tabLogin.style.color = 'var(--text)';
+        tabLogin.style.border = '1px solid rgba(255,255,255,0.2)';
+        signupForm.style.display = 'flex';
+        loginForm.style.display = 'none';
+      }
+    }
+
+    // Connexion
+    document.getElementById('client-login-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('login-client-email').value.trim();
+      const password = document.getElementById('login-client-password').value;
+      
+      try {
+        if (!supabaseClient) {
+          alert('❌ Erreur: Connexion à la base de données non disponible');
+          console.error('supabaseClient non initialisé');
+          return;
+        }
+        
+        const { data, error } = await supabaseClient
+          .from('clients')
+          .select('*')
+          .eq('email', email)
+          .eq('password', password)
+          .single();
+        
+        if (error) {
+          console.error('❌ Erreur Supabase:', error);
+          alert('❌ Email ou mot de passe incorrect');
+          return;
+        }
+        
+        if (!data) {
+          alert('❌ Email ou mot de passe incorrect');
+          return;
+        }
+        
+        const clientData = {
+          id: data.id,
+          email: data.email,
+          name: data.name,
+          connectedAt: new Date().toISOString()
+        };
+        
+        sessionStorage.setItem('clientData', JSON.stringify(clientData));
+        closeLoginModal();
+        
+        // Recharger la page pour afficher les données
+        window.location.reload();
+        
+      } catch (e) {
+        console.error('❌ Exception connexion:', e);
+        alert('❌ Erreur lors de la connexion: ' + e.message);
+      }
+    });
+
+    // Inscription
+    document.getElementById('client-signup-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('signup-client-name').value.trim();
+      const email = document.getElementById('signup-client-email').value.trim();
+      const password = document.getElementById('signup-client-password').value;
+      const passwordConfirm = document.getElementById('signup-client-password-confirm').value;
+      
+      if (password !== passwordConfirm) {
+        alert('❌ Les mots de passe ne correspondent pas');
+        return;
+      }
+      
+      if (password.length < 6) {
+        alert('❌ Le mot de passe doit contenir au moins 6 caractères');
+        return;
+      }
+      
+      try {
+        const { data: existing } = await supabaseClient
+          .from('clients')
+          .select('email')
+          .eq('email', email)
+          .single();
+        
+        if (existing) {
+          alert('❌ Un compte avec cet email existe déjà. Veuillez vous connecter.');
+          switchClientTab('login');
+          return;
+        }
+        
+        const clientData = {
+          id: Date.now(),
+          name: name,
+          email: email,
+          password: password
+        };
+        
+        const { error } = await supabaseClient
+          .from('clients')
+          .insert([clientData]);
+        
+        if (error) {
+          console.error('❌ Erreur création compte:', error);
+          alert('❌ Erreur lors de la création du compte');
+          return;
+        }
+        
+        alert('✅ Compte créé avec succès ! Vous pouvez maintenant vous connecter.');
+        switchClientTab('login');
+        document.getElementById('login-client-email').value = email;
+        
+      } catch (e) {
+        console.error('❌ Exception inscription:', e);
+        alert('❌ Erreur lors de la création du compte');
+      }
+    });
+  </script>
+</body>
+</html>

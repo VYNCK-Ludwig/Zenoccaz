@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Détail du véhicule — ZENOCCAZ</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .detail-container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary);
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-top: 20px;
+    }
+    @media (max-width: 768px) {
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .gallery {
+      position: sticky;
+      top: 20px;
+    }
+    .main-image {
+      width: 100%;
+      height: 400px;
+      object-fit: contain;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      background: rgba(0,0,0,0.05);
+    }
+    .thumbnails {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 8px;
+    }
+    .thumbnail {
+      width: 100%;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .thumbnail:hover, .thumbnail.active {
+      border-color: var(--primary);
+    }
+    .detail-content h1 {
+      font-size: 32px;
+      margin: 0 0 8px;
+      color: var(--text);
+    }
+    .price-tag {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 24px;
+    }
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 24px 0;
+      padding: 24px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .spec-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .spec-label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .spec-value {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .features-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 24px 0;
+    }
+    .feature-badge {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--primary);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .description-section {
+      margin: 24px 0;
+      padding: 24px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .description-section h3 {
+      margin: 0 0 16px;
+      color: var(--text);
+    }
+    .contact-btn {
+      width: 100%;
+      margin-top: 24px;
+    }
+    
+    /* Lightbox pour agrandir les images */
+    .image-lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+    .image-lightbox.active {
+      display: flex;
+    }
+    .lightbox-image {
+      max-width: 95%;
+      max-height: 95vh;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: white;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10001;
+      transition: transform 0.2s;
+    }
+    .lightbox-close:hover {
+      transform: scale(1.2);
+    }
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 30px;
+      padding: 20px 15px;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+      z-index: 10001;
+    }
+    .lightbox-nav:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .lightbox-nav.prev {
+      left: 20px;
+    }
+    .lightbox-nav.next {
+      right: 20px;
+    }
+    .lightbox-counter {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 16px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 8px 16px;
+      border-radius: 20px;
+      z-index: 10001;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="admin-header">
+      <div class="admin-title">
+        <h1 style="margin:0;font-size:28px;font-weight:700;"><span style="color:white;">zen</span> <span style="color:#10b981;">occaz</span> <span style="color:#f97316;">.fr</span></h1>
+        <p class="tag">Votre spécialiste en véhicules d'occasion premium</p>
+      </div>
+      <div class="admin-actions">
+        <a href="index.html" class="btn">retour</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Lightbox pour agrandir les images -->
+  <div id="image-lightbox" class="image-lightbox">
+    <span class="lightbox-close" id="lightbox-close">&times;</span>
+    <button class="lightbox-nav prev" id="lightbox-prev">‹</button>
+    <img id="lightbox-image" class="lightbox-image" src="" alt="Image agrandie">
+    <button class="lightbox-nav next" id="lightbox-next">›</button>
+    <div class="lightbox-counter" id="lightbox-counter">1 / 1</div>
+  </div>
+
+  <main class="detail-container">
+    <a href="index.html" class="back-link">← Retour aux véhicules</a>
+    
+    <div id="vehicle-detail" class="detail-grid">
+      <div class="gallery">
+        <img id="main-image" class="main-image" src="" alt="Véhicule">
+        <div id="thumbnails" class="thumbnails"></div>
+      </div>
+      
+      <div class="detail-content">
+        <h1 id="vehicle-title">Chargement...</h1>
+        <div id="vehicle-price" class="price-tag"></div>
+        
+        <div class="specs-grid" id="specs-grid">
+          <!-- Specs will be inserted here -->
+        </div>
+        
+        <div id="features-container"></div>
+        
+        <div class="description-section">
+          <h3>Description</h3>
+          <p id="vehicle-description"></p>
+        </div>
+        
+        <button class="btn primary contact-btn" onclick="window.location.href='services.html'">
+          📞 Contactez-nous pour ce véhicule
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">© ZENOCCAZ — Vente de véhicules d'occasion premium</footer>
+
+  <!-- Charger Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <script type="module">
+    // Import config et créer client
+    const config = await import('./supabase-config.js');
+    const { createClient } = window.supabase || supabase;
+    const supabaseClient = createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
+    
+    // Récupérer l'ID du véhicule depuis l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const vehicleId = urlParams.get('id');
+    
+    if (!vehicleId) {
+      alert('❌ Aucun véhicule spécifié');
+      window.location.href = 'index.html';
+    }
+    
+    // Charger les données du véhicule
+    async function loadVehicleDetail() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('vehicles')
+          .select('*')
+          .eq('id', vehicleId)
+          .single();
+        
+        if (error || !data) {
+          console.error('❌ Erreur:', error);
+          alert('Véhicule non trouvé');
+          window.location.href = 'index.html';
+          return;
+        }
+        
+        console.log('✅ Véhicule chargé:', data);
+        renderVehicleDetail(data);
+      } catch (err) {
+        console.error('❌ Exception:', err);
+        alert('Erreur de chargement');
+        window.location.href = 'index.html';
+      }
+    }
+    
+    function renderVehicleDetail(vehicle) {
+      // Titre et prix
+      document.getElementById('vehicle-title').textContent = `${vehicle.make} ${vehicle.model} (${vehicle.year})`;
+      document.getElementById('vehicle-price').textContent = `${vehicle.price} €`;
+      
+      // Images
+      const images = vehicle.images || (vehicle.image ? [vehicle.image] : ['https://via.placeholder.com/800x600?text=Pas+d%27image']);
+      const mainImage = document.getElementById('main-image');
+      let currentImageIndex = 0; // Tracker l'index actuel
+      mainImage.src = images[0];
+      
+      // Rendre l'image principale cliquable pour agrandir
+      mainImage.style.cursor = 'zoom-in';
+      mainImage.onclick = () => openLightbox(currentImageIndex, images);
+      
+      const thumbnailsContainer = document.getElementById('thumbnails');
+      thumbnailsContainer.innerHTML = '';
+      images.forEach((img, index) => {
+        const thumb = document.createElement('img');
+        thumb.src = img;
+        thumb.className = 'thumbnail' + (index === 0 ? ' active' : '');
+        thumb.onclick = () => {
+          // Mettre à jour l'image principale ET l'index actuel
+          currentImageIndex = index;
+          mainImage.src = img;
+          document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+          // Clic simple ouvre aussi la lightbox
+          openLightbox(index, images);
+        };
+        thumbnailsContainer.appendChild(thumb);
+      });
+      
+      // Specs
+      const specsGrid = document.getElementById('specs-grid');
+      const specs = [
+        { label: 'Année', value: vehicle.year },
+        { label: 'Kilométrage', value: vehicle.mileage ? `${vehicle.mileage.toLocaleString()} km` : 'N/A' },
+        { label: 'Carburant', value: vehicle.fuel_type || 'N/A' },
+        { label: 'Transmission', value: vehicle.transmission || 'N/A' },
+        { label: 'Couleur', value: vehicle.color || 'N/A' },
+        { label: 'Portes', value: vehicle.doors || 'N/A' },
+        { label: 'Places', value: vehicle.seats || 'N/A' },
+        { label: 'Puissance', value: vehicle.horsepower ? `${vehicle.horsepower} ch` : 'N/A' },
+        { label: 'État', value: vehicle.condition || 'N/A' },
+        { label: 'Garantie', value: vehicle.warranty_months ? `${vehicle.warranty_months} mois` : 'N/A' }
+      ];
+      
+      specsGrid.innerHTML = specs.map(spec => `
+        <div class="spec-item">
+          <span class="spec-label">${spec.label}</span>
+          <span class="spec-value">${spec.value}</span>
+        </div>
+      `).join('');
+      
+      // Équipements
+      if (vehicle.features && vehicle.features.length > 0) {
+        const featuresContainer = document.getElementById('features-container');
+        featuresContainer.innerHTML = `
+          <h3 style="margin: 24px 0 12px; color: var(--text);">Équipements</h3>
+          <div class="features-list">
+            ${vehicle.features.map(f => `<span class="feature-badge">✓ ${f}</span>`).join('')}
+          </div>
+        `;
+      }
+      
+      // Description
+      document.getElementById('vehicle-description').textContent = vehicle.description || 'Aucune description disponible.';
+    }
+    
+    // Lightbox pour agrandir les images
+    let currentLightboxIndex = 0;
+    let lightboxImages = [];
+    
+    function openLightbox(index, images) {
+      currentLightboxIndex = index;
+      lightboxImages = images;
+      updateLightboxImage();
+      document.getElementById('image-lightbox').classList.add('active');
+      document.body.style.overflow = 'hidden'; // Désactiver le scroll
+    }
+    
+    function closeLightbox() {
+      document.getElementById('image-lightbox').classList.remove('active');
+      document.body.style.overflow = ''; // Réactiver le scroll
+    }
+    
+    function updateLightboxImage() {
+      document.getElementById('lightbox-image').src = lightboxImages[currentLightboxIndex];
+      document.getElementById('lightbox-counter').textContent = `${currentLightboxIndex + 1} / ${lightboxImages.length}`;
+      
+      // Cacher les boutons prev/next s'il n'y a qu'une image
+      document.getElementById('lightbox-prev').style.display = lightboxImages.length > 1 ? 'block' : 'none';
+      document.getElementById('lightbox-next').style.display = lightboxImages.length > 1 ? 'block' : 'none';
+    }
+    
+    function prevImage() {
+      currentLightboxIndex = (currentLightboxIndex - 1 + lightboxImages.length) % lightboxImages.length;
+      updateLightboxImage();
+    }
+    
+    function nextImage() {
+      currentLightboxIndex = (currentLightboxIndex + 1) % lightboxImages.length;
+      updateLightboxImage();
+    }
+    
+    // Event listeners pour la lightbox
+    document.getElementById('lightbox-close').onclick = closeLightbox;
+    document.getElementById('image-lightbox').onclick = (e) => {
+      if (e.target.id === 'image-lightbox') closeLightbox();
+    };
+    document.getElementById('lightbox-prev').onclick = (e) => {
+      e.stopPropagation();
+      prevImage();
+    };
+    document.getElementById('lightbox-next').onclick = (e) => {
+      e.stopPropagation();
+      nextImage();
+    };
+    
+    // Navigation au clavier
+    document.addEventListener('keydown', (e) => {
+      const lightbox = document.getElementById('image-lightbox');
+      if (!lightbox.classList.contains('active')) return;
+      
+      if (e.key === 'Escape') closeLightbox();
+      else if (e.key === 'ArrowLeft') prevImage();
+      else if (e.key === 'ArrowRight') nextImage();
+    });
+    
+    loadVehicleDetail();
+  </script>
+</body>
+</html>

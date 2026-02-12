@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "make": "Peugeot",
+    "model": "208",
+    "year": "2018",
+    "price": "9 500",
+    "description": "Compacte essence, 65 000 km, bonne état.",
+    "image": "https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=800&q=60"
+  },
+  {
+    "id": 2,
+    "make": "Renault",
+    "model": "Clio",
+    "year": "2017",
+    "price": "8 200",
+    "description": "Clim, contrôle technique OK.",
+    "image": "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=800&q=60"
+  },
+  {
+    "id": 3,
+    "make": "Toyota",
+    "model": "Auris",
+    "year": "2016",
+    "price": "10 900",
+    "description": "Hybride, faible consommation.",
+    "image": "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?auto=format&fit=crop&w=800&q=60"
+  },
+  {
+    "id": 4,
+    "make": "Volkswagen",
+    "model": "Golf",
+    "year": "2015",
+    "price": "11 300",
+    "description": "Diesel, entretien complet.",
+    "image": "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?auto=format&fit=crop&w=800&q=60"
+  }
+]

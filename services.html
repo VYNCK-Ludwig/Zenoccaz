@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Nos Services — ZENOCCAZ</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Auth modal polished styling */
+    #auth-modal{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(2,6,23,0.6); z-index:1200; }
+    #auth-modal.hidden{ display:none }
+    #auth-modal .modal-content{ background:linear-gradient(180deg,#07202a 0%, #0b1220 100%); color:#e6eef2; padding:20px; border-radius:12px; box-shadow:0 12px 40px rgba(2,6,23,0.7); border:1px solid rgba(255,255,255,0.04); width:100%; max-width:520px }
+    #auth-modal h2{ margin:0 0 6px; color:#fff; font-size:18px }
+    #auth-modal p{ color:#9fb1b7; margin:0 0 12px }
+    #auth-tabs{ display:flex; gap:8px; margin-bottom:6px }
+    #auth-tabs .btn{ background:transparent; border:1px solid rgba(255,255,255,0.06); color:#cfe8e4; padding:8px 12px; border-radius:8px; }
+    #auth-tabs .btn.primary{ background:#10b981; color:#fff; border-color:transparent; box-shadow:0 8px 20px rgba(16,185,129,0.12) }
+    #auth-form input{ width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:#e6eef2; outline:none }
+    #auth-form input::placeholder{ color:#9fb1b7 }
+    #auth-form .btn{ padding:8px 12px; border-radius:8px }
+    #auth-form .btn.primary{ background:#10b981; color:#fff; border:0; box-shadow:0 8px 20px rgba(16,185,129,0.12) }
+    #auth-form .btn:not(.primary){ background:transparent; border:1px solid rgba(255,255,255,0.06); color:#cfe8e4 }
+    /* make inputs and stacked layout consistent */
+    #reg-fields, #login-fields{ display:flex; flex-direction:column; gap:8px }
+    /* small-screen adjustments */
+    @media (max-width:600px){ #auth-modal .modal-content{ padding:16px; border-radius:10px; margin:20px } }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="admin-header">
+      <div class="admin-title">
+        <h1 style="margin:0;font-size:28px;font-weight:700;"><span style="color:white;">zen</span> <span style="color:#10b981;">occaz</span> <span style="color:#f97316;">.fr</span></h1>
+        <p class="tag">Votre spécialiste en véhicules d'occasion premium</p>
+      </div>
+      <div class="admin-actions">
+        <a href="index.html#accueil" class="btn">accueil</a>
+        <a href="index.html#vehicules" class="btn">véhicules</a>
+        <a href="services.html" class="btn">services</a>
+        <a href="index.html#contact" class="btn">contact</a>
+        <a href="client-account.html" class="btn" style="background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;">mon compte</a>
+        <span id="user-status" style="color:var(--muted);font-size:14px;margin-left:16px;"></span>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width:1200px;margin:0 auto;padding:40px 20px;background:linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.05));border-radius:12px;margin-top:20px;margin-bottom:20px;border:1px solid rgba(255,255,255,0.08);">
+    <section class="services-section">
+      <h2 style="font-size:48px;margin:0 0 12px;color:var(--text);text-align:center;">nos services</h2>
+      <p style="font-size:16px;margin:0 0 40px;color:var(--muted);text-align:center;">une expertise automobile complète pour votre sérénité</p>
+      <div class="services-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:48px;">
+        <!-- Service 1: Expertise Achat -->
+        <div class="service-card" style="background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:32px 24px;border-radius:12px;text-align:center;position:relative;">
+          <div style="position:absolute;top:-12px;right:-20px;background:#f97316;padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;color:white;">POPULAIRE</div>
+          <div style="width:80px;height:80px;border-radius:999px;background:#f97316;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 24px;">🔍</div>
+          <h3 style="margin:0 0 16px;color:var(--text);font-size:22px;">expertise achat</h3>
+          <p style="margin:0 0 24px;color:var(--muted);font-size:14px;">accompagnement personnalisé pour votre prochain véhicule</p>
+          <ul style="list-style:none;padding:0;margin:0 0 24px;text-align:left;">
+            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#f97316;">✓</span>recherche ciblée selon vos critères</li>
+            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#f97316;">✓</span>vérification technique approfondie</li>
+            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#f97316;">✓</span>négociation du meilleur prix</li>
+            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#f97316;">✓</span>accompagnement jusqu'à la livraison</li>
+          </ul>
+          <button style="background:#f97316;color:white;border:0;padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:600;width:100%;">demander un accompagnement</button>
+        </div>
+
+        <!-- Service 2: Reprise Équitable -->
+        <div class="service-card" style="background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:32px 24px;border-radius:12px;text-align:center;">
+          <div style="width:80px;height:80px;border-radius:999px;background:#10b981;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 24px;">💰</div>
+          <h3 style="margin:0 0 16px;color:var(--text);font-size:22px;">reprise équitable</h3>
+          <p style="margin:0 0 24px;color:var(--muted);font-size:14px;">estimation juste et transparente de votre véhicule</p>
+          <ul style="list-style:none;padding:0;margin:0 0 24px;text-align:left;">
+            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#10b981;">✓</span>évaluation gratuite et immédiate</li>
+            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#10b981;">✓</span>prix de reprise garanti 48h</li>
+            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#10b981;">✓</span>démarches administratives incluses</li>
+            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#10b981;">✓</span>paiement sécurisé</li>
+          </ul>
+          <button style="background:#10b981;color:white;border:0;padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:600;width:100%;">demander une évaluation</button>
+        </div>
+
+        <!-- Service 3: Vente via Zenoccaz -->
+        <div class="service-card" style="background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:32px 24px;border-radius:12px;text-align:center;position:relative;">
+          <div style="position:absolute;top:-12px;right:-20px;background:#f97316;padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;color:white;">PRIME</div>
+          <div style="width:80px;height:80px;border-radius:999px;background:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 24px;">👑</div>
+          <h3 style="margin:0 0 16px;color:var(--text);font-size:22px;">vente via zenoccaz</h3>
+          <p style="margin:0 0 24px;color:var(--muted);font-size:14px;">mise en valeur professionnelle de votre véhicule</p>
+          <ul style="list-style:none;padding:0;margin:0 0 24px;text-align:left;">
+            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#f59e0b;">✓</span>diagnostic complet professionnel</li>
+            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#f59e0b;">✓</span>mise en valeur professionnelle de votre véhicule</li>
+            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#f59e0b;">✓</span>confiance renforcée pour l'acheteur</li>
+            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#f59e0b;">✓</span>vente facilitée et sécurisée</li>
+          </ul>
+          <button style="background:#f97316;color:white;border:0;padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:600;width:100%;">découvrir nos véhicules</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="zenscan-section" style="margin-top:60px;">
+      <h2 style="font-size:48px;margin:0 0 12px;color:var(--text);text-align:center;">pack zenscan</h2>
+      <p style="font-size:16px;margin:0 0 40px;color:var(--muted);text-align:center;">diagnostic électronique professionnel pour votre véhicule</p>
+
+      <div style="background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);border-radius:12px;overflow:hidden;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr style="background:rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.08);">
+              <th style="padding:20px;text-align:left;color:var(--muted);font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;border-right:1px solid rgba(255,255,255,0.08);">Pack ZenScan</th>
+              <th style="padding:20px;text-align:left;color:var(--muted);font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;border-right:1px solid rgba(255,255,255,0.08);">Contenu</th>
+              <th style="padding:20px;text-align:left;color:var(--muted);font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;border-right:1px solid rgba(255,255,255,0.08);">Tarif TTC</th>
+              <th style="padding:20px;text-align:left;color:var(--muted);font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Avantage ZenScan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:20px;color:var(--text);font-weight:600;border-right:1px solid rgba(255,255,255,0.04);">Numérisation complète</td>
+              <td style="padding:20px;color:var(--muted);font-size:14px;border-right:1px solid rgba(255,255,255,0.04);">Lecture des défauts + explication orale + effacement si possible</td>
+              <td style="padding:20px;color:#10b981;font-weight:600;border-right:1px solid rgba(255,255,255,0.04);">45 €</td>
+              <td style="padding:20px;color:#f97316;font-weight:600;">Diagnostic rapide</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:20px;color:var(--text);font-weight:600;border-right:1px solid rgba(255,255,255,0.04);">Numérisation + rapport PDF</td>
+              <td style="padding:20px;color:var(--muted);font-size:14px;border-right:1px solid rgba(255,255,255,0.04);">Scan complet + rapport clair + conseils personnalisés</td>
+              <td style="padding:20px;color:#10b981;font-weight:600;border-right:1px solid rgba(255,255,255,0.04);">69 €</td>
+              <td style="padding:20px;color:#f97316;font-weight:600;">Suivi écrit détaillé</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:20px;color:var(--text);font-weight:600;border-right:1px solid rgba(255,255,255,0.04);">technique de précontrôle</td>
+              <td style="padding:20px;color:var(--muted);font-size:14px;border-right:1px solid rgba(255,255,255,0.04);">Scan complet + checklist CT + rapport + recommandations</td>
+              <td style="padding:20px;color:#10b981;font-weight:600;border-right:1px solid rgba(255,255,255,0.04);">79 €</td>
+              <td style="padding:20px;color:#f97316;font-weight:600;">Préparation CT optimale</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:20px;color:var(--text);font-weight:600;border-right:1px solid rgba(255,255,255,0.04);">Scan + intervention mineure</td>
+              <td style="padding:20px;color:var(--muted);font-size:14px;border-right:1px solid rgba(255,255,255,0.04);">Scan complet + intervention mineure (capteur, fusible...)</td>
+              <td style="padding:20px;color:#10b981;font-weight:600;border-right:1px solid rgba(255,255,255,0.04);">129 €</td>
+              <td style="padding:20px;color:#f97316;font-weight:600;">Réparation</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:20px;color:var(--text);font-weight:600;border-right:1px solid rgba(255,255,255,0.04);">Formation express</td>
+              <td style="padding:20px;color:var(--muted);font-size:14px;border-right:1px solid rgba(255,255,255,0.04);">Scan complet + initiation à la lecture des défauts</td>
+              <td style="padding:20px;color:#10b981;font-weight:600;border-right:1px solid rgba(255,255,255,0.04);">89 €</td>
+              <td style="padding:20px;color:#f97316;font-weight:600;">Autonomie diagnostic</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:20px;color:var(--text);font-weight:600;border-right:1px solid rgba(255,255,255,0.04);">Déplacement à domicile</td>
+              <td style="padding:20px;color:var(--muted);font-size:14px;border-right:1px solid rgba(255,255,255,0.04);">Tous les services ZenScan disponibles chez vous - inclus dans un rayon de 20km, au-delà de 0.50€/km</td>
+              <td style="padding:20px;color:#10b981;font-weight:600;text-align:center;border-right:1px solid rgba(255,255,255,0.04);">inclus dans le pack</td>
+              <td style="padding:20px;color:#f97316;font-weight:600;">Confort maximal</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="text-align:center;margin-top:40px;">
+        <button id="open-diagnostic-btn" style="background:#10b981;color:white;border:0;padding:14px 32px;border-radius:8px;cursor:pointer;font-weight:600;font-size:16px;display:inline-flex;align-items:center;gap:8px;">
+          <span>⏱️</span> demander un diagnostic
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">© ZENOCCAZ — Vente de véhicules d'occasion premium</footer>
+
+  <!-- Diagnostic modal (choix pack + calcul déplacement) -->
+  <div id="diagnostic-modal" class="modal hidden" aria-hidden="true" role="dialog" aria-labelledby="diag-title">
+    <div class="modal-content" style="max-width:720px;">
+      <h2 id="diag-title">Demander un diagnostic — Pack ZenScan</h2>
+      <p style="color:var(--muted);margin-top:6px;margin-bottom:14px;">Choisissez les services souhaités. Pour le déplacement à domicile, saisissez l'adresse du client pour calculer le kilométrage et le tarif (20 km offerts, puis 0,50€/km).</p>
+
+      <form id="diag-form" style="display:grid;gap:12px;">
+        <div style="display:flex;flex-direction:column;gap:12px;max-height:420px;overflow:auto;padding-right:6px;">
+          <!-- Card style entries -->
+          <label class="diag-card" style="display:flex;align-items:flex-start;gap:14px;border:1px solid rgba(255,255,255,0.03);padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(0,0,0,0.04), rgba(255,255,255,0.01));">
+            <input type="checkbox" name="service" value="num1" data-price="45" data-title="Numérisation complète" style="margin-top:6px;" />
+            <div style="flex:1;">
+              <div style="font-weight:700;color:var(--text);font-size:16px;margin-bottom:6px;">Numérisation complète</div>
+              <div style="color:var(--muted);font-size:13px;margin-bottom:8px;">Lecture des défauts + explication orale + effacement si possible</div>
+              <div style="color:#f97316;font-size:13px;font-weight:700;">Diagnostic rapide</div>
+            </div>
+            <div style="min-width:72px;text-align:right;color:#10b981;font-weight:700;font-size:16px;">45 €</div>
+          </label>
+
+          <label class="diag-card" style="display:flex;align-items:flex-start;gap:14px;border:1px solid rgba(255,255,255,0.03);padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(0,0,0,0.04), rgba(255,255,255,0.01));">
+            <input type="checkbox" name="service" value="num2" data-price="69" data-title="Numérisation + rapport PDF" style="margin-top:6px;" />
+            <div style="flex:1;">
+              <div style="font-weight:700;color:var(--text);font-size:16px;margin-bottom:6px;">Numérisation + rapport PDF</div>
+              <div style="color:var(--muted);font-size:13px;margin-bottom:8px;">Scan complet + rapport clair + conseils personnalisés</div>
+              <div style="color:#f97316;font-size:13px;font-weight:700;">Suivi écrit détaillé</div>
+            </div>
+            <div style="min-width:72px;text-align:right;color:#10b981;font-weight:700;font-size:16px;">69 €</div>
+          </label>
+
+          <label class="diag-card" style="display:flex;align-items:flex-start;gap:14px;border:1px solid rgba(255,255,255,0.03);padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(0,0,0,0.04), rgba(255,255,255,0.01));">
+            <input type="checkbox" name="service" value="prect" data-price="79" data-title="Technique de précontrôle" style="margin-top:6px;" />
+            <div style="flex:1;">
+              <div style="font-weight:700;color:var(--text);font-size:16px;margin-bottom:6px;">Technique de précontrôle</div>
+              <div style="color:var(--muted);font-size:13px;margin-bottom:8px;">Scan complet + checklist CT + rapport + recommandations</div>
+              <div style="color:#f97316;font-size:13px;font-weight:700;">Préparation CT optimale</div>
+            </div>
+            <div style="min-width:72px;text-align:right;color:#10b981;font-weight:700;font-size:16px;">79 €</div>
+          </label>
+
+          <label class="diag-card" style="display:flex;align-items:flex-start;gap:14px;border:1px solid rgba(255,255,255,0.03);padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(0,0,0,0.04), rgba(255,255,255,0.01));">
+            <input type="checkbox" name="service" value="interv" data-price="129" data-title="Scan + intervention mineure" style="margin-top:6px;" />
+            <div style="flex:1;">
+              <div style="font-weight:700;color:var(--text);font-size:16px;margin-bottom:6px;">Scan + intervention mineure</div>
+              <div style="color:var(--muted);font-size:13px;margin-bottom:8px;">Scan complet + intervention mineure (capteur, fusible...)</div>
+              <div style="color:#f97316;font-size:13px;font-weight:700;">Réparation immédiate</div>
+            </div>
+            <div style="min-width:72px;text-align:right;color:#10b981;font-weight:700;font-size:16px;">129 €</div>
+          </label>
+
+          <label class="diag-card" style="display:flex;align-items:flex-start;gap:14px;border:1px solid rgba(255,255,255,0.03);padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(0,0,0,0.04), rgba(255,255,255,0.01));">
+            <input type="checkbox" name="service" value="form" data-price="89" data-title="Formation express" style="margin-top:6px;" />
+            <div style="flex:1;">
+              <div style="font-weight:700;color:var(--text);font-size:16px;margin-bottom:6px;">Formation express</div>
+              <div style="color:var(--muted);font-size:13px;margin-bottom:8px;">Scan complet + initiation à la lecture des défauts</div>
+              <div style="color:#f97316;font-size:13px;font-weight:700;">Autonomie diagnostic</div>
+            </div>
+            <div style="min-width:72px;text-align:right;color:#10b981;font-weight:700;font-size:16px;">89 €</div>
+          </label>
+
+          <label class="diag-card" style="display:flex;align-items:flex-start;gap:14px;border:1px solid rgba(255,255,255,0.03);padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(0,0,0,0.04), rgba(255,255,255,0.01));">
+            <input type="checkbox" name="service" value="deplacement" data-price="0" data-title="Déplacement à domicile" style="margin-top:6px;" />
+            <div style="flex:1;">
+              <div style="font-weight:700;color:var(--text);font-size:16px;margin-bottom:6px;">Déplacement à domicile</div>
+              <div style="color:var(--muted);font-size:13px;margin-bottom:8px;">Tous les services ZenScan disponibles chez vous - inclus dans un rayon de 20km, au-delà de 0.50€/km</div>
+              <div style="color:#f97316;font-size:13px;font-weight:700;">Confort maximal</div>
+            </div>
+            <div style="min-width:72px;text-align:right;color:#10b981;font-weight:700;font-size:16px;">inclus</div>
+          </label>
+        </div>
+
+        <div id="depl-block" style="display:none;flex-direction:column;gap:8px;margin-top:6px;">
+          <div style="font-size:13px;color:var(--muted);">Origine (départ) : <strong>2 chemin de la baleyte, 03380 Huriel, France</strong></div>
+          <label style="display:flex;flex-direction:column;gap:6px;"><span style="color:var(--muted);font-size:13px">Adresse du client / destination</span><input id="dest-address" type="text" placeholder="Adresse complète du client" style="padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);" /></label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button type="button" id="calc-distance" class="btn">Calculer la distance</button>
+            <div id="distance-result" style="color:var(--muted);font-size:14px;"></div>
+          </div>
+        </div>
+
+        <div style="border-top:1px dashed rgba(255,255,255,0.04);padding-top:10px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+          <div style="min-width:220px;">
+            <div style="color:var(--muted);font-size:13px">Total estimé</div>
+            <div id="price-total" style="font-weight:700;font-size:18px;color:var(--text);">0,00 €</div>
+            <div id="price-breakdown" style="color:var(--muted);font-size:13px;margin-top:6px;"></div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button type="button" id="confirm-diagnostic" class="btn primary">Envoyer la demande</button>
+            <button type="button" id="close-diagnostic" class="btn">Annuler</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Load Supabase from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module">
+    // Import config and initialize Supabase
+    import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
+    
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // Expose to window for non-module scripts
+    window.supabase = supabaseClient;
+    window.supabaseClient = {
+      supabase: supabaseClient,
+      insertContact: async (contact) => {
+        return await supabaseClient.from('contacts').insert([contact]);
+      },
+      insertZenscan: async (zenscan) => {
+        return await supabaseClient.from('zenscan_requests').insert([zenscan]);
+      }
+    };
+    
+    console.log('✅ Supabase initialisé pour services.html');
+    
+    // Dispatch ready event
+    window.dispatchEvent(new Event('supabaseReady'));
+  </script>
+  
+  <script>
+    (function(){
+      // Configuration
+      const ORIGIN = '2 chemin de la baleyte 03380 Huriel France';
+      const KM_FREE = 20;
+      const KM_PRICE = 0.5; // €/km beyond free
+
+      // Helpers
+      function $$(s,root=document){return Array.from(root.querySelectorAll(s))}
+      function $(s,root=document){return root.querySelector(s)}
+
+      function haversineKm([lat1,lon1],[lat2,lon2]){
+        const toRad = r=> r*Math.PI/180;
+        const R=6371; // km
+        const dLat = toRad(lat2-lat1);
+        const dLon = toRad(lon2-lon1);
+        const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+        const c = 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R*c;
+      }
+
+      async function geocode(query){
+        const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(query);
+        try{
+          const res = await fetch(url, {headers:{'Accept':'application/json'}});
+          const data = await res.json();
+          if(data && data.length) return {lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon)};
+        }catch(e){console.warn('geocode error',e)}
+        return null;
+      }
+
+      // Elements
+      const openBtn = $('#open-diagnostic-btn');
+      const modal = $('#diagnostic-modal');
+      const closeBtn = $('#close-diagnostic');
+      const calcBtn = $('#calc-distance');
+      const destInput = $('#dest-address');
+      const deplBlock = $('#depl-block');
+      const priceTotalEl = $('#price-total');
+      const priceBreakdownEl = $('#price-breakdown');
+      const distanceResult = $('#distance-result');
+      const confirmBtn = $('#confirm-diagnostic');
+
+      let originCoords = null;
+      // geocode origin once
+      geocode(ORIGIN).then(c=>{ originCoords = c; });
+
+      function openModal(){ modal.classList.remove('hidden'); modal.setAttribute('aria-hidden','false'); }
+      function closeModal(){ modal.classList.add('hidden'); modal.setAttribute('aria-hidden','true'); }
+
+      openBtn.addEventListener('click', ()=>{
+        openModal();
+      });
+      closeBtn.addEventListener('click', ()=> closeModal());
+
+      // toggle display for déplacement checkbox
+      const deplCheckbox = Array.from(document.querySelectorAll('input[name="service"][value="deplacement"]'))[0];
+      if(deplCheckbox){
+        deplCheckbox.addEventListener('change', (e)=>{
+          deplBlock.style.display = e.target.checked ? 'flex' : 'none';
+          updatePrice();
+        });
+      }
+
+      // calculate distance
+      calcBtn.addEventListener('click', async ()=>{
+        const dest = destInput.value && destInput.value.trim();
+        if(!dest){ distanceResult.textContent = 'Veuillez saisir l\'adresse du client.'; return }
+        distanceResult.textContent = 'Calcul en cours…';
+        const destCoords = await geocode(dest);
+        if(!destCoords){ distanceResult.textContent = 'Adresse introuvable.'; return }
+        if(!originCoords){ originCoords = await geocode(ORIGIN); if(!originCoords){ distanceResult.textContent = 'Impossible de géocoder l\'origine.'; return } }
+        const km = haversineKm([originCoords.lat, originCoords.lon],[destCoords.lat,destCoords.lon]);
+        const kmRounded = Math.max(0, Math.round(km*10)/10);
+        const extra = Math.max(0, kmRounded - KM_FREE);
+        const travelFee = Math.round(extra * KM_PRICE * 100)/100;
+        distanceResult.innerHTML = `Distance estimée: <strong>${kmRounded} km</strong> — Frais déplacement: <strong>${travelFee.toFixed(2)} €</strong> (${KM_FREE} km offerts)`;
+        // store values for price calc
+        distanceResult.dataset.km = kmRounded;
+        distanceResult.dataset.fee = travelFee;
+        updatePrice();
+      });
+
+      function updatePrice(){
+        const checked = $$('input[name="service"]:checked', modal);
+        let sum = 0;
+        let breakdown = [];
+        checked.forEach(ch=>{
+          const price = parseFloat(ch.dataset.price) || 0;
+          if(ch.value === 'deplacement'){
+            // use computed fee if available
+            const fee = parseFloat(distanceResult.dataset.fee) || 0;
+            breakdown.push(`${ch.parentNode.textContent.trim()}: ${fee.toFixed(2)} €`);
+            sum += fee;
+          } else {
+            breakdown.push(`${ch.parentNode.textContent.trim()}: ${price.toFixed(2)} €`);
+            sum += price;
+          }
+        });
+        priceTotalEl.textContent = sum.toFixed(2) + ' €';
+        priceBreakdownEl.innerHTML = breakdown.join('<br>');
+      }
+
+      // update whenever checkboxes change
+      $$( 'input[name="service"]', modal).forEach(el=> el.addEventListener('change', updatePrice));
+
+      // Vérifier si utilisateur connecté avant de confirmer
+      confirmBtn.addEventListener('click', ()=>{
+        const user = getCurrentUser();
+        console.log('🔍 Vérification utilisateur:', user);
+        
+        if(!user){
+          // Pas connecté : ouvrir le modal d'authentification
+          console.log('❌ Utilisateur non connecté - Ouverture du modal d\'authentification');
+          openAuthModal('register');
+        } else {
+          // Déjà connecté : finaliser directement
+          console.log('✅ Utilisateur déjà connecté:', user.name, '- Enregistrement direct');
+          finalizeZenscanRequest(user.id);
+        }
+      });
+
+      // Session utilisateur : uniquement ID et nom en localStorage (pas de données complètes)
+      function getCurrentUser(){ try{ const raw = sessionStorage.getItem('zenoccaz_current_user'); return raw ? JSON.parse(raw) : null }catch(e){ return null } }
+      function setCurrentUser(obj){ 
+        try{ 
+          sessionStorage.setItem('zenoccaz_current_user', JSON.stringify(obj));
+          updateUserStatus();
+          console.log('✅ Session utilisateur créée:', obj.name);
+        }catch(e){} 
+      }
+      // Rendre les fonctions accessibles globalement
+      window.logoutUser = function(){
+        try{
+          sessionStorage.removeItem('zenoccaz_current_user');
+          updateUserStatus();
+          alert('✅ Déconnexion réussie');
+          console.log('🔓 Utilisateur déconnecté');
+        }catch(e){
+          console.error('Erreur déconnexion:', e);
+        }
+      }
+
+      function updateUserStatus(){
+        const user = getCurrentUser();
+        const statusEl = document.getElementById('user-status');
+        if(!statusEl) return;
+        
+        if(user){
+          statusEl.innerHTML = `<span style="color:var(--primary);font-weight:600;">👤 ${user.name}</span> | <a href="#" onclick="window.logoutUser(); return false;" style="color:#f97316;text-decoration:underline;">Déconnexion</a>`;
+        } else {
+          statusEl.innerHTML = '<a href="#" onclick="window.openAuthModalGlobal(\'register\'); return false;" style="color:var(--primary);text-decoration:underline;">Se connecter</a>';
+        }
+      }
+
+      // Session utilisateur conservée pendant la session du navigateur (sessionStorage)
+      console.log('🔄 Vérification de la session...');
+
+      // Initialiser le statut au chargement
+      updateUserStatus();
+      
+      // Afficher un message si utilisateur connecté
+      const user = getCurrentUser();
+      if(user){
+        console.log('✅ Utilisateur connecté:', user.name);
+      } else {
+        console.log('ℹ️ Aucun utilisateur connecté - authentification requise pour ZenScan');
+      }
+
+      // create an auth modal for register/login
+      const authModalHtml = `
+      <div id="auth-modal" class="modal hidden" aria-hidden="true" role="dialog" aria-labelledby="auth-title">
+        <div class="modal-content" style="max-width:520px;">
+          <h2 id="auth-title">Identifiez-vous ou créez un compte</h2>
+          <p style="color:var(--muted);margin-top:6px;margin-bottom:12px;">Créez un compte pour finaliser la demande. Vos coordonnées (nom, adresse, plaque) seront enregistrées dans le panneau d'administration.</p>
+          <div style="display:grid;gap:12px;">
+            <div id="auth-tabs" style="display:flex;gap:8px;">
+              <button id="auth-tab-login" class="btn">Se connecter</button>
+              <button id="auth-tab-register" class="btn primary">Créer un compte</button>
+            </div>
+            <form id="auth-form" style="display:grid;gap:8px;">
+              <!-- register fields -->
+              <div id="reg-fields" style="display:none;flex-direction:column;gap:8px;">
+                <input id="reg-first" placeholder="Prénom" />
+                <input id="reg-last" placeholder="Nom" />
+                <input id="reg-email" placeholder="Email (optionnel)" />
+                <input id="reg-phone" placeholder="Téléphone (optionnel)" />
+                <input id="reg-address" placeholder="Adresse complète" />
+                <input id="reg-plate" placeholder="Plaque d'immatriculation" />
+                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px;"><button type="button" id="reg-submit" class="btn primary">Créer</button><button type="button" id="reg-cancel" class="btn">Annuler</button></div>
+              </div>
+              <!-- login fields -->
+              <div id="login-fields" style="display:none;flex-direction:column;gap:8px;">
+                <input id="login-email" placeholder="Email ou téléphone" />
+                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px;"><button type="button" id="login-submit" class="btn primary">Se connecter</button><button type="button" id="login-cancel" class="btn">Annuler</button></div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>`;
+
+      document.body.insertAdjacentHTML('beforeend', authModalHtml);
+      const authModal = $('#auth-modal');
+      const authTabLogin = $('#auth-tab-login');
+      const authTabRegister = $('#auth-tab-register');
+      const regFields = $('#reg-fields');
+      const loginFields = $('#login-fields');
+      const regSubmit = $('#reg-submit');
+      const regCancel = $('#reg-cancel');
+      const loginSubmit = $('#login-submit');
+      const loginCancel = $('#login-cancel');
+
+      function openAuthModal(mode){ authModal.classList.remove('hidden'); authModal.setAttribute('aria-hidden','false'); if(mode==='login'){ loginFields.style.display='flex'; regFields.style.display='none'; authTabLogin.classList.add('primary'); authTabRegister.classList.remove('primary'); } else { loginFields.style.display='none'; regFields.style.display='flex'; authTabRegister.classList.add('primary'); authTabLogin.classList.remove('primary'); } }
+      function closeAuthModal(){ authModal.classList.add('hidden'); authModal.setAttribute('aria-hidden','true'); }
+      
+      // Rendre openAuthModal accessible globalement
+      window.openAuthModalGlobal = openAuthModal;
+
+      authTabLogin.addEventListener('click', ()=> openAuthModal('login'));
+      authTabRegister.addEventListener('click', ()=> openAuthModal('register'));
+      regCancel.addEventListener('click', ()=> closeAuthModal());
+      loginCancel.addEventListener('click', ()=> closeAuthModal());
+
+      // Register handler: create contact directly in Supabase
+      regSubmit.addEventListener('click', async ()=>{
+        const first = ($('#reg-first').value||'').trim();
+        const last = ($('#reg-last').value||'').trim();
+        const email = ($('#reg-email').value||'').trim();
+        const phone = ($('#reg-phone').value||'').trim();
+        const addr = ($('#reg-address').value||'').trim();
+        const plate = ($('#reg-plate').value||'').trim();
+        if(!first || !last || !addr || !plate){ alert('❌ Prénom, nom, adresse et plaque sont requis.'); return }
+        
+        console.log('📝 Création du contact...');
+        const id = Date.now();
+        const contact = { 
+          id, 
+          name: last + ' ' + first, 
+          first_name: first, 
+          last_name: last, 
+          email, 
+          phone, 
+          address: addr, 
+          plates: [plate]
+          // created_at sera automatiquement ajouté par Supabase (DEFAULT now())
+        }
+        
+        // Enregistrer directement dans Supabase
+        try{
+          if(!window.supabase){
+            alert('❌ Erreur: Supabase non initialisé');
+            return;
+          }
+          
+          const { data, error } = await window.supabase.from('contacts').insert([contact]).select();
+          
+          if(error){
+            console.error('❌ Erreur Supabase:', error);
+            alert('❌ Erreur lors de la création du compte: ' + error.message);
+            return;
+          }
+          
+          console.log('✅ Contact créé dans Supabase:', data);
+          setCurrentUser({id: id, name: contact.name});
+          closeAuthModal();
+          
+          // Enregistrer la demande ZenScan
+          await finalizeZenscanRequest(id);
+        }catch(e){
+          console.error('❌ Exception:', e);
+          alert('❌ Erreur: ' + e.message);
+        }
+      });
+
+      // Simple login: by email or phone from Supabase
+      loginSubmit.addEventListener('click', async ()=>{
+        const key = ($('#login-email').value||'').trim();
+        if(!key){ alert('❌ Saisissez votre email ou téléphone.'); return }
+        
+        console.log('🔍 Recherche du compte...');
+        
+        try{
+          if(!window.supabase){
+            alert('❌ Erreur: Supabase non initialisé');
+            return;
+          }
+          
+          // Chercher par email OU téléphone
+          const { data, error } = await window.supabase
+            .from('contacts')
+            .select('*')
+            .or(`email.eq.${key},phone.eq.${key.replace(/\s+/g, '')}`);
+          
+          if(error){
+            console.error('❌ Erreur Supabase:', error);
+            alert('❌ Erreur lors de la connexion: ' + error.message);
+            return;
+          }
+          
+          if(!data || data.length === 0){
+            alert('❌ Compte non trouvé. Veuillez créer un compte.');
+            return;
+          }
+          
+          const found = data[0];
+          console.log('✅ Compte trouvé:', found.name);
+          setCurrentUser({id: found.id, name: found.name});
+          closeAuthModal();
+          
+          // Enregistrer la demande ZenScan
+          await finalizeZenscanRequest(found.id);
+        }catch(e){
+          console.error('❌ Exception:', e);
+          alert('❌ Erreur: ' + e.message);
+        }
+      });
+
+      // Finalize and store the zenscan request directly in Supabase
+      async function finalizeZenscanRequest(contactId){
+        const checkedEls = $$('input[name="service"]:checked', modal);
+        const checked = checkedEls.map(i=> (i.dataset.title || i.value) );
+        if(checked.length===0){ alert('❌ Sélectionnez au moins un service.'); return }
+        
+        const summary = priceBreakdownEl.innerText || '—';
+        const total = priceTotalEl.textContent;
+        const reqObj = { 
+          id: Date.now(), 
+          contact_id: contactId,  // snake_case pour correspondre au schéma Supabase
+          services: checked, 
+          breakdown: summary, 
+          total: total, 
+          dest: destInput.value||null
+          // created_at sera automatiquement ajouté par Supabase (DEFAULT now())
+        };
+        
+        console.log('💾 Enregistrement demande ZenScan dans Supabase...');
+        
+        try{
+          if(!window.supabase){
+            alert('❌ Erreur: Supabase non initialisé');
+            return;
+          }
+          
+          const { data, error } = await window.supabase.from('zenscan_requests').insert([reqObj]).select();
+          
+          if(error){
+            console.error('❌ Erreur Supabase:', error);
+            alert('❌ Erreur lors de l\'enregistrement: ' + error.message);
+            return;
+          }
+          
+          console.log('✅ Demande ZenScan enregistrée:', data);
+          alert('✅ Demande enregistrée avec succès! Merci.');
+          closeModal();
+        }catch(e){
+          console.error('❌ Exception:', e);
+          alert('❌ Erreur: ' + e.message);
+        }
+      }
+
+      // Le handler du bouton confirmer est déjà défini plus haut (ligne ~365)
+      // Pas besoin de dupliquer ici
+
+      // close modal when clicking outside content
+      modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
+
+    })();
+  </script>
+
+  <script src="app.js"></script>
+</body>
+</html>

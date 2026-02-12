@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: zenoccaz-chatbot
+    plan: free
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: GROQ_API_KEY
+        scope: build,runtime
+        sync: false
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
