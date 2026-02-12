@@ -501,7 +501,6 @@ FORMAT DE RÉPONSE :
       [
         { label: 'Prendre un rendez-vous', value: 'rdv' },
         { label: 'Être rappelé', value: 'callback' },
-        { label: 'Envoyer un message WhatsApp', value: 'whatsapp' },
         { label: 'Laisser mon email', value: 'email' },
       ],
       (value) => {
@@ -514,12 +513,16 @@ FORMAT DE RÉPONSE :
           return;
         }
         if (value === 'callback') {
-          this.askText('Super. Laisse ton numéro et le meilleur créneau.', (text) => {
-            console.log('📞 Texte callback reçu:', text);
-            console.log('📞 Longueur:', text.length);
-            console.log('📞 JSON.stringify:', JSON.stringify({ callback_info: text }));
-            this.updateChatLead({ callback_info: text });
-            this.addMessage('Parfait. On te rappelle vite.', 'bot');
+          this.askText('D\'accord ! Quel est ton nom de famille ?', (nom) => {
+            this.updateChatLead({ callback_nom: nom });
+            this.addMessage(`Merci ${nom} !`, 'bot');
+            this.askText('Quel est ton numéro de téléphone ?', (tel) => {
+              this.updateChatLead({ callback_tel: tel });
+              this.askText('Quel jour et créneau te conviennent le mieux ? (ex: lundi matin, mercredi 14h...)', (date) => {
+                this.updateChatLead({ callback_date: date, callback_info: `${nom} - ${tel} - ${date}` });
+                this.addMessage(`Parfait ${nom}, on te rappelle au ${tel} (${date}). À très vite ! 👋`, 'bot');
+              });
+            });
           });
           return;
         }

@@ -349,6 +349,13 @@
         </div>
       </div>
 
+      <!-- Filtres -->
+      <div style="display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;">
+        <button class="btn" id="chat-filter-all" style="background:var(--accent);color:#fff;" onclick="filterChatLeads('all')">Toutes</button>
+        <button class="btn" id="chat-filter-active" style="background:rgba(255,255,255,0.08);" onclick="filterChatLeads('active')">Actives</button>
+        <button class="btn" id="chat-filter-archived" style="background:rgba(255,255,255,0.08);" onclick="filterChatLeads('archived')">Archivées</button>
+      </div>
+
       <div style="background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:12px;overflow:auto;">
         <table class="contacts-table">
           <thead>
@@ -356,6 +363,8 @@
               <th>DATE</th>
               <th>CHOIX</th>
               <th>DÉTAILS</th>
+              <th>STATUT</th>
+              <th>ACTIONS</th>
             </tr>
           </thead>
           <tbody id="chat-leads-table-body">
@@ -2247,16 +2256,35 @@
       }
 
       // ====== GESTION DES CHOIX CHAT IA ======
+      let chatLeadsFilter = 'all'
+
+      function filterChatLeads(filter){
+        chatLeadsFilter = filter
+        document.getElementById('chat-filter-all').style.background = filter === 'all' ? 'var(--accent)' : 'rgba(255,255,255,0.08)'
+        document.getElementById('chat-filter-active').style.background = filter === 'active' ? 'var(--accent)' : 'rgba(255,255,255,0.08)'
+        document.getElementById('chat-filter-archived').style.background = filter === 'archived' ? 'var(--accent)' : 'rgba(255,255,255,0.08)'
+        renderChatLeadsTable()
+      }
+      window.filterChatLeads = filterChatLeads
+
       async function loadChatLeads(){
         try{
           if(!window.supabase){
             console.error('❌ Supabase non initialisé');
             return []
           }
-          const { data, error } = await window.supabase
+          let query = window.supabase
             .from('chat_leads')
             .select('*')
             .order('created_at', { ascending: false })
+
+          if(chatLeadsFilter === 'active'){
+            query = query.or('status.is.null,status.eq.active')
+          } else if(chatLeadsFilter === 'archived'){
+            query = query.eq('status', 'archived')
+          }
+
+          const { data, error } = await query
 
           if(error){
             console.error('❌ Erreur chargement chat leads:', error)
@@ -2268,6 +2296,54 @@
           return []
         }
       }
+
+      async function archiveChatLead(id){
+        if(!window.supabase) return
+        const { error } = await window.supabase
+          .from('chat_leads')
+          .update({ status: 'archived' })
+          .eq('id', id)
+        if(error){
+          console.error('❌ Erreur archivage:', error)
+          alert('Erreur lors de l\'archivage')
+        } else {
+          await renderChatLeadsTable()
+        }
+      }
+
+      async function unarchiveChatLead(id){
+        if(!window.supabase) return
+        const { error } = await window.supabase
+          .from('chat_leads')
+          .update({ status: 'active' })
+          .eq('id', id)
+        if(error){
+          console.error('❌ Erreur désarchivage:', error)
+          alert('Erreur lors du désarchivage')
+        } else {
+          await renderChatLeadsTable()
+        }
+      }
+
+      async function deleteChatLead(id){
+        if(!confirm('Supprimer définitivement cette demande ?')) return
+        if(!window.supabase) return
+        const { error } = await window.supabase
+          .from('chat_leads')
+          .delete()
+          .eq('id', id)
+        if(error){
+          console.error('❌ Erreur suppression:', error)
+          alert('Erreur lors de la suppression')
+        } else {
+          if(chatDetailsModal) chatDetailsModal.style.display = 'none'
+          await renderChatLeadsTable()
+        }
+      }
+
+      window.archiveChatLead = archiveChatLead
+      window.unarchiveChatLead = unarchiveChatLead
+      window.deleteChatLead = deleteChatLead
 
       function formatChatDetails(row){
         if(!row || !row.payload) return '—'
@@ -2301,7 +2377,7 @@
         chatLeadsTbody.innerHTML = ''
         if(arr.length===0){
           const tr = document.createElement('tr')
-          tr.innerHTML = '<td colspan="3" class="activity-empty">Aucun choix enregistré.</td>'
+          tr.innerHTML = '<td colspan="5" class="activity-empty">Aucune demande trouvée.</td>'
           chatLeadsTbody.appendChild(tr)
           return
         }
@@ -2309,12 +2385,27 @@
           const tr = document.createElement('tr')
           const dateObj = new Date(row.created_at)
           const dateStr = dateObj.toLocaleDateString('fr-FR')
-          const choiceLabel = row.choice === 'sell' ? 'Vendre' : row.choice === 'buy' ? 'Acheter' : 'Question'
+          const choiceLabel = row.choice === 'sell' ? 'Vendre' : row.choice === 'buy' ? 'Acheter' : row.choice === 'ai_chat' ? 'Chat IA' : 'Question'
+          const isArchived = row.status === 'archived'
+          const statusBadge = isArchived
+            ? '<span style="background:rgba(255,255,255,0.1);color:#888;padding:3px 10px;border-radius:20px;font-size:11px;">Archivée</span>'
+            : '<span style="background:rgba(16,185,129,0.15);color:#10b981;padding:3px 10px;border-radius:20px;font-size:11px;">Active</span>'
+          
+          const archiveBtn = isArchived
+            ? `<button onclick="event.stopPropagation();unarchiveChatLead(${row.id})" style="background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#60a5fa;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px;" title="Réactiver">↩️</button>`
+            : `<button onclick="event.stopPropagation();archiveChatLead(${row.id})" style="background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:#f59e0b;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px;" title="Archiver">📦</button>`
+          
           tr.innerHTML = `
             <td>${dateStr}</td>
             <td>${choiceLabel}</td>
             <td>${formatChatDetails(row)}</td>
+            <td>${statusBadge}</td>
+            <td style="display:flex;gap:6px;">
+              ${archiveBtn}
+              <button onclick="event.stopPropagation();deleteChatLead(${row.id})" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#ef4444;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px;" title="Supprimer">🗑️</button>
+            </td>
           `
+          if(isArchived) tr.style.opacity = '0.6'
           tr.style.cursor = 'pointer'
           tr.addEventListener('click', () => showChatDetails(row))
           chatLeadsTbody.appendChild(tr)
@@ -2364,12 +2455,25 @@
             html += `<div>📱 <strong>Mode contact:</strong> ${escapeHtml(contactLabels[p.contact_choice] || p.contact_choice)}</div>`
           }
           if(p.callback_info) html += `<div style="color:#4CAF50;font-weight:bold;">📞 <strong>Rappel demandé:</strong> ${escapeHtml(p.callback_info)}</div>`
+          if(p.callback_nom) html += `<div>👤 <strong>Nom:</strong> ${escapeHtml(p.callback_nom)}</div>`
+          if(p.callback_tel) html += `<div>📱 <strong>Téléphone:</strong> ${escapeHtml(p.callback_tel)}</div>`
+          if(p.callback_date) html += `<div>📅 <strong>Créneau:</strong> ${escapeHtml(p.callback_date)}</div>`
           if(p.email) html += `<div style="color:#4CAF50;font-weight:bold;">📧 <strong>Email:</strong> ${escapeHtml(p.email)}</div>`
           if(p.whatsapp) html += `<div style="color:#4CAF50;font-weight:bold;">💬 <strong>WhatsApp:</strong> ${escapeHtml(p.whatsapp)}</div>`
           if(p.rdv_info) html += `<div style="color:#4CAF50;font-weight:bold;">📅 <strong>RDV:</strong> ${escapeHtml(p.rdv_info)}</div>`
           
           html += '</div>'
         }
+        
+          const isArchived = row.status === 'archived'
+          html += `<div style="margin-top:20px;padding-top:15px;border-top:1px solid rgba(255,255,255,0.1);display:flex;gap:10px;">`
+          if(isArchived){
+            html += `<button onclick="unarchiveChatLead(${row.id})" style="background:rgba(59,130,246,0.2);border:1px solid rgba(59,130,246,0.4);color:#60a5fa;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;">↩️ Réactiver</button>`
+          } else {
+            html += `<button onclick="archiveChatLead(${row.id})" style="background:rgba(245,158,11,0.2);border:1px solid rgba(245,158,11,0.4);color:#f59e0b;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;">📦 Archiver</button>`
+          }
+          html += `<button onclick="deleteChatLead(${row.id})" style="background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);color:#ef4444;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;">🗑️ Supprimer</button>`
+          html += '</div>'
         
         content.innerHTML = html
         modal.style.display = 'flex'
