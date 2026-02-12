@@ -373,6 +373,11 @@ class ChatBot {
     this.state.conversation.push({ role: 'user', content: userMessage });
 
     try {
+      // Déterminer le sujet de la conversation si pas encore défini
+      if (!this.state.chatSubject) {
+        this.state.chatSubject = userMessage.substring(0, 100);
+      }
+
       const systemPrompt = `Tu es l'assistant virtuel de ZENOCCAZ, un garage et service d'achat/vente de véhicules d'occasion.
 
 CONTEXTE ZENOCCAZ :
@@ -440,9 +445,11 @@ FORMAT DE RÉPONSE :
 
         // Mettre à jour Supabase avec la conversation
         this.updateChatLead({ 
+          ai_conversation_topic: this.state.chatSubject,
           last_message: userMessage,
           last_response: data.response,
-          conversation_length: this.state.conversation.length
+          conversation_length: this.state.conversation.length,
+          full_conversation: this.state.conversation.map(m => `${m.role === 'user' ? 'Client' : 'IA'}: ${m.content}`).join('\n')
         });
 
         // Détecter si l'IA propose un contact et afficher les boutons
