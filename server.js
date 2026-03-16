@@ -2,153 +2,319 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import https from 'https';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+let LEARNED_DIAGNOSTICS = [];
+
+// Charger les diagnostics appris
+try {
+  const learnedPath = path.join(__dirname, 'learned-diagnostics.json');
+  if (fs.existsSync(learnedPath)) {
+    const data = fs.readFileSync(learnedPath, 'utf-8');
+    LEARNED_DIAGNOSTICS = JSON.parse(data);
+    console.log(`✅ Chargé ${LEARNED_DIAGNOSTICS.length} diagnostics appris`);
+  }
+} catch (e) {
+  console.warn('⚠️ Impossible de charger learned-diagnostics.json:', e.message);
+  LEARNED_DIAGNOSTICS = [];
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
 
-// Configuration CORS explicite pour accepter les requêtes depuis tous les domaines
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.options('*', cors());
-
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true })); // 20mb pour les images base64
 app.use(express.static('.'));
 
 const GROQ_API_KEY = (process.env.GROQ_API_KEY || '').trim();
 
-// Vérifier que la clé Groq est configurée
 if (!GROQ_API_KEY) {
   console.error('❌ GROQ_API_KEY non trouvée dans .env');
   process.exit(1);
 }
 
-function callGroqChat(payload) {
+// ─────────────────────────────────────────────────────────
+// HELPERS HTTP
+// ─────────────────────────────────────────────────────────
+
+function httpPost(hostname, path, headers, body) {
   return new Promise((resolve, reject) => {
-    const body = JSON.stringify(payload);
+    const bodyStr = JSON.stringify(body);
     const req = https.request(
       {
-        hostname: 'api.groq.com',
-        path: '/openai/v1/chat/completions',
+        hostname,
+        path,
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${GROQ_API_KEY}`,
           'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(body),
+          'Content-Length': Buffer.byteLength(bodyStr),
+          ...headers,
         },
       },
       (res) => {
         let data = '';
         res.on('data', (chunk) => (data += chunk));
         res.on('end', () => {
-          let parsed = null;
           try {
-            parsed = JSON.parse(data);
+            const parsed = JSON.parse(data);
+            if (res.statusCode < 200 || res.statusCode >= 300) {
+              const err = new Error(`HTTP ${res.statusCode}`);
+              err.details = parsed;
+              return reject(err);
+            }
+            resolve(parsed);
           } catch (e) {
-            parsed = null;
+            reject(new Error('JSON parse error: ' + data.substring(0, 200)));
           }
-
-          if (res.statusCode < 200 || res.statusCode >= 300) {
-            const err = new Error(`Groq API error ${res.statusCode}`);
-            err.details = parsed || data;
-            return reject(err);
-          }
-
-          return resolve(parsed);
         });
       }
     );
-
     req.on('error', reject);
-    req.write(body);
+    req.write(bodyStr);
     req.end();
   });
 }
 
-/**
- * Endpoint GET /health - pour vérifier que le serveur est alive
- */
-app.get('/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
-});
+function callGroq(messages, maxTokens = 1024) {
+  return httpPost(
+    'api.groq.com',
+    '/openai/v1/chat/completions',
+    { Authorization: `Bearer ${GROQ_API_KEY}` },
+    {
+      model: 'llama-3.1-8b-instant',
+      messages,
+      max_tokens: maxTokens,
+      temperature: 0.7,
+    }
+  );
+}
+
+
+// ─────────────────────────────────────────────────────────
+// APPRENTISSAGE
+// ─────────────────────────────────────────────────────────
+
+function saveLearningFeedback(symptom, diagnosis, fuelType, vehicleInfo = {}) {
+  const existing = LEARNED_DIAGNOSTICS.find(
+    d => d.symptom.toLowerCase() === symptom.toLowerCase() &&
+         d.diagnosis.toLowerCase() === diagnosis.toLowerCase()
+  );
+
+  if (existing) {
+    existing.validation_count = (existing.validation_count || 1) + 1;
+    existing.confidence_score = Math.min(10, existing.validation_count);
+    existing.updated_at = new Date().toISOString();
+    console.log(`📈 Diagnostic renforcé: "${symptom}" → "${diagnosis}" (${existing.confidence_score}/10)`);
+  } else {
+    LEARNED_DIAGNOSTICS.push({
+      id: Date.now(),
+      created_at: new Date().toISOString(),
+      symptom,
+      diagnosis,
+      fuel_type: fuelType,
+      vehicle_brand: vehicleInfo.brand,
+      vehicle_model: vehicleInfo.model,
+      vehicle_year: vehicleInfo.year,
+      validation_count: 1,
+      confidence_score: 1
+    });
+    console.log(`✅ Nouveau diagnostic appris: "${symptom}" → "${diagnosis}"`);
+  }
+
+  try {
+    fs.writeFileSync(
+      path.join(__dirname, 'learned-diagnostics.json'),
+      JSON.stringify(LEARNED_DIAGNOSTICS, null, 2)
+    );
+  } catch (e) {
+    console.error('❌ Erreur sauvegarde:', e.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// ROUTES
+// ─────────────────────────────────────────────────────────
+
+// Ping keep-alive (répond 200 sans consommer de tokens)
+app.get('/api/ping', (req, res) => res.json({ status: 'ok' }));
+app.get('/health', (req, res) => res.json({ status: 'OK', timestamp: new Date().toISOString() }));
 
 /**
- * Endpoint POST /api/chat
- * Reçoit un message de l'utilisateur et retourne une réponse de Groq
+ * POST /api/chat — Chat principal via Groq (Llama)
  */
 app.post('/api/chat', async (req, res) => {
   try {
     const { message, systemPrompt, conversationHistory } = req.body;
 
     if (!message || typeof message !== 'string') {
-      return res.status(400).json({ error: 'Message requis et valide' });
+      return res.status(400).json({ error: 'Message requis' });
     }
 
-    // Construire l'historique des messages
+    // Ignorer les pings
+    if (message === '__ping__') {
+      return res.json({ response: 'pong' });
+    }
+
     const messages = [];
 
-    // Ajouter le system prompt (personnalisé ou par défaut)
-    const defaultSystemPrompt = `Tu es un assistant IA pour ZENOCCAZ, un spécialiste en vente de véhicules d'occasion premium.
-- Réponds en français avec un ton professionnel mais amical
-- Aide les visiteurs avec des questions sur les véhicules, les tarifs, les services
-- Si tu as des informations sur nos véhicules, utilise-les
-- Propose toujours de les mettre en contact avec l'équipe pour plus de détails
-- Sois concis (max 3-4 lignes)`;
+    // System prompt
+    const defaultSystem = `Tu es un assistant virtuel de ZENOCCAZ et un mecanicien expert automobile.
+Tu diagnostiques comme un vrai mecano : tu fais tester avant d'acheter quoi que ce soit.
+Tu proposes toujours l'etape la plus simple et gratuite en premier.
+Tu ne mentionnes JAMAIS turbo, injecteur ou pieces couteuses tant que les verifications gratuites n'ont pas ete faites.`;
 
-    messages.push({
-      role: 'system',
-      content: systemPrompt || defaultSystemPrompt,
-    });
+    messages.push({ role: 'system', content: systemPrompt || defaultSystem });
 
-    // Ajouter l'historique de conversation si présent
+    // Historique
     if (Array.isArray(conversationHistory) && conversationHistory.length > 0) {
       conversationHistory.forEach(msg => {
         if (msg.role && msg.content) {
-          messages.push({
-            role: msg.role,
-            content: msg.content,
-          });
+          messages.push({ role: msg.role, content: msg.content });
         }
       });
     } else {
-      // Sinon, juste ajouter le message actuel
-      messages.push({
-        role: 'user',
-        content: message,
-      });
+      messages.push({ role: 'user', content: message });
     }
 
-    // Appel à Groq API
-    console.log('📤 Calling Groq API with', messages.length, 'messages');
-    const data = await callGroqChat({
-      model: 'llama-3.1-8b-instant',
-      messages,
-      max_tokens: 512,
-      temperature: 0.7,
-    });
-    
+    const data = await callGroq(messages, 1024);
     const reply = data.choices?.[0]?.message?.content || 'Désolé, pas de réponse.';
-    console.log('📥 Groq API replied:', reply.substring(0, 50) + '...');
 
     res.json({ response: reply });
+
   } catch (error) {
-    console.error('❌ Erreur serveur:', error?.details || error?.message || error);
+    console.error('❌ /api/chat error:', error?.message);
     res.status(500).json({ error: 'Erreur serveur', details: error?.message });
   }
 });
 
+/**
+ * POST /api/analyze-photo — Analyse photo via Groq LLaVA (vision, gratuit)
+ * Body: { base64: string, mediaType: string, context: string }
+ */
+app.post('/api/analyze-photo', async (req, res) => {
+  try {
+    const { base64, mediaType, context } = req.body;
+
+    if (!base64) {
+      return res.status(400).json({ error: 'Image base64 requise' });
+    }
+
+    console.log(`📸 Analyse photo LLaVA - contexte: "${(context || '').substring(0, 50)}"`);
+
+    const systemPrompt = `Tu es un mecanicien expert automobile qui analyse des photos de pieces de vehicules.
+Tu examines chaque detail avec l oeil d un professionnel.
+Tu regardes : etat des durites (fissures, fuites, ecrasement), soufflets (dechirures, graisse projetee),
+connexions electriques (oxydation, fils abimes), courroies (usure, craquelures),
+joints (fuites), niveaux visibles, corrosion, usure generale.
+${context ? 'Contexte du probleme signale par le client : ' + context : ''}
+
+FORMAT OBLIGATOIRE :
+Ce que je vois : [description precise de tout ce qui est visible]
+Etat general : [bon / moyen / mauvais / critique]
+Problemes detectes : [liste precise, meme les petits details]
+Ce qui semble OK : [ce qui a l air en bon etat]
+Recommandation : [action a faire, du plus urgent au moins urgent]
+Cout estime : [fourchette realiste ou "rien a faire"]`;
+
+    const imageUrl = `data:${mediaType || 'image/jpeg'};base64,${base64}`;
+
+    const data = await httpPost(
+      'api.groq.com',
+      '/openai/v1/chat/completions',
+      { Authorization: `Bearer ${GROQ_API_KEY}` },
+      {
+        model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+        messages: [
+          {
+            role: 'user',
+            content: [
+              { type: 'image_url', image_url: { url: imageUrl } },
+              {
+                type: 'text',
+                text: systemPrompt + '\n\nAnalyse cette photo comme un mecanicien expert et dis-moi tout ce que tu vois.'
+              }
+            ]
+          }
+        ],
+        max_tokens: 1024,
+        temperature: 0.3
+      }
+    );
+
+    const reply = data.choices?.[0]?.message?.content || 'Impossible d analyser la photo.';
+    console.log('✅ Analyse photo OK:', reply.substring(0, 80) + '...');
+    res.json({ response: reply });
+
+  } catch (error) {
+    console.error('❌ /api/analyze-photo error:', error?.message);
+    res.status(500).json({
+      error: 'Analyse photo indisponible',
+      details: error?.message
+    });
+  }
+});
+
+
+/**
+ * POST /api/save-diagnosis — Enregistre un diagnostic appris
+ */
+app.post('/api/save-diagnosis', (req, res) => {
+  try {
+    const { symptom, diagnosis, fuelType, vehicleInfo } = req.body;
+    if (!symptom || !diagnosis) {
+      return res.status(400).json({ error: 'symptom et diagnosis requis' });
+    }
+    saveLearningFeedback(symptom, diagnosis, fuelType, vehicleInfo || {});
+    res.json({ success: true, totalLearned: LEARNED_DIAGNOSTICS.length });
+  } catch (error) {
+    res.status(500).json({ error: 'Erreur', details: error?.message });
+  }
+});
+
+/**
+ * GET /api/learned-diagnostics — Liste les diagnostics appris
+ */
+app.get('/api/learned-diagnostics', (req, res) => {
+  try {
+    const { symptom, fuelType } = req.query;
+    if (symptom) {
+      const lower = symptom.toLowerCase();
+      const filtered = LEARNED_DIAGNOSTICS.filter(d =>
+        d.symptom.toLowerCase().includes(lower) &&
+        (!fuelType || !d.fuel_type || d.fuel_type === fuelType)
+      ).sort((a, b) => b.confidence_score - a.confidence_score);
+      return res.json({ count: filtered.length, diagnostics: filtered });
+    }
+    res.json({
+      count: LEARNED_DIAGNOSTICS.length,
+      diagnostics: LEARNED_DIAGNOSTICS.sort((a, b) => b.confidence_score - a.confidence_score)
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Erreur', details: error?.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────
+// DÉMARRAGE
+// ─────────────────────────────────────────────────────────
+
 app.listen(PORT, HOST, () => {
-  const nodeEnv = process.env.NODE_ENV || 'development';
-  const isDev = nodeEnv !== 'production';
-  const displayHost = isDev ? `http://localhost:${PORT}` : `https://zenoccaz.onrender.com`;
-  
-  console.log(`✅ Serveur démarré sur port ${PORT} (${nodeEnv})`);
-  console.log(`   Accessible à: ${displayHost}`);
-  console.log(`   Chat API disponible à /api/chat`);
-  console.log(`   Health check disponible à /health`);
+  const isDev = (process.env.NODE_ENV || 'development') !== 'production';
+  console.log(`✅ Serveur démarré sur port ${PORT}`);
+  console.log(`   Chat (Groq)    : POST /api/chat`);
+  console.log(`   Photo (Claude) : POST /api/analyze-photo ${ANTHROPIC_API_KEY ? '✅' : '❌ clé manquante'}`);
+  console.log(`   Save diagnosis : POST /api/save-diagnosis`);
+  console.log(`   Ping keep-alive: GET  /api/ping`);
 });
