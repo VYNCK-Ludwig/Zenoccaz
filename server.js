@@ -314,7 +314,7 @@ app.listen(PORT, HOST, () => {
   const isDev = (process.env.NODE_ENV || 'development') !== 'production';
   console.log(`✅ Serveur démarré sur port ${PORT}`);
   console.log(`   Chat (Groq)    : POST /api/chat`);
-  console.log(`   Photo (Claude) : POST /api/analyze-photo ${ANTHROPIC_API_KEY ? '✅' : '❌ clé manquante'}`);
+  console.log(`   Photo (LLaVA)  : POST /api/analyze-photo ✅`);
   console.log(`   Save diagnosis : POST /api/save-diagnosis`);
   console.log(`   Ping keep-alive: GET  /api/ping`);
 });
