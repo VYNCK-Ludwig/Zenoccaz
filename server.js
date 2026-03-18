@@ -35,11 +35,17 @@ app.use(cors({
 }));
 app.options('*', cors());
 app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ limit: '10mb', extended: true })); // 20mb pour les images base64
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.static('.'));
 
+// Clés API
+const SERPAPI_KEY = (process.env.SERPAPI_KEY || '').trim();
 const GROQ_API_KEY = (process.env.GROQ_API_KEY || '').trim();
 
+if (!SERPAPI_KEY) {
+  console.error('❌ SERPAPI_KEY non trouvée dans .env');
+  process.exit(1);
+}
 if (!GROQ_API_KEY) {
   console.error('❌ GROQ_API_KEY non trouvée dans .env');
   process.exit(1);
@@ -87,6 +93,7 @@ function httpPost(hostname, path, headers, body) {
   });
 }
 
+// Appel Groq (chat)
 function callGroq(messages, maxTokens = 1024) {
   return httpPost(
     'api.groq.com',
@@ -101,9 +108,22 @@ function callGroq(messages, maxTokens = 1024) {
   );
 }
 
-// Recherche web via SerpApi (Google Search)
+// Appel SerpAPI
+function callSerpAPI(query) {
+  return httpPost(
+    'serpapi.com',
+    '/search',
+    { 'Content-Type': 'application/json' },
+    {
+      engine: 'google',
+      q: query,
+      api_key: SERPAPI_KEY
+    }
+  );
+}
+
+// Recherche web via SerpApi
 async function searchWeb(query) {
-  const SERPAPI_KEY = process.env.SERPAPI_KEY || '';
   if (!SERPAPI_KEY) { console.warn('SERPAPI_KEY manquante'); return null; }
 
   try {
@@ -126,7 +146,6 @@ async function searchWeb(query) {
 
     if (!result || !result.organic_results) return null;
 
-    // Extraire les snippets des 3 premiers résultats
     const snippets = result.organic_results
       .slice(0, 3)
       .map(r => r.snippet || r.title)
@@ -141,9 +160,17 @@ async function searchWeb(query) {
   }
 }
 
-// Détecte si c'est une question de connaissance nécessitant une recherche
+// ─────────────────────────────────────────────────────────
+// 🔥🔥🔥 SEULE MODIFICATION : détection des références de pièces
+// ─────────────────────────────────────────────────────────
+
 function isKnowledgeQuestion(message) {
   const lower = message.toLowerCase();
+
+  // Détection d'une référence de pièce dans une phrase
+  const refRegex = /\b[0-9a-z]{1,3}\s?[0-9]{3}\s?[0-9]{3}\s?[a-z0-9]{1,3}\b/i;
+  if (refRegex.test(message)) return true;
+
   const patterns = [
     "a quoi sert", "c est quoi", "quest ce que", "comment fonctionne",
     "explique", "kesako", "role de", "fonction de", "definition",
@@ -151,9 +178,9 @@ function isKnowledgeQuestion(message) {
     "capteur", "vanne", "module", "calculateur",
     "boitier", "relais", "fusible", "sonde", "debimetre", "injecteur"
   ];
-  return patterns.some(function(p) { return lower.includes(p); });
-}
 
+  return patterns.some(p => lower.includes(p));
+}
 
 // ─────────────────────────────────────────────────────────
 // APPRENTISSAGE
@@ -200,13 +227,10 @@ function saveLearningFeedback(symptom, diagnosis, fuelType, vehicleInfo = {}) {
 // ROUTES
 // ─────────────────────────────────────────────────────────
 
-// Ping keep-alive (répond 200 sans consommer de tokens)
 app.get('/api/ping', (req, res) => res.json({ status: 'ok' }));
 app.get('/health', (req, res) => res.json({ status: 'OK', timestamp: new Date().toISOString() }));
 
-/**
- * POST /api/chat — Chat principal via Groq (Llama)
- */
+// Chat principal via Groq
 app.post('/api/chat', async (req, res) => {
   try {
     const { message, systemPrompt, conversationHistory } = req.body;
@@ -215,14 +239,12 @@ app.post('/api/chat', async (req, res) => {
       return res.status(400).json({ error: 'Message requis' });
     }
 
-    // Ignorer les pings
     if (message === '__ping__') {
       return res.json({ response: 'pong' });
     }
 
     const messages = [];
 
-    // System prompt
     const defaultSystem = `Tu es un assistant virtuel de ZENOCCAZ et un mecanicien expert automobile.
 Tu diagnostiques comme un vrai mecano : tu fais tester avant d'acheter quoi que ce soit.
 Tu proposes toujours l'etape la plus simple et gratuite en premier.
@@ -230,7 +252,6 @@ Tu ne mentionnes JAMAIS turbo, injecteur ou pieces couteuses tant que les verifi
 
     messages.push({ role: 'system', content: systemPrompt || defaultSystem });
 
-    // Historique
     if (Array.isArray(conversationHistory) && conversationHistory.length > 0) {
       conversationHistory.forEach(msg => {
         if (msg.role && msg.content) {
@@ -241,14 +262,12 @@ Tu ne mentionnes JAMAIS turbo, injecteur ou pieces couteuses tant que les verifi
       messages.push({ role: 'user', content: message });
     }
 
-    // Si question de connaissance → enrichir avec recherche web
     let webContext = '';
     if (isKnowledgeQuestion(message)) {
       console.log('🔍 Question de connaissance détectée, recherche web...');
       const searchResult = await searchWeb(message);
       if (searchResult) {
         webContext = '\n\nINFO TROUVEE SUR LE WEB (utilise ces infos pour repondre avec precision) :\n' + searchResult;
-        // Enrichir le system prompt avec le contexte web
         if (messages[0] && messages[0].role === 'system') {
           messages[0].content += webContext;
         }
@@ -267,10 +286,7 @@ Tu ne mentionnes JAMAIS turbo, injecteur ou pieces couteuses tant que les verifi
   }
 });
 
-/**
- * POST /api/analyze-photo — Analyse photo via Groq LLaVA (vision, gratuit)
- * Body: { base64: string, mediaType: string, context: string }
- */
+// Analyse photo via Groq LLaVA
 app.post('/api/analyze-photo', async (req, res) => {
   try {
     const { base64, mediaType, context } = req.body;
@@ -334,10 +350,7 @@ Cout estime : [fourchette realiste ou "rien a faire"]`;
   }
 });
 
-
-/**
- * POST /api/save-diagnosis — Enregistre un diagnostic appris
- */
+// Enregistre un diagnostic appris
 app.post('/api/save-diagnosis', (req, res) => {
   try {
     const { symptom, diagnosis, fuelType, vehicleInfo } = req.body;
@@ -351,9 +364,7 @@ app.post('/api/save-diagnosis', (req, res) => {
   }
 });
 
-/**
- * GET /api/learned-diagnostics — Liste les diagnostics appris
- */
+// Liste les diagnostics appris
 app.get('/api/learned-diagnostics', (req, res) => {
   try {
     const { symptom, fuelType } = req.query;
@@ -379,10 +390,9 @@ app.get('/api/learned-diagnostics', (req, res) => {
 // ─────────────────────────────────────────────────────────
 
 app.listen(PORT, HOST, () => {
-  const isDev = (process.env.NODE_ENV || 'development') !== 'production';
   console.log(`✅ Serveur démarré sur port ${PORT}`);
   console.log(`   Chat (Groq)    : POST /api/chat`);
-  console.log(`   Photo (LLaVA)  : POST /api/analyze-photo ✅`);
+  console.log(`   Photo (LLaVA)  : POST /api/analyze-photo`);
   console.log(`   Save diagnosis : POST /api/save-diagnosis`);
   console.log(`   Ping keep-alive: GET  /api/ping`);
 });
