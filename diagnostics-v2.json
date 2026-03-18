@@ -1,0 +1,346 @@
+{
+  "diagnostics_simples": {
+    "moteur_ne_demarre_pas": {
+      "nom": "Moteur ne démarre pas",
+      "priorité": 1,
+      "symptômes": ["Moteur ne tourne pas", "Silence complet", "Clic répétés", "Démarreur qui grince"],
+      "carburant": ["essence", "diesel"],
+      "étapes_diagnostic": [
+        {
+          "ordre": 1,
+          "titre": "Vérification des connexions batterie",
+          "description": "Les bornes batterie sont-elles corrodées ou mal serrées ?",
+          "détails": [
+            "Corrosion verte/blanche = nettoyez avec borax et eau",
+            "Borne lâche = retendez fermement",
+            "Corrosion importante = remplacez les bornes"
+          ],
+          "niveau": "très facile"
+        },
+        {
+          "ordre": 2,
+          "titre": "Test des feux et essuie-glaces",
+          "description": "Les feux/essuie-glaces fonctionnent-ils normalement ?",
+          "détails": [
+            "Feux très faibles = batterie faible",
+            "Feux normaux = batterie OK, chercher ailleurs",
+            "Feux qui clignotent = batterie en fin de vie"
+          ],
+          "niveau": "très facile"
+        },
+        {
+          "ordre": 3,
+          "titre": "Test aux démarreurs (essence)",
+          "description": "Qu'entendez-vous quand vous tournez la clé ?",
+          "détails": [
+            "Clic clic clic = batterie très faible",
+            "Silence total = batterie ou démarreur",
+            "Bruit de démarreur = problème après démarrage"
+          ],
+          "niveau": "très facile"
+        }
+      ],
+      "causes_possibles": [
+        "Batterie déchargée (50%)",
+        "Batterie usée (30%)",
+        "Corrosion des bornes (15%)",
+        "Démarreur HS (5%)"
+      ],
+      "coûts": {
+        "nettoyage_bornes": "0-20€",
+        "batterie": "40-150€",
+        "démarreur": "200-800€"
+      },
+      "urgence": "urgent",
+      "peut_rouler_sans": "Non",
+      "danger": "Impossible de rouler"
+    },
+    "bougies_essence": {
+      "nom": "Bougies d'allumage usées (ESSENCE uniquement)",
+      "priorité": 2,
+      "carburant": ["essence"],
+      "symptômes": ["Démarrage difficile", "Ralenti instable", "Perte de puissance", "Consommation accrue", "Secousses"],
+      "étapes_diagnostic": [
+        {
+          "ordre": 1,
+          "titre": "Test du démarrage à froid",
+          "description": "Essayez de démarrer le matin après une nuit",
+          "détails": [
+            "Démarrage très difficile = bougies usées",
+            "Démarrage normal = bougies probablement OK",
+            "Moteur qui calent = changement bougie urgent"
+          ],
+          "niveau": "très facile"
+        },
+        {
+          "ordre": 2,
+          "titre": "Observation du voyant moteur",
+          "description": "Y a-t-il un voyant moteur allumé ou qui clignote ?",
+          "détails": [
+            "Voyant qui clignote = problème série, code défaut imminence",
+            "Voyant allumé = problème engine détecté (peut être bougies)",
+            "Pas de voyant = peut être les bougies quand même"
+          ],
+          "niveau": "très facile"
+        },
+        {
+          "ordre": 3,
+          "titre": "Démontage des bougies",
+          "description": "Enlevez une bougie (attention au moteur froid) et observez",
+          "détails": [
+            "Bougie très noire/usée = changement urgent",
+            "Bougie couverte de suie = changement",
+            "Bougie blanche = OK",
+            "Espaceur : 0.8-1mm normalement"
+          ],
+          "niveau": "facile"
+        }
+      ],
+      "causes_possibles": [
+        "Bougies usées (kilométrage élevé)",
+        "Mélange trop riche",
+        "Carburant de mauvaise qualité"
+      ],
+      "coûts": {
+        "bougies_seules": "20-60€",
+        "main_oeuvre": "50-150€"
+      },
+      "urgence": "moyen",
+      "peut_rouler_sans": "Oui, mais perte puissance",
+      "danger": "Aucun danger majeur"
+    },
+    "bobine_allumage_essence": {
+      "nom": "Bobine d'allumage HS (ESSENCE)",
+      "priorité": 3,
+      "carburant": ["essence"],
+      "symptômes": ["Perte de puissance progressive", "Ralenti instable", "Panne sèche", "Voyant moteur allumé"],
+      "étapes_diagnostic": [
+        {
+          "ordre": 1,
+          "titre": "Vérification du voyant moteur",
+          "description": "Lisez les codes défaut avec un scanneurOBD",
+          "détails": [
+            "Code P0300-P0308 = problème bobine/bougie probable",
+            "Code P0356-P0362 = bobine défaillante",
+            "Pas de code = tester autre chose"
+          ],
+          "niveau": "moyen"
+        },
+        {
+          "ordre": 2,
+          "titre": "Test visuel des bobines",
+          "description": "Inspectez les bobines d'allumage (sur le moteur)",
+          "détails": [
+            "Bobine fissurée = remplacement",
+            "Corrosion = peut causer problème",
+            "Aspect normal = chercher ailleurs"
+          ],
+          "niveau": "facile"
+        },
+        {
+          "ordre": 3,
+          "titre": "Test de résistance",
+          "description": "Mesurez l'ohmmètre sur les bobines (moteur éteint)",
+          "détails": [
+            "Résistance normale: 0.5-2 ohms",
+            "Résistance très haute ou infinie = bobine HS",
+            "Résistance par rapport au châssis"
+          ],
+          "niveau": "moyen"
+        }
+      ],
+      "causes_possibles": [
+        "Bobine fatiguée (kilométrage élevé)",
+        "Humidité/condensation",
+        "Surtension électrique"
+      ],
+      "coûts": {
+        "bobine_seule": "40-150€",
+        "main_oeuvre": "50-100€"
+      },
+      "urgence": "moyen",
+      "peut_rouler_sans": "Oui mais perte puissance",
+      "danger": "Aucun danger"
+    },
+    "demarreur": {
+      "nom": "Démarreur défaillant",
+      "priorité": 4,
+      "carburant": ["essence", "diesel"],
+      "symptômes": ["Bruit de démarreur grippé", "Silence quand on tourne la clé", "Cliquements sans engagement"],
+      "étapes_diagnostic": [
+        {
+          "ordre": 1,
+          "titre": "Batterie OK ?",
+          "description": "Vérifiez d'abord que la batterie n'est pas usée",
+          "détails": [
+            "Tension batterie : doit être > 12V",
+            "Feux normaux = batterie OK",
+            "Feux faibles = batterie d'abord!"
+          ],
+          "niveau": "très facile"
+        },
+        {
+          "ordre": 2,
+          "titre": "Écoute du démarreur",
+          "description": "Quel bruit fait le démarreur quand vous tournez la clé ?",
+          "détails": [
+            "Bruit de grattement = pinion grippé",
+            "Clic unique puis silence = relais",
+            "Bruit d'engrenage = engrenage endommagé"
+          ],
+          "niveau": "facile"
+        },
+        {
+          "ordre": 3,
+          "titre": "Test de solenoïde",
+          "description": "Branchez en direct sur batterie (test dur)",
+          "détails": [
+            "Si ça tourne = relais",
+            "Si toujours rien = démarreur HS",
+            "Attention aux courts-circuits!"
+          ],
+          "niveau": "difficile"
+        }
+      ],
+      "causes_possibles": [
+        "Démarreur gripé (usure normale)",
+        "Relais HS",
+        "Engrenage endommagé",
+        "Problème électromécanique"
+      ],
+      "coûts": {
+        "démarreur_neuf": "200-800€",
+        "réfection": "150-300€",
+        "relais": "30-100€"
+      },
+      "urgence": "urgent",
+      "peut_rouler_sans": "Non",
+      "danger": "Panne complète"
+    }
+  },
+  "diagnostics_complexes": {
+    "joint_injecteur_diesel": {
+      "nom": "Joint d'injecteur défaillant (DIESEL)",
+      "priorité": 5,
+      "carburant": ["diesel"],
+      "symptômes": ["Fuite d'huile", "Consommation excessive", "Perte de puissance", "Fumée noire", "Vibrations"],
+      "étapes_diagnostic": [
+        {
+          "ordre": 1,
+          "titre": "Vérification visuelle du charbon",
+          "description": "Regardez autour de l'injecteur. Y a-t-il du charbon noir/sec ou fuite ?",
+          "détails": [
+            "Charbon sec et noir = joint usé",
+            "Tache d'huile humide = fuite active",
+            "Odeur diesel brûlée = problème confirmé"
+          ],
+          "niveau": "facile"
+        }
+      ],
+      "coûts": {
+        "joint_seul": "20-50€",
+        "injecteur_complet": "200-600€"
+      },
+      "urgence": "moyen",
+      "peut_rouler_sans": "2-3 semaines"
+    }
+  },
+  "diagnostics_essence": {
+    "filtre_essence": {
+      "nom": "Filtre essence encrassé (ESSENCE)",
+      "priorité": 6,
+      "carburant": ["essence"],
+      "symptômes": ["Perte de puissance progressive", "Ralenti instable", "Démarrage difficile"],
+      "étapes_diagnostic": [
+        {
+          "ordre": 1,
+          "titre": "Localisation du filtre",
+          "description": "Trouvez le filtre essence sous le véhicule",
+          "détails": [
+            "Filtre transparent encrassé = à changer",
+            "Filtre opaque = probablement à changer",
+            "Filtre clair = OK"
+          ],
+          "niveau": "facile"
+        }
+      ],
+      "coûts": {
+        "filtre": "10-30€",
+        "main_oeuvre": "20-50€"
+      },
+      "urgence": "bas",
+      "peut_rouler_sans": "Oui, perte power"
+    }
+  },
+  "diagnostics_diesel": {
+    "filtre_gazole_encrassé": {
+      "nom": "Filtre gazole encrassé (DIESEL)",
+      "priorité": 6,
+      "carburant": ["diesel"],
+      "symptômes": ["Perte de puissance", "Démarrage difficile moteur froid", "Fumée noire"],
+      "étapes_diagnostic": [
+        {
+          "ordre": 1,
+          "titre": "Vérité du voyant filtre",
+          "description": "Y a-t-il un voyant 'filtre gazole' allumé ?",
+          "détails": [
+            "Voyant allumé = purgez le circuit",
+            "Voyant qui clignote = urgence",
+            "Pas de voyant = test comportement"
+          ],
+          "niveau": "très facile"
+        }
+      ],
+      "coûts": {
+        "purgeur": "20-50€",
+        "filtre": "40-80€"
+      },
+      "urgence": "moyen",
+      "peut_rouler_sans": "Non, risque moteur"
+    }
+  },
+  "diagnostics_par_type": {
+    "essence": {
+      "ordre_verification": [
+        "moteur_ne_demarre_pas",
+        "bougies_essence",
+        "bobine_allumage_essence",
+        "demarreur",
+        "filtre_essence"
+      ],
+      "pannes_spécifiques": [
+        "bougies (démarrage difficile, perte puissance)",
+        "bobine (ralenti instable)",
+        "filtre essence (perte puissance progressive)"
+      ]
+    },
+    "diesel": {
+      "ordre_verification": [
+        "moteur_ne_demarre_pas",
+        "demarreur",
+        "filtre_gazole_encrassé",
+        "joint_injecteur_diesel"
+      ],
+      "pannes_spécifiques": [
+        "filtre gazole (perte puissance, démarrage froid)",
+        "injecteur (fumée noire)",
+        "préchauffage (démarrage froid)"
+      ]
+    }
+  },
+  "priorites_diagnostic": {
+    "ordre_global": [
+      "Batterie et connections",
+      "Démarreur",
+      "Bougies (essence) / Filtre gazole (diesel)",
+      "Bobine d'allumage (essence)",
+      "Pannes plus complexes"
+    ],
+    "règles": [
+      "Ne JAMAIS aller à une grosse panne sans vérifier batterie d'abord",
+      "Pour essence: bougies avant bobine",
+      "Pour diesel: filtre gazole avant injecteur",
+      "Adapter les tests au type de carburant du véhicule"
+    ]
+  }
+}

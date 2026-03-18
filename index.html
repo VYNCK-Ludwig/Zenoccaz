@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ZENOCCAZ — Vente de véhicules d'occasion</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="chat-fullscreen.css">
 </head>
 <body>
   <header class="site-header">
@@ -18,7 +19,7 @@
         <a href="#vehicules" class="btn">véhicules</a>
         <a href="services.html" class="btn">services</a>
         <a href="#contact" class="btn">contact</a>
-        <a href="client-account.html" class="btn" style="background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;">mon compte</a>
+        <a href="client-account.html" id="account-btn" class="btn" style="background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;">mon compte</a>
       </div>
     </div>
   </header>
@@ -70,14 +71,11 @@
         <p style="color:var(--muted);font-size:16px;">Partagez votre expérience avec ZENOCCAZ</p>
       </div>
 
-      <!-- Liste des avis -->
       <div id="reviews-list" style="margin-bottom:40px;display:grid;gap:20px;"></div>
 
-      <!-- Formulaire pour laisser un avis -->
       <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:32px;max-width:700px;margin:0 auto;">
         <h3 style="margin:0 0 24px;color:var(--text);font-size:24px;text-align:center;">Laissez votre avis</h3>
         <form id="review-form" style="display:flex;flex-direction:column;gap:20px;">
-          <!-- Notation par étoiles -->
           <div>
             <label style="display:block;margin-bottom:12px;color:var(--text);font-weight:600;">Votre note</label>
             <div id="star-rating" style="display:flex;gap:8px;font-size:32px;cursor:pointer;justify-content:center;">
@@ -89,20 +87,14 @@
             </div>
             <input type="hidden" id="rating-value" value="0">
           </div>
-
-          <!-- Nom du client -->
           <div>
             <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Votre nom</label>
             <input type="text" id="review-name" placeholder="Jean Dupont" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
           </div>
-
-          <!-- Commentaire -->
           <div>
             <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Votre commentaire</label>
             <textarea id="review-comment" placeholder="Partagez votre expérience avec nous..." rows="5" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;resize:vertical;"></textarea>
           </div>
-
-          <!-- Bouton envoyer -->
           <button type="submit" class="btn primary" style="padding:14px 32px;font-size:16px;font-weight:600;">✨ Publier mon avis</button>
         </form>
       </div>
@@ -122,51 +114,39 @@
         <h2 id="client-modal-title" style="margin:0 0 8px;color:var(--text);font-size:28px;">🔐 Connexion Client</h2>
         <p style="color:var(--muted);font-size:14px;">Connectez-vous ou créez un compte pour publier votre avis</p>
       </div>
-      
-      <!-- Onglets Connexion / Inscription -->
       <div style="display:flex;gap:8px;margin-bottom:24px;">
         <button id="tab-login" onclick="switchClientTab('login')" class="btn" style="flex:1;padding:12px;background:linear-gradient(135deg,#10b981,#059669);border:none;color:#fff;">Connexion</button>
         <button id="tab-signup" onclick="switchClientTab('signup')" class="btn" style="flex:1;padding:12px;background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--text);">Inscription</button>
       </div>
-      
-      <!-- Formulaire de connexion -->
       <form id="client-login-form" style="display:flex;flex-direction:column;gap:20px;">
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Email</label>
           <input type="email" id="login-client-email" placeholder="votre@email.com" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
         </div>
-        
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Mot de passe</label>
           <input type="password" id="login-client-password" placeholder="••••••••" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
         </div>
-        
         <button type="submit" class="btn primary" style="padding:14px;font-size:16px;font-weight:600;margin-top:8px;">✅ Se connecter</button>
         <button type="button" onclick="closeLoginModal()" class="btn" style="padding:12px;font-size:14px;background:transparent;border:1px solid rgba(255,255,255,0.2);">Annuler</button>
       </form>
-
-      <!-- Formulaire d'inscription -->
       <form id="client-signup-form" style="display:none;flex-direction:column;gap:20px;">
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Nom complet</label>
           <input type="text" id="signup-client-name" placeholder="Jean Dupont" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
         </div>
-        
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Email</label>
           <input type="email" id="signup-client-email" placeholder="votre@email.com" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
         </div>
-        
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Mot de passe</label>
           <input type="password" id="signup-client-password" placeholder="••••••••" required minlength="6" style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
         </div>
-        
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Confirmer le mot de passe</label>
           <input type="password" id="signup-client-password-confirm" placeholder="••••••••" required minlength="6" style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
         </div>
-        
         <button type="submit" class="btn primary" style="padding:14px;font-size:16px;font-weight:600;margin-top:8px;">✨ Créer mon compte</button>
         <button type="button" onclick="closeLoginModal()" class="btn" style="padding:12px;font-size:14px;background:transparent;border:1px solid rgba(255,255,255,0.2);">Annuler</button>
       </form>
@@ -180,18 +160,14 @@
     try {
       console.log('🔄 Chargement Supabase pour index.html...');
       
-      // Import de la config
       const config = await import('./supabase-config.js');
       
-      // Créer le client Supabase
       const { createClient } = window.supabase || supabase;
       const supabaseClient = createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
       
-      // Exposer le client
       window.supabase = supabaseClient;
       window.supabaseClient = {
         supabase: supabaseClient,
-        
         async fetchVehicles() {
           const { data, error } = await supabaseClient.from('vehicles').select('*').order('created_at', { ascending: false });
           return { data: data || [], error };
@@ -201,21 +177,19 @@
       console.log('✅ Supabase prêt pour index.html');
       window.dispatchEvent(new Event('supabaseReady'));
       
-      // ====== GESTION DES AVIS CLIENTS ======
+      // ====== AVIS CLIENTS ======
       let selectedRating = 0;
       const stars = document.querySelectorAll('.star');
       const ratingValue = document.getElementById('rating-value');
       const reviewForm = document.getElementById('review-form');
       const reviewsList = document.getElementById('reviews-list');
 
-      // Système de notation par étoiles
       stars.forEach(star => {
         star.addEventListener('click', function() {
           selectedRating = parseInt(this.dataset.rating);
           ratingValue.value = selectedRating;
           updateStars(selectedRating);
         });
-        
         star.addEventListener('mouseenter', function() {
           updateStars(parseInt(this.dataset.rating));
         });
@@ -227,45 +201,27 @@
 
       function updateStars(rating) {
         stars.forEach((star, index) => {
-          if (index < rating) {
-            star.textContent = '★';
-            star.style.color = '#f59e0b';
-          } else {
-            star.textContent = '☆';
-            star.style.color = '#6b7280';
-          }
+          if (index < rating) { star.textContent = '★'; star.style.color = '#f59e0b'; }
+          else { star.textContent = '☆'; star.style.color = '#6b7280'; }
         });
       }
 
-      // Charger les avis existants
       async function loadReviews() {
         try {
-          const { data, error } = await supabaseClient
-            .from('reviews')
-            .select('*')
-            .order('created_at', { ascending: false });
-          
-          if (error) {
-            console.error('❌ Erreur chargement avis:', error);
-            return;
-          }
-          
+          const { data, error } = await supabaseClient.from('reviews').select('*').order('created_at', { ascending: false });
+          if (error) { console.error('❌ Erreur avis:', error); return; }
           displayReviews(data || []);
-        } catch (e) {
-          console.error('❌ Exception:', e);
-        }
+        } catch (e) { console.error('❌', e); }
       }
 
       function displayReviews(reviews) {
         if (reviews.length === 0) {
-          reviewsList.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);">Aucun avis pour le moment. Soyez le premier à laisser votre avis !</div>';
+          reviewsList.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);">Aucun avis pour le moment. Soyez le premier !</div>';
           return;
         }
-
         reviewsList.innerHTML = reviews.map(review => {
           const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
           const date = new Date(review.created_at).toLocaleDateString('fr-FR');
-          
           return `
             <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:24px;">
               <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
@@ -287,279 +243,143 @@
         return div.innerHTML;
       }
 
-      // Soumettre un avis (nécessite connexion)
       reviewForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        
-        if (selectedRating === 0) {
-          alert('⭐ Veuillez sélectionner une note avant de publier votre avis');
-          return;
-        }
-
+        if (selectedRating === 0) { alert('⭐ Veuillez sélectionner une note'); return; }
         const name = document.getElementById('review-name').value.trim();
         const comment = document.getElementById('review-comment').value.trim();
-
-        // Vérifier si le client est connecté
-        const clientData = sessionStorage.getItem('clientData');
-        
+        // ✅ localStorage (cohérent avec le reste)
+        const clientData = localStorage.getItem('clientData');
         if (!clientData) {
-          // Sauvegarder temporairement les données du formulaire
-          sessionStorage.setItem('pendingReview', JSON.stringify({
-            name: name,
-            comment: comment,
-            rating: selectedRating
-          }));
-          
-          // Ouvrir le modal de connexion
+          localStorage.setItem('pendingReview', JSON.stringify({ name, comment, rating: selectedRating }));
           openLoginModal();
           return;
         }
-
-        // Client connecté, publier l'avis
         try {
-          const reviewData = {
-            id: Date.now(),
-            client_name: name,
-            comment: comment,
-            rating: selectedRating
-          };
-
-          const { error } = await supabaseClient
-            .from('reviews')
-            .insert([reviewData]);
-
-          if (error) {
-            console.error('❌ Erreur publication avis:', error);
-            alert('❌ Erreur lors de la publication de votre avis');
-            return;
-          }
-
-          alert('✅ Merci ! Votre avis a été publié avec succès.');
-          
-          // Réinitialiser le formulaire
-          reviewForm.reset();
-          selectedRating = 0;
-          updateStars(0);
-          
-          // Recharger les avis
+          const { error } = await supabaseClient.from('reviews').insert([{ id: Date.now(), client_name: name, comment, rating: selectedRating }]);
+          if (error) { alert('❌ Erreur publication'); return; }
+          alert('✅ Avis publié !');
+          reviewForm.reset(); selectedRating = 0; updateStars(0);
           await loadReviews();
-          
-        } catch (e) {
-          console.error('❌ Exception:', e);
-          alert('❌ Erreur: ' + e.message);
-        }
+        } catch (e) { alert('❌ ' + e.message); }
       });
 
-      // Charger les avis au démarrage
       loadReviews();
 
-      // ====== GESTION DE LA CONNEXION CLIENT ======
-      const loginModal = document.getElementById('client-login-modal');
+      // ====== CONNEXION CLIENT ======
+      const loginModalEl = document.getElementById('client-login-modal');
       const clientLoginForm = document.getElementById('client-login-form');
       const clientSignupForm = document.getElementById('client-signup-form');
 
+      // ✅ Mettre à jour le bouton "mon compte" avec le prénom si connecté
+      function updateAccountButton() {
+        const raw = localStorage.getItem('clientData');
+        const btn = document.getElementById('account-btn');
+        if (!btn) return;
+        if (raw) {
+          const client = JSON.parse(raw);
+          const prenom = client.name ? client.name.split(' ')[0] : 'Mon compte';
+          btn.textContent = `👤 ${prenom}`;
+        } else {
+          btn.textContent = 'mon compte';
+        }
+      }
+      updateAccountButton();
+
       window.openLoginModal = function() {
-        loginModal.classList.remove('hidden');
-        loginModal.style.display = 'flex';
-        switchClientTab('login'); // Par défaut sur connexion
+        loginModalEl.classList.remove('hidden');
+        loginModalEl.style.display = 'flex';
+        switchClientTab('login');
       }
 
       window.closeLoginModal = function() {
-        loginModal.classList.add('hidden');
-        loginModal.style.display = 'none';
+        loginModalEl.classList.add('hidden');
+        loginModalEl.style.display = 'none';
       }
 
       window.switchClientTab = function(tab) {
         const tabLogin = document.getElementById('tab-login');
         const tabSignup = document.getElementById('tab-signup');
-        const loginForm = document.getElementById('client-login-form');
-        const signupForm = document.getElementById('client-signup-form');
-        
+        const lf = document.getElementById('client-login-form');
+        const sf = document.getElementById('client-signup-form');
         if (tab === 'login') {
-          tabLogin.style.background = 'linear-gradient(135deg,#10b981,#059669)';
-          tabLogin.style.color = '#fff';
-          tabLogin.style.border = 'none';
-          tabSignup.style.background = 'transparent';
-          tabSignup.style.color = 'var(--text)';
-          tabSignup.style.border = '1px solid rgba(255,255,255,0.2)';
-          loginForm.style.display = 'flex';
-          signupForm.style.display = 'none';
+          tabLogin.style.cssText = 'flex:1;padding:12px;background:linear-gradient(135deg,#10b981,#059669);border:none;color:#fff;';
+          tabSignup.style.cssText = 'flex:1;padding:12px;background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--text);';
+          lf.style.display = 'flex'; sf.style.display = 'none';
         } else {
-          tabSignup.style.background = 'linear-gradient(135deg,#10b981,#059669)';
-          tabSignup.style.color = '#fff';
-          tabSignup.style.border = 'none';
-          tabLogin.style.background = 'transparent';
-          tabLogin.style.color = 'var(--text)';
-          tabLogin.style.border = '1px solid rgba(255,255,255,0.2)';
-          signupForm.style.display = 'flex';
-          loginForm.style.display = 'none';
+          tabSignup.style.cssText = 'flex:1;padding:12px;background:linear-gradient(135deg,#10b981,#059669);border:none;color:#fff;';
+          tabLogin.style.cssText = 'flex:1;padding:12px;background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--text);';
+          sf.style.display = 'flex'; lf.style.display = 'none';
         }
       }
 
-      // Fermer le modal en cliquant en dehors
-      loginModal.addEventListener('click', function(e) {
-        if (e.target === loginModal) {
-          closeLoginModal();
-        }
+      loginModalEl.addEventListener('click', function(e) {
+        if (e.target === loginModalEl) closeLoginModal();
       });
 
-      // Soumettre le formulaire de connexion
+      // ✅ CONNEXION — localStorage + event clientLogin pour le chatbot
       clientLoginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        
         const email = document.getElementById('login-client-email').value.trim();
         const password = document.getElementById('login-client-password').value;
-        
         try {
-          // Vérifier si le compte existe dans la table clients
-          const { data, error } = await supabaseClient
-            .from('clients')
-            .select('*')
-            .eq('email', email)
-            .eq('password', password)
-            .single();
-          
-          if (error || !data) {
-            alert('❌ Email ou mot de passe incorrect');
-            return;
+          const { data, error } = await supabaseClient.from('clients').select('*').eq('email', email).eq('password', password).single();
+          if (error || !data) { alert('❌ Email ou mot de passe incorrect'); return; }
+
+          const clientData = { id: data.id, email: data.email, name: data.name, connectedAt: new Date().toISOString() };
+
+          // ✅ localStorage pour partager avec chatbot
+          localStorage.setItem('clientData', JSON.stringify(clientData));
+
+          // ✅ Notifier le chatbot instantanément
+          window.dispatchEvent(new CustomEvent('clientLogin', { detail: clientData }));
+
+          // ✅ Mettre à jour le bouton compte
+          updateAccountButton();
+
+          closeLoginModal();
+
+          // Gérer avis en attente
+          const pendingReview = localStorage.getItem('pendingReview');
+          if (pendingReview) {
+            const review = JSON.parse(pendingReview);
+            document.getElementById('review-name').value = review.name;
+            document.getElementById('review-comment').value = review.comment;
+            selectedRating = review.rating;
+            ratingValue.value = review.rating;
+            updateStars(review.rating);
+            localStorage.removeItem('pendingReview');
+            setTimeout(async () => {
+              try {
+                const { error } = await supabaseClient.from('reviews').insert([{ id: Date.now(), client_name: review.name, comment: review.comment, rating: review.rating }]);
+                if (!error) { alert('✅ Avis publié !'); reviewForm.reset(); selectedRating=0; updateStars(0); await loadReviews(); }
+              } catch(e) { console.error(e); }
+            }, 500);
           }
-          
-          // Sauvegarder les données client dans sessionStorage
-          const clientData = {
-            id: data.id,
-            email: data.email,
-            name: data.name,
-            connectedAt: new Date().toISOString()
-          };
-          
-          sessionStorage.setItem('clientData', JSON.stringify(clientData));
-        
-        // Fermer le modal
-        closeLoginModal();
-        
-        // Vérifier s'il y a un avis en attente
-        const pendingReview = sessionStorage.getItem('pendingReview');
-        
-        if (pendingReview) {
-          const review = JSON.parse(pendingReview);
-          
-          // Pré-remplir le formulaire avec les données sauvegardées
-          document.getElementById('review-name').value = review.name;
-          document.getElementById('review-comment').value = review.comment;
-          selectedRating = review.rating;
-          ratingValue.value = review.rating;
-          updateStars(review.rating);
-          
-          // Supprimer l'avis en attente
-          sessionStorage.removeItem('pendingReview');
-          
-          // Soumettre automatiquement l'avis
-          setTimeout(async () => {
-            try {
-              const reviewData = {
-                id: Date.now(),
-                client_name: review.name,
-                comment: review.comment,
-                rating: review.rating
-              };
 
-              const { error } = await supabaseClient
-                .from('reviews')
-                .insert([reviewData]);
-
-              if (error) {
-                console.error('❌ Erreur publication avis:', error);
-                alert('❌ Erreur lors de la publication de votre avis');
-                return;
-              }
-
-              alert('✅ Merci ! Votre avis a été publié avec succès.');
-              
-              // Réinitialiser le formulaire
-              reviewForm.reset();
-              selectedRating = 0;
-              updateStars(0);
-              
-              // Recharger les avis
-              await loadReviews();
-              
-            } catch (e) {
-              console.error('❌ Exception:', e);
-              alert('❌ Erreur: ' + e.message);
-            }
-          }, 500);
-        } else {
-          alert('✅ Connexion réussie ! Vous pouvez maintenant publier votre avis.');
-        }
-        } catch (e) {
-          console.error('❌ Exception connexion:', e);
-          alert('❌ Erreur lors de la connexion');
-        }
+        } catch (e) { alert('❌ Erreur: ' + e.message); }
       });
 
-      // Soumettre le formulaire d'inscription
+      // ✅ INSCRIPTION
       clientSignupForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        
         const name = document.getElementById('signup-client-name').value.trim();
         const email = document.getElementById('signup-client-email').value.trim();
         const password = document.getElementById('signup-client-password').value;
-        const passwordConfirm = document.getElementById('signup-client-password-confirm').value;
-        
-        if (password !== passwordConfirm) {
-          alert('❌ Les mots de passe ne correspondent pas');
-          return;
-        }
-        
-        if (password.length < 6) {
-          alert('❌ Le mot de passe doit contenir au moins 6 caractères');
-          return;
-        }
-        
+        const confirm = document.getElementById('signup-client-password-confirm').value;
+        if (password !== confirm) { alert('❌ Mots de passe différents'); return; }
+        if (password.length < 6) { alert('❌ Minimum 6 caractères'); return; }
         try {
-          // Vérifier si l'email existe déjà
-          const { data: existing } = await supabaseClient
-            .from('clients')
-            .select('email')
-            .eq('email', email)
-            .single();
-          
-          if (existing) {
-            alert('❌ Un compte avec cet email existe déjà. Veuillez vous connecter.');
-            switchClientTab('login');
-            return;
-          }
-          
-          // Créer le nouveau compte
-          const clientData = {
-            id: Date.now(),
-            name: name,
-            email: email,
-            password: password // NOTE: En production, il faudrait hasher le mot de passe
-          };
-          
-          const { error } = await supabaseClient
-            .from('clients')
-            .insert([clientData]);
-          
-          if (error) {
-            console.error('❌ Erreur création compte:', error);
-            alert('❌ Erreur lors de la création du compte');
-            return;
-          }
-          
-          alert('✅ Compte créé avec succès ! Vous pouvez maintenant vous connecter.');
-          
-          // Passer à l'onglet connexion et pré-remplir l'email
+          const { data: existing } = await supabaseClient.from('clients').select('email').eq('email', email).single();
+          if (existing) { alert('❌ Email déjà utilisé'); switchClientTab('login'); return; }
+          const { error } = await supabaseClient.from('clients').insert([{ id: Date.now(), name, email, password }]);
+          if (error) { alert('❌ Erreur création compte'); return; }
+          alert('✅ Compte créé ! Connectez-vous.');
           switchClientTab('login');
           document.getElementById('login-client-email').value = email;
-          
-        } catch (e) {
-          console.error('❌ Exception inscription:', e);
-          alert('❌ Erreur lors de la création du compte');
-        }
+        } catch (e) { alert('❌ Erreur: ' + e.message); }
       });
-      
+
     } catch (error) {
       console.error('❌ Erreur chargement Supabase:', error);
     }
@@ -570,8 +390,9 @@
     <div id="chat-box">
       <div class="chat-header">
         <div>
-          <h3>Assistant IA</h3>
-          <p>Posez vos questions</p>
+          <h3>• Assistant IA</h3>
+          <p id="chat-client-name" style="display:none;color:#f97316;font-weight:600;font-size:13px;margin:2px 0 0;"></p>
+          <p id="chat-subtitle" style="font-size:12px;color:#888;margin:0;">Posez vos questions</p>
         </div>
         <button id="chat-close-btn">✕</button>
       </div>
@@ -599,6 +420,8 @@
     </button>
   </div>
 
+  <script src="keep-alive.js"></script>
+  <script src="diagnostic-engine.js"></script>
   <script src="app.js"></script>
   <script src="chatbot.js"></script>
 </body>

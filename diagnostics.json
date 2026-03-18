@@ -1,0 +1,386 @@
+{
+  "diagnostics": {
+    "joint_injecteur": {
+      "nom": "Joint d'injecteur défaillant",
+      "symptômes": ["Fuite d'huile", "Consommation excessive d'huile", "Perte de puissance", "Fumée noire à l'échappement", "Bruit anormal du moteur"],
+      "étapes_diagnostic": [
+        {
+          "ordre": 1,
+          "titre": "Vérification visuelle",
+          "description": "Regardez autour de l'injecteur. Y a-t-il du charbon noir/sec ou une fuite d'huile humide ?",
+          "détails": [
+            "Charbon sec et noir = joint usé",
+            "Tache d'huile humide = fuite active",
+            "Odeur d'essence brûlée = problème confirme"
+          ],
+          "niveau": "facile"
+        },
+        {
+          "ordre": 2,
+          "titre": "Vérification du niveau d'huile",
+          "description": "Le niveau baisse-t-il rapidement entre deux vidanges ?",
+          "détails": [
+            "Baisse de 0.5L/1000km = alerte",
+            "Baisse de 1L/1000km = urgent",
+            "Pas de baisse = autre problème"
+          ],
+          "niveau": "facile"
+        },
+        {
+          "ordre": 3,
+          "titre": "Test de compression",
+          "description": "Mesurez la compression du moteur avec un compressomètre",
+          "détails": [
+            "Compression normale : 10-12 bar",
+            "Compression basse : joint usé confirmé",
+            "Une seule seringue basse : injecteur spécifique"
+          ],
+          "niveau": "moyen"
+        },
+        {
+          "ordre": 4,
+          "titre": "Démontage et inspection",
+          "description": "Démontez l'injecteur pour inspection directe",
+          "détails": [
+            "Joint complètement noirci = remplacement urgent",
+            "Fuite visible = remplacement urgent",
+            "Injecteur cassé = remplacement complet"
+          ],
+          "niveau": "difficile"
+        }
+      ],
+      "causes": [
+        "Usure naturelle (100 000+ km)",
+        "Utilisation d'essence bon marché",
+        "Révisions insuffisantes",
+        "Surchauffe du moteur",
+        "Injection de carburant défaillante"
+      ],
+      "coûts": {
+        "joint_seul": "20-50€",
+        "injecteur_complet": "150-400€",
+        "main_d_oeuvre": "150-300€"
+      },
+      "urgence": "moyen",
+      "peut_rouler_sans": "2-3 semaines sans danger majeur (mais usure rapide)",
+      "danger": "Risque de casse moteur si très avancé"
+    },
+    "climatisation": {
+      "nom": "Climatisation défaillante",
+      "symptômes": ["Pas de froid", "Air tiède", "Bruit anormal", "Fuite de liquide", "Mauvaise odeur"],
+      "étapes_diagnostic": [
+        {
+          "ordre": 1,
+          "titre": "Test du soufflage",
+          "description": "Mettez la clim au max et testez avec votre main",
+          "détails": [
+            "Air très froid = OK",
+            "Air tiède = problème de refrigérant",
+            "Pas d'air du tout = compresseur HS"
+          ],
+          "niveau": "facile"
+        },
+        {
+          "ordre": 2,
+          "titre": "Vérification du bruit",
+          "description": "Y a-t-il un bruit de claquement ou vibration ?",
+          "détails": [
+            "Claquement régulier = compresseur défaillant",
+            "Sifflement = fuite de gaz",
+            "Silence normal = palier OK"
+          ],
+          "niveau": "facile"
+        },
+        {
+          "ordre": 3,
+          "titre": "Détection de fuite",
+          "description": "Cherchez des taches vertes/rouges sous le moteur",
+          "détails": [
+            "Tache huileuse = fuite de gaz + huile",
+            "Pas de tache = fuites minimes ou aucune",
+            "Odeur acide = fuite importante"
+          ],
+          "niveau": "facile"
+        },
+        {
+          "ordre": 4,
+          "titre": "Recharge du gaz",
+          "description": "Faire une recharge de gaz R134a pour vérifier",
+          "détails": [
+            "Après recharge : froid = fuite mineure",
+            "Pas de changement = compresseur HS",
+            "Froid temporaire = fuite importante"
+          ],
+          "niveau": "moyen"
+        },
+        {
+          "ordre": 5,
+          "titre": "Diagnostic compresseur",
+          "description": "Contrôler le compresseur avec un manomètre",
+          "détails": [
+            "Pression basse = fuite",
+            "Pression zéro = compresseur HS",
+            "Pression haute anormale = blocage"
+          ],
+          "niveau": "difficile"
+        }
+      ],
+      "causes": [
+        "Fuite de gaz refrigérant",
+        "Compresseur usé",
+        "Conduit bouché",
+        "Fuite du condenseur",
+        "Électrovanne HS"
+      ],
+      "coûts": {
+        "recharge": "30-80€",
+        "remplacement_gaz_complet": "300-500€",
+        "compresseur": "400-1200€",
+        "condenseur": "200-600€"
+      },
+      "urgence": "bas",
+      "peut_rouler_sans": "Indéfiniment (inconfort seulement)",
+      "danger": "Aucun danger mécanique"
+    },
+    "batterie": {
+      "nom": "Batterie ou alternateur défaillant",
+      "symptômes": ["Démarrage difficile", "Voyant batterie allumé", "Lumières faibles", "Électronique qui coupe"],
+      "étapes_diagnostic": [
+        {
+          "ordre": 1,
+          "titre": "Test des connexions",
+          "description": "Les bornes sont-elles corrodées ou mal serrées ?",
+          "détails": [
+            "Corrosion verte/blanche = corrosion de bornes",
+            "Borne lâche = mauvais contact",
+            "Corrosion importante = nettoyage + test"
+          ],
+          "niveau": "facile"
+        },
+        {
+          "ordre": 2,
+          "titre": "Test du voltmètre moteur éteint",
+          "description": "Mesurez la tension aux bornes de batterie",
+          "détails": [
+            "12V-12.6V = OK",
+            "11V-12V = batterie faible",
+            "En dessous de 11V = batterie HS"
+          ],
+          "niveau": "moyen"
+        },
+        {
+          "ordre": 3,
+          "titre": "Test du voltmètre moteur allumé",
+          "description": "Vérifiez la tension avec le moteur qui tourne",
+          "détails": [
+            "13.5V-14.5V = alternateur OK",
+            "12V ou moins = alternateur HS",
+            "15V+ = régulateur HS"
+          ],
+          "niveau": "moyen"
+        },
+        {
+          "ordre": 4,
+          "titre": "Test de démarrage froid",
+          "description": "Essayez de démarrer après une nuit",
+          "détails": [
+            "Démarrage normal = batterie OK",
+            "Démarrage difficile = batterie faible",
+            "Pas de démarrage = batterie HS ou alternateur HS"
+          ],
+          "niveau": "facile"
+        },
+        {
+          "ordre": 5,
+          "titre": "Test d'alternateur (voir de nuit)",
+          "description": "Allumez les feux et écoutez le bruit du moteur",
+          "détails": [
+            "Bruit augmente = alternateur pousse",
+            "Pas de changement = alternateur HS",
+            "Feux qui vacillent = alternateur faible"
+          ],
+          "niveau": "facile"
+        }
+      ],
+      "causes": [
+        "Batterie trop ancienne (3-5 ans)",
+        "Alternateur usé",
+        "Courroie d'entraînement usée",
+        "Corrosion des bornes",
+        "Câbles usés ou mal serrés"
+      ],
+      "coûts": {
+        "batterie": "40-150€",
+        "alternateur": "150-600€",
+        "courroie": "30-150€",
+        "nettoyage_bornes": "0€ (DIY)"
+      },
+      "urgence": "urgent",
+      "peut_rouler_sans": "Non recommandé (risque de casse)",
+      "danger": "Risque de panne sur autoroute"
+    },
+    "embrayage_usé": {
+      "nom": "Embrayage usé ou HS",
+      "symptômes": ["Difficultés à passer les vitesses", "Patinage de l'embrayage", "Brûlure d'embrayage", "Vibrations", "Odeur de brûlé"],
+      "étapes_diagnostic": [
+        {
+          "ordre": 1,
+          "titre": "Vérification de la pédale",
+          "description": "Comment se comporte la pédale d'embrayage ?",
+          "détails": [
+            "Pédale spongeuse = air dans circuit",
+            "Pédale dure = ressort cassé",
+            "Pédale qui ne revient pas = liaison usée",
+            "Pédale qui monte haut = embrayage usé"
+          ],
+          "niveau": "facile"
+        },
+        {
+          "ordre": 2,
+          "titre": "Test de patinage",
+          "description": "En 4ème vitesse à bas régime, essayez d'accélérer",
+          "détails": [
+            "Moteur cale = embrayage OK",
+            "Moteur s'emballe = patinage = embrayage usé",
+            "Pas d'accélération = débrayage incomplet"
+          ],
+          "niveau": "facile"
+        },
+        {
+          "ordre": 3,
+          "titre": "Vérification de l'odeur",
+          "description": "Sentez-vous une odeur de brûlé/plastique ?",
+          "détails": [
+            "Odeur acide = embrayage surchauffé",
+            "Pas d'odeur = embrayage peut aller",
+            "Odeur très forte = urgence"
+          ],
+          "niveau": "facile"
+        },
+        {
+          "ordre": 4,
+          "titre": "Test sur pente",
+          "description": "Sur une pente en 1ère, démarrez sans accélérer",
+          "détails": [
+            "Moteur cale = embrayage OK",
+            "Roues tournent sans caler = embrayage glisse",
+            "Glissement important = urgent"
+          ],
+          "niveau": "facile"
+        },
+        {
+          "ordre": 5,
+          "titre": "Mesure du point de patinage",
+          "description": "À quel point soulevez-vous la pédale avant engagement ?",
+          "détails": [
+            "Au 1/4 de la course = normal",
+            "Au 3/4 de la course = usé",
+            "En haut de la course = très usé"
+          ],
+          "niveau": "moyen"
+        }
+      ],
+      "causes": [
+        "Usure naturelle (100 000-200 000 km)",
+        "Conduite sportive",
+        "Rues en pente fréquemment",
+        "Griffes usées",
+        "Ressort cassé de pédale"
+      ],
+      "coûts": {
+        "kit_complet": "300-800€",
+        "main_d_oeuvre": "300-600€",
+        "total_moyen": "600-1400€"
+      },
+      "urgence": "urgent",
+      "peut_rouler_sans": "Oui, mais risque d'être bloqué",
+      "danger": "Risque de blocage moteur sur autoroute"
+    },
+    "moteur_ne_demarre_pas": {
+      "nom": "Le moteur ne démarre pas",
+      "symptômes": ["Moteur ne tourne pas", "Silence complet", "Clic répétés", "Démarreur qui grince"],
+      "étapes_diagnostic": [
+        {
+          "ordre": 1,
+          "titre": "Vérification basique",
+          "description": "Y a-t-il du bruit quand vous tournez la clé ?",
+          "détails": [
+            "Rien = problème électrique",
+            "Clic clic clic = batterie faible",
+            "Bruit de démarreur = problème injection"
+          ],
+          "niveau": "facile"
+        },
+        {
+          "ordre": 2,
+          "titre": "Vérification des câbles",
+          "description": "Les câbles batterie sont-ils bien connectés ?",
+          "détails": [
+            "Corrosion = nettoyez avec borax",
+            "Câble lâche = retendez",
+            "Câble cassé = remplacement"
+          ],
+          "niveau": "facile"
+        },
+        {
+          "ordre": 3,
+          "titre": "Test de la batterie",
+          "description": "Les feux/essuie-glaces fonctionnent-ils ?",
+          "détails": [
+            "Feux faibles = batterie faible/démarreur HS",
+            "Feux normaux/démarreur silencieux = injection",
+            "Feux qui clignotent = batch batterie"
+          ],
+          "niveau": "facile"
+        },
+        {
+          "ordre": 4,
+          "titre": "Vérification antimarrage",
+          "description": "Y a-t-il un voyant antivol/antimarrage allumé ?",
+          "détails": [
+            "Voyant clignotant = immobiliseur actif",
+            "Voyant courant = problème détection clé",
+            "Pas de voyant = panne mécanique"
+          ],
+          "niveau": "facile"
+        },
+        {
+          "ordre": 5,
+          "titre": "Avec un multimètre",
+          "description": "Mesurez la tension aux bornes batterie",
+          "détails": [
+            "Moins de 10.5V = batterie très faible",
+            "10.5-12V = batterie faible",
+            "Plus de 12.5V = batterie OK, problème ailleurs"
+          ],
+          "niveau": "moyen"
+        }
+      ],
+      "causes": [
+        "Batterie déchargée ou usée",
+        "Démarreur HS",
+        "Corrosion batterie",
+        "Problème injection carburant",
+        "Problème électrique majeur"
+      ],
+      "coûts": {
+        "batterie": "40-150€",
+        "démarreur": "200-800€",
+        "nettoyage": "0-50€"
+      },
+      "urgence": "urgent",
+      "peut_rouler_sans": "Non possible",
+      "danger": "Impossible de rouler"
+    }
+  },
+  "véhicules_courants": {
+    "côté_fréquence": [
+      "Batterie/alternateur - 20% des pannes",
+      "Clinatisation - 15%",
+      "Usure mécanique générale - 20%",
+      "Joints/fuites - 15%",
+      "Problèmes électriques - 15%",
+      "Autres - 15%"
+    ]
+  }
+}
