@@ -101,6 +101,59 @@ function callGroq(messages, maxTokens = 1024) {
   );
 }
 
+// Recherche web via SerpApi (Google Search)
+async function searchWeb(query) {
+  const SERPAPI_KEY = process.env.SERPAPI_KEY || '';
+  if (!SERPAPI_KEY) { console.warn('SERPAPI_KEY manquante'); return null; }
+
+  try {
+    const encoded = encodeURIComponent(query + ' automobile');
+    const result = await new Promise((resolve, reject) => {
+      const req = https.request({
+        hostname: 'serpapi.com',
+        path: `/search.json?q=${encoded}&hl=fr&gl=fr&api_key=${SERPAPI_KEY}&num=3`,
+        method: 'GET',
+      }, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try { resolve(JSON.parse(data)); } catch(e) { resolve(null); }
+        });
+      });
+      req.on('error', reject);
+      req.end();
+    });
+
+    if (!result || !result.organic_results) return null;
+
+    // Extraire les snippets des 3 premiers résultats
+    const snippets = result.organic_results
+      .slice(0, 3)
+      .map(r => r.snippet || r.title)
+      .filter(Boolean)
+      .join(' | ');
+
+    console.log('🔍 SerpApi résultat:', snippets.substring(0, 150));
+    return snippets || null;
+  } catch (e) {
+    console.warn('Recherche SerpApi echouee:', e.message);
+    return null;
+  }
+}
+
+// Détecte si c'est une question de connaissance nécessitant une recherche
+function isKnowledgeQuestion(message) {
+  const lower = message.toLowerCase();
+  const patterns = [
+    "a quoi sert", "c est quoi", "quest ce que", "comment fonctionne",
+    "explique", "kesako", "role de", "fonction de", "definition",
+    "ca sert a quoi", "a quoi ca sert", "reference", "piece",
+    "capteur", "vanne", "module", "calculateur",
+    "boitier", "relais", "fusible", "sonde", "debimetre", "injecteur"
+  ];
+  return patterns.some(function(p) { return lower.includes(p); });
+}
+
 
 // ─────────────────────────────────────────────────────────
 // APPRENTISSAGE
@@ -186,6 +239,21 @@ Tu ne mentionnes JAMAIS turbo, injecteur ou pieces couteuses tant que les verifi
       });
     } else {
       messages.push({ role: 'user', content: message });
+    }
+
+    // Si question de connaissance → enrichir avec recherche web
+    let webContext = '';
+    if (isKnowledgeQuestion(message)) {
+      console.log('🔍 Question de connaissance détectée, recherche web...');
+      const searchResult = await searchWeb(message);
+      if (searchResult) {
+        webContext = '\n\nINFO TROUVEE SUR LE WEB (utilise ces infos pour repondre avec precision) :\n' + searchResult;
+        // Enrichir le system prompt avec le contexte web
+        if (messages[0] && messages[0].role === 'system') {
+          messages[0].content += webContext;
+        }
+        console.log('✅ Contexte web injecté:', searchResult.substring(0, 100));
+      }
     }
 
     const data = await callGroq(messages, 1024);
