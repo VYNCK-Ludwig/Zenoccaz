@@ -145,9 +145,15 @@ async function searchBuyLinks(query) {
 // ─────────────────────────────────────────────────────────
 
 function extractPartRef(message) {
-  // Référence pièce : alphanumérique 6+ caractères (46476967, 1J0919506K, 7L6907386, etc.)
-  const match = message.match(/\b[a-z0-9]{6,}[\s\-]?[a-z0-9]*\b/i);
-  return match ? match[0].replace(/\s/g, '') : null;
+  // Format "MARQUE - 12345" ou "MARQUE 12345"
+  const brandRef = message.match(/([A-Z]{2,})\s*[-–]\s*([A-Z0-9]{4,})/i);
+  if (brandRef) return brandRef[1] + ' ' + brandRef[2];
+  // Référence numérique seule 5+ chiffres
+  const numRef = message.match(/\b\d{5,}\b/);
+  if (numRef) return numRef[0];
+  // Référence alphanumérique 6+ caractères
+  const alphaRef = message.match(/\b[a-z0-9]{6,}[\s\-]?[a-z0-9]*\b/i);
+  return alphaRef ? alphaRef[0].replace(/\s/g, '') : null;
 }
 
 function isKnowledgeQuestion(message) {
@@ -176,7 +182,7 @@ function isBuyQuestion(message) {
 
 function buildSearchQuery(message) {
   const ref = extractPartRef(message);
-  if (ref) return ref + ' piece auto reference constructeur';
+  if (ref) return ref + ' piece detachee auto a quoi sert';
   return message + ' automobile';
 }
 
