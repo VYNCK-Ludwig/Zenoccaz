@@ -145,15 +145,15 @@ async function searchBuyLinks(query) {
 // ─────────────────────────────────────────────────────────
 
 function extractPartRef(message) {
-  // Format "MARQUE - 12345" ou "MARQUE 12345"
-  const brandRef = message.match(/([A-Z]{2,})\s*[-–]\s*([A-Z0-9]{4,})/i);
-  if (brandRef) return brandRef[1] + ' ' + brandRef[2];
-  // Référence numérique seule 5+ chiffres
-  const numRef = message.match(/\b\d{5,}\b/);
+  // Format "MARQUE - REF" ou "MARQUE REF" ex: "MAPCO - 95930", "BOSCH AR 801 S"
+  const brandRef = message.match(/([A-Z]{2,})\s*[-]?\s*([A-Z0-9][\sA-Z0-9]{2,})/i);
+  if (brandRef) return (brandRef[1] + ' ' + brandRef[2]).trim();
+  // Référence numérique seule 4+ chiffres
+  const numRef = message.match(/\b\d{4,}\b/);
   if (numRef) return numRef[0];
-  // Référence alphanumérique 6+ caractères
-  const alphaRef = message.match(/\b[a-z0-9]{6,}[\s\-]?[a-z0-9]*\b/i);
-  return alphaRef ? alphaRef[0].replace(/\s/g, '') : null;
+  // Référence alphanumérique 5+ caractères
+  const alphaRef = message.match(/\b[a-z0-9]{5,}[a-z0-9\-]*\b/i);
+  return alphaRef ? alphaRef[0].trim() : null;
 }
 
 function isKnowledgeQuestion(message) {
@@ -182,7 +182,7 @@ function isBuyQuestion(message) {
 
 function buildSearchQuery(message) {
   const ref = extractPartRef(message);
-  if (ref) return ref + ' piece detachee auto a quoi sert';
+  if (ref) return ref + ' piece detachee auto';
   return message + ' automobile';
 }
 
@@ -264,7 +264,7 @@ app.post('/api/chat', async function(req, res) {
       console.log('Question de connaissance detectee, recherche web...');
       const searchResult = await searchWeb(buildSearchQuery(message));
       if (searchResult && messages[0] && messages[0].role === 'system') {
-        messages[0].content += '\n\nINFO TROUVEE SUR LE WEB (utilise ces infos pour repondre avec precision) :\n' + searchResult;
+        messages[0].content += '\n\nINFO TROUVEE SUR LE WEB - UTILISE CES INFORMATIONS OBLIGATOIREMENT pour repondre. Ne dis JAMAIS que tu ne peux pas trouver si ces infos sont presentes :\n' + searchResult + '\n\nTu DOIS utiliser ces informations pour repondre directement sans dire de verifier ailleurs.';
         console.log('Contexte web injecte:', searchResult.substring(0, 100));
       }
     }
