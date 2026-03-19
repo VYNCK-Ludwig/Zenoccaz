@@ -11,16 +11,15 @@ dotenv.config();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let LEARNED_DIAGNOSTICS = [];
 
-// Charger les diagnostics appris
 try {
   const learnedPath = path.join(__dirname, 'learned-diagnostics.json');
   if (fs.existsSync(learnedPath)) {
     const data = fs.readFileSync(learnedPath, 'utf-8');
     LEARNED_DIAGNOSTICS = JSON.parse(data);
-    console.log(`✅ Chargé ${LEARNED_DIAGNOSTICS.length} diagnostics appris`);
+    console.log('Charge ' + LEARNED_DIAGNOSTICS.length + ' diagnostics appris');
   }
 } catch (e) {
-  console.warn('⚠️ Impossible de charger learned-diagnostics.json:', e.message);
+  console.warn('Impossible de charger learned-diagnostics.json:', e.message);
   LEARNED_DIAGNOSTICS = [];
 }
 
@@ -28,154 +27,179 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
 
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(cors({ origin: '*', methods: ['GET', 'POST', 'OPTIONS'], allowedHeaders: ['Content-Type', 'Authorization'] }));
 app.options('*', cors());
 app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ limit: '10mb', extended: true })); // 20mb pour les images base64
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.static('.'));
 
 const GROQ_API_KEY = (process.env.GROQ_API_KEY || '').trim();
-
-if (!GROQ_API_KEY) {
-  console.error('❌ GROQ_API_KEY non trouvée dans .env');
-  process.exit(1);
-}
+if (!GROQ_API_KEY) { console.error('GROQ_API_KEY manquante'); process.exit(1); }
 
 // ─────────────────────────────────────────────────────────
 // HELPERS HTTP
 // ─────────────────────────────────────────────────────────
 
-function httpPost(hostname, path, headers, body) {
-  return new Promise((resolve, reject) => {
+function httpPost(hostname, urlPath, headers, body) {
+  return new Promise(function(resolve, reject) {
     const bodyStr = JSON.stringify(body);
-    const req = https.request(
-      {
-        hostname,
-        path,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(bodyStr),
-          ...headers,
-        },
-      },
-      (res) => {
-        let data = '';
-        res.on('data', (chunk) => (data += chunk));
-        res.on('end', () => {
-          try {
-            const parsed = JSON.parse(data);
-            if (res.statusCode < 200 || res.statusCode >= 300) {
-              const err = new Error(`HTTP ${res.statusCode}`);
-              err.details = parsed;
-              return reject(err);
-            }
-            resolve(parsed);
-          } catch (e) {
-            reject(new Error('JSON parse error: ' + data.substring(0, 200)));
+    const req = https.request({
+      hostname: hostname,
+      path: urlPath,
+      method: 'POST',
+      headers: Object.assign({ 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(bodyStr) }, headers),
+    }, function(res) {
+      let data = '';
+      res.on('data', function(chunk) { data += chunk; });
+      res.on('end', function() {
+        try {
+          const parsed = JSON.parse(data);
+          if (res.statusCode < 200 || res.statusCode >= 300) {
+            const err = new Error('HTTP ' + res.statusCode);
+            err.details = parsed;
+            return reject(err);
           }
-        });
-      }
-    );
+          resolve(parsed);
+        } catch (e) {
+          reject(new Error('JSON parse error: ' + data.substring(0, 200)));
+        }
+      });
+    });
     req.on('error', reject);
     req.write(bodyStr);
     req.end();
   });
 }
 
-function callGroq(messages, maxTokens = 1024) {
-  return httpPost(
-    'api.groq.com',
-    '/openai/v1/chat/completions',
-    { Authorization: `Bearer ${GROQ_API_KEY}` },
-    {
-      model: 'llama-3.3-70b-versatile',
-      messages,
-      max_tokens: maxTokens,
-      temperature: 0.7,
-    }
+function callGroq(messages, maxTokens) {
+  maxTokens = maxTokens || 1024;
+  return httpPost('api.groq.com', '/openai/v1/chat/completions',
+    { Authorization: 'Bearer ' + GROQ_API_KEY },
+    { model: 'llama-3.3-70b-versatile', messages: messages, max_tokens: maxTokens, temperature: 0.7 }
   );
 }
 
-// Recherche web via SerpApi (Google Search)
-async function searchWeb(query) {
-  const SERPAPI_KEY = process.env.SERPAPI_KEY || '';
-  if (!SERPAPI_KEY) { console.warn('SERPAPI_KEY manquante'); return null; }
+function getSerpApiKey() {
+  return (process.env.SERPAPI_KEY || process.env['SERPAPI-KEY'] || '').trim();
+}
 
-  try {
-    const encoded = encodeURIComponent(query + ' automobile');
-    const result = await new Promise((resolve, reject) => {
-      const req = https.request({
-        hostname: 'serpapi.com',
-        path: `/search.json?q=${encoded}&hl=fr&gl=fr&api_key=${SERPAPI_KEY}&num=3`,
-        method: 'GET',
-      }, (res) => {
-        let data = '';
-        res.on('data', chunk => data += chunk);
-        res.on('end', () => {
-          try { resolve(JSON.parse(data)); } catch(e) { resolve(null); }
-        });
+function httpGet(hostname, urlPath) {
+  return new Promise(function(resolve, reject) {
+    const req = https.request({ hostname: hostname, path: urlPath, method: 'GET' }, function(res) {
+      let data = '';
+      res.on('data', function(chunk) { data += chunk; });
+      res.on('end', function() {
+        try { resolve(JSON.parse(data)); } catch(e) { resolve(null); }
       });
-      req.on('error', reject);
-      req.end();
     });
+    req.on('error', reject);
+    req.end();
+  });
+}
 
+// ─────────────────────────────────────────────────────────
+// RECHERCHE WEB
+// ─────────────────────────────────────────────────────────
+
+async function searchWeb(query) {
+  const key = getSerpApiKey();
+  if (!key) { console.warn('SERPAPI_KEY manquante'); return null; }
+  console.log('SERPAPI_KEY found:', key.substring(0, 8) + '...');
+  try {
+    const encoded = encodeURIComponent(query);
+    const result = await httpGet('serpapi.com', '/search.json?q=' + encoded + '&hl=fr&gl=fr&api_key=' + key + '&num=3');
     if (!result || !result.organic_results) return null;
-
-    // Extraire les snippets des 3 premiers résultats
-    const snippets = result.organic_results
-      .slice(0, 3)
-      .map(r => r.snippet || r.title)
-      .filter(Boolean)
-      .join(' | ');
-
-    console.log('🔍 SerpApi résultat:', snippets.substring(0, 150));
+    const snippets = result.organic_results.slice(0, 3).map(function(r) { return r.snippet || r.title; }).filter(Boolean).join(' | ');
+    console.log('SerpApi resultat:', snippets.substring(0, 150));
     return snippets || null;
   } catch (e) {
-    console.warn('Recherche SerpApi echouee:', e.message);
+    console.warn('searchWeb echoue:', e.message);
     return null;
   }
 }
 
-// Détecte si c'est une question de connaissance nécessitant une recherche
+async function searchBuyLinks(query) {
+  const key = getSerpApiKey();
+  if (!key) return null;
+  try {
+    const ref = extractPartRef(query);
+    const searchQuery = ref
+      ? ref + ' piece detachee auto oscaro autodoc mister-auto ebay leboncoin amazon'
+      : query + ' acheter piece auto oscaro autodoc mister-auto ebay';
+    const encoded = encodeURIComponent(searchQuery);
+    const result = await httpGet('serpapi.com', '/search.json?q=' + encoded + '&hl=fr&gl=fr&api_key=' + key + '&num=8');
+    if (!result || !result.organic_results) return null;
+    const links = result.organic_results.slice(0, 4).map(function(r) {
+      return '- ' + r.title + ' : ' + r.link;
+    }).filter(Boolean).join('\n');
+    console.log('Liens achat trouves:', links.substring(0, 200));
+    return links || null;
+  } catch(e) {
+    console.warn('searchBuyLinks echoue:', e.message);
+    return null;
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// DETECTION TYPE DE QUESTION
+// ─────────────────────────────────────────────────────────
+
+function extractPartRef(message) {
+  // Référence pièce : alphanumérique 6+ caractères (46476967, 1J0919506K, 7L6907386, etc.)
+  const match = message.match(/\b[a-z0-9]{6,}[\s\-]?[a-z0-9]*\b/i);
+  return match ? match[0].replace(/\s/g, '') : null;
+}
+
 function isKnowledgeQuestion(message) {
   const lower = message.toLowerCase();
+  if (extractPartRef(message)) return true;
   const patterns = [
     "a quoi sert", "c est quoi", "quest ce que", "comment fonctionne",
     "explique", "kesako", "role de", "fonction de", "definition",
-    "ca sert a quoi", "a quoi ca sert", "reference", "piece",
-    "capteur", "vanne", "module", "calculateur",
-    "boitier", "relais", "fusible", "sonde", "debimetre", "injecteur"
+    "ca sert a quoi", "a quoi ca sert", "reference", "capteur",
+    "vanne", "module", "calculateur", "boitier", "relais", "fusible",
+    "sonde", "debimetre", "injecteur", "numero de serie", "correspond a"
   ];
   return patterns.some(function(p) { return lower.includes(p); });
 }
 
+function isBuyQuestion(message) {
+  const lower = message.toLowerCase();
+  const patterns = [
+    "trouver", "acheter", "commander", "ou trouver", "ou acheter",
+    "prix de", "combien coute", "trouver une", "acheter une",
+    "piece neuve", "piece occasion", "ou la trouver", "ou la commander",
+    "trouve moi", "cherche moi"
+  ];
+  return patterns.some(function(p) { return lower.includes(p); });
+}
+
+function buildSearchQuery(message) {
+  const ref = extractPartRef(message);
+  if (ref) return ref + ' piece auto reference constructeur';
+  return message + ' automobile';
+}
 
 // ─────────────────────────────────────────────────────────
 // APPRENTISSAGE
 // ─────────────────────────────────────────────────────────
 
-function saveLearningFeedback(symptom, diagnosis, fuelType, vehicleInfo = {}) {
-  const existing = LEARNED_DIAGNOSTICS.find(
-    d => d.symptom.toLowerCase() === symptom.toLowerCase() &&
-         d.diagnosis.toLowerCase() === diagnosis.toLowerCase()
-  );
-
+function saveLearningFeedback(symptom, diagnosis, fuelType, vehicleInfo) {
+  vehicleInfo = vehicleInfo || {};
+  const existing = LEARNED_DIAGNOSTICS.find(function(d) {
+    return d.symptom.toLowerCase() === symptom.toLowerCase() && d.diagnosis.toLowerCase() === diagnosis.toLowerCase();
+  });
   if (existing) {
     existing.validation_count = (existing.validation_count || 1) + 1;
     existing.confidence_score = Math.min(10, existing.validation_count);
     existing.updated_at = new Date().toISOString();
-    console.log(`📈 Diagnostic renforcé: "${symptom}" → "${diagnosis}" (${existing.confidence_score}/10)`);
+    console.log('Diagnostic renforce: "' + symptom + '" -> "' + diagnosis + '" (' + existing.confidence_score + '/10)');
   } else {
     LEARNED_DIAGNOSTICS.push({
       id: Date.now(),
       created_at: new Date().toISOString(),
-      symptom,
-      diagnosis,
+      symptom: symptom,
+      diagnosis: diagnosis,
       fuel_type: fuelType,
       vehicle_brand: vehicleInfo.brand,
       vehicle_model: vehicleInfo.model,
@@ -183,16 +207,12 @@ function saveLearningFeedback(symptom, diagnosis, fuelType, vehicleInfo = {}) {
       validation_count: 1,
       confidence_score: 1
     });
-    console.log(`✅ Nouveau diagnostic appris: "${symptom}" → "${diagnosis}"`);
+    console.log('Nouveau diagnostic appris: "' + symptom + '" -> "' + diagnosis + '"');
   }
-
   try {
-    fs.writeFileSync(
-      path.join(__dirname, 'learned-diagnostics.json'),
-      JSON.stringify(LEARNED_DIAGNOSTICS, null, 2)
-    );
+    fs.writeFileSync(path.join(__dirname, 'learned-diagnostics.json'), JSON.stringify(LEARNED_DIAGNOSTICS, null, 2));
   } catch (e) {
-    console.error('❌ Erreur sauvegarde:', e.message);
+    console.error('Erreur sauvegarde:', e.message);
   }
 }
 
@@ -200,189 +220,153 @@ function saveLearningFeedback(symptom, diagnosis, fuelType, vehicleInfo = {}) {
 // ROUTES
 // ─────────────────────────────────────────────────────────
 
-// Ping keep-alive (répond 200 sans consommer de tokens)
-app.get('/api/ping', (req, res) => res.json({ status: 'ok' }));
-app.get('/health', (req, res) => res.json({ status: 'OK', timestamp: new Date().toISOString() }));
+app.get('/api/ping', function(req, res) { res.json({ status: 'ok' }); });
+app.get('/health', function(req, res) { res.json({ status: 'OK', timestamp: new Date().toISOString() }); });
 
-/**
- * POST /api/chat — Chat principal via Groq (Llama)
- */
-app.post('/api/chat', async (req, res) => {
+app.post('/api/chat', async function(req, res) {
   try {
-    const { message, systemPrompt, conversationHistory } = req.body;
+    const message = req.body.message;
+    const systemPrompt = req.body.systemPrompt;
+    const conversationHistory = req.body.conversationHistory;
 
     if (!message || typeof message !== 'string') {
       return res.status(400).json({ error: 'Message requis' });
     }
-
-    // Ignorer les pings
-    if (message === '__ping__') {
-      return res.json({ response: 'pong' });
-    }
+    if (message === '__ping__') return res.json({ response: 'pong' });
 
     const messages = [];
-
-    // System prompt
-    const defaultSystem = `Tu es un assistant virtuel de ZENOCCAZ et un mecanicien expert automobile.
-Tu diagnostiques comme un vrai mecano : tu fais tester avant d'acheter quoi que ce soit.
-Tu proposes toujours l'etape la plus simple et gratuite en premier.
-Tu ne mentionnes JAMAIS turbo, injecteur ou pieces couteuses tant que les verifications gratuites n'ont pas ete faites.`;
-
+    const defaultSystem = 'Tu es un assistant virtuel de ZENOCCAZ et un mecanicien expert automobile. Tu diagnostiques comme un vrai mecano : tu fais tester avant d\'acheter quoi que ce soit. Tu proposes toujours l\'etape la plus simple et gratuite en premier.';
     messages.push({ role: 'system', content: systemPrompt || defaultSystem });
 
-    // Historique
     if (Array.isArray(conversationHistory) && conversationHistory.length > 0) {
-      conversationHistory.forEach(msg => {
-        if (msg.role && msg.content) {
-          messages.push({ role: msg.role, content: msg.content });
-        }
+      conversationHistory.forEach(function(msg) {
+        if (msg.role && msg.content) messages.push({ role: msg.role, content: msg.content });
       });
     } else {
       messages.push({ role: 'user', content: message });
     }
 
-    // Si question de connaissance → enrichir avec recherche web
-    let webContext = '';
-    if (isKnowledgeQuestion(message)) {
-      console.log('🔍 Question de connaissance détectée, recherche web...');
-      const searchResult = await searchWeb(message);
-      if (searchResult) {
-        webContext = '\n\nINFO TROUVEE SUR LE WEB (utilise ces infos pour repondre avec precision) :\n' + searchResult;
-        // Enrichir le system prompt avec le contexte web
-        if (messages[0] && messages[0].role === 'system') {
-          messages[0].content += webContext;
-        }
-        console.log('✅ Contexte web injecté:', searchResult.substring(0, 100));
+    // Recherche web selon le type de question
+    if (isBuyQuestion(message)) {
+      console.log('Question achat detectee, recherche liens...');
+      const buyLinks = await searchBuyLinks(message);
+      if (buyLinks && messages[0] && messages[0].role === 'system') {
+        messages[0].content += '\n\nLIENS ACHAT TROUVES SUR LE WEB (presente ces 4 liens a l\'utilisateur avec le nom du site et l\'URL complete pour qu\'il puisse acheter la piece) :\n' + buyLinks;
+        console.log('Liens achat injectes');
+      }
+    } else if (isKnowledgeQuestion(message)) {
+      console.log('Question de connaissance detectee, recherche web...');
+      const searchResult = await searchWeb(buildSearchQuery(message));
+      if (searchResult && messages[0] && messages[0].role === 'system') {
+        messages[0].content += '\n\nINFO TROUVEE SUR LE WEB (utilise ces infos pour repondre avec precision) :\n' + searchResult;
+        console.log('Contexte web injecte:', searchResult.substring(0, 100));
       }
     }
 
     const data = await callGroq(messages, 1024);
-    const reply = data.choices?.[0]?.message?.content || 'Désolé, pas de réponse.';
-
+    const reply = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'Desole, pas de reponse.';
     res.json({ response: reply });
 
   } catch (error) {
-    console.error('❌ /api/chat error:', error?.message);
-    res.status(500).json({ error: 'Erreur serveur', details: error?.message });
+    console.error('/api/chat error:', error && error.message);
+    res.status(500).json({ error: 'Erreur serveur', details: error && error.message });
   }
 });
 
-/**
- * POST /api/analyze-photo — Analyse photo via Groq LLaVA (vision, gratuit)
- * Body: { base64: string, mediaType: string, context: string }
- */
-app.post('/api/analyze-photo', async (req, res) => {
+app.post('/api/analyze-photo', async function(req, res) {
   try {
-    const { base64, mediaType, context } = req.body;
+    const base64 = req.body.base64;
+    const mediaType = req.body.mediaType;
+    const context = req.body.context || '';
 
-    if (!base64) {
-      return res.status(400).json({ error: 'Image base64 requise' });
-    }
+    if (!base64) return res.status(400).json({ error: 'Image base64 requise' });
+    console.log('Analyse photo - contexte: "' + context.substring(0, 50) + '"');
 
-    console.log(`📸 Analyse photo LLaVA - contexte: "${(context || '').substring(0, 50)}"`);
+    const systemPrompt = 'Tu es un mecanicien expert automobile qui analyse des photos de pieces de vehicules.\n'
+      + 'Tu examines chaque detail avec l\'oeil d\'un professionnel.\n'
+      + 'Tu regardes : etat des durites (fissures, fuites, ecrasement), soufflets (dechirures, graisse projetee),\n'
+      + 'connexions electriques (oxydation, fils abimes), courroies (usure, craquelures),\n'
+      + 'joints (fuites), niveaux visibles, corrosion, usure generale.\n'
+      + (context ? 'Contexte du probleme signale par le client : ' + context + '\n' : '')
+      + '\nFORMAT OBLIGATOIRE :\n'
+      + 'Ce que je vois : [description precise de tout ce qui est visible]\n'
+      + 'Etat general : [bon / moyen / mauvais / critique]\n'
+      + 'Problemes detectes : [liste precise, meme les petits details]\n'
+      + 'Ce qui semble OK : [ce qui a l\'air en bon etat]\n'
+      + 'Recommandation : [action a faire, du plus urgent au moins urgent]\n'
+      + 'Cout estime : [fourchette realiste ou "rien a faire"]';
 
-    const systemPrompt = `Tu es un mecanicien expert automobile qui analyse des photos de pieces de vehicules.
-Tu examines chaque detail avec l oeil d un professionnel.
-Tu regardes : etat des durites (fissures, fuites, ecrasement), soufflets (dechirures, graisse projetee),
-connexions electriques (oxydation, fils abimes), courroies (usure, craquelures),
-joints (fuites), niveaux visibles, corrosion, usure generale.
-${context ? 'Contexte du probleme signale par le client : ' + context : ''}
+    const imageUrl = 'data:' + (mediaType || 'image/jpeg') + ';base64,' + base64;
 
-FORMAT OBLIGATOIRE :
-Ce que je vois : [description precise de tout ce qui est visible]
-Etat general : [bon / moyen / mauvais / critique]
-Problemes detectes : [liste precise, meme les petits details]
-Ce qui semble OK : [ce qui a l air en bon etat]
-Recommandation : [action a faire, du plus urgent au moins urgent]
-Cout estime : [fourchette realiste ou "rien a faire"]`;
-
-    const imageUrl = `data:${mediaType || 'image/jpeg'};base64,${base64}`;
-
-    const data = await httpPost(
-      'api.groq.com',
-      '/openai/v1/chat/completions',
-      { Authorization: `Bearer ${GROQ_API_KEY}` },
+    const data = await httpPost('api.groq.com', '/openai/v1/chat/completions',
+      { Authorization: 'Bearer ' + GROQ_API_KEY },
       {
         model: 'meta-llama/llama-4-scout-17b-16e-instruct',
-        messages: [
-          {
-            role: 'user',
-            content: [
-              { type: 'image_url', image_url: { url: imageUrl } },
-              {
-                type: 'text',
-                text: systemPrompt + '\n\nAnalyse cette photo comme un mecanicien expert et dis-moi tout ce que tu vois.'
-              }
-            ]
-          }
-        ],
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image_url', image_url: { url: imageUrl } },
+            { type: 'text', text: systemPrompt + '\n\nAnalyse cette photo comme un mecanicien expert et dis-moi tout ce que tu vois.' }
+          ]
+        }],
         max_tokens: 1024,
         temperature: 0.3
       }
     );
 
-    const reply = data.choices?.[0]?.message?.content || 'Impossible d analyser la photo.';
-    console.log('✅ Analyse photo OK:', reply.substring(0, 80) + '...');
+    const reply = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'Impossible d\'analyser la photo.';
+    console.log('Analyse photo OK:', reply.substring(0, 80) + '...');
     res.json({ response: reply });
 
   } catch (error) {
-    console.error('❌ /api/analyze-photo error:', error?.message);
-    res.status(500).json({
-      error: 'Analyse photo indisponible',
-      details: error?.message
-    });
+    console.error('/api/analyze-photo error:', error && error.message);
+    res.status(500).json({ error: 'Analyse photo indisponible', details: error && error.message });
   }
 });
 
-
-/**
- * POST /api/save-diagnosis — Enregistre un diagnostic appris
- */
-app.post('/api/save-diagnosis', (req, res) => {
+app.post('/api/save-diagnosis', function(req, res) {
   try {
-    const { symptom, diagnosis, fuelType, vehicleInfo } = req.body;
-    if (!symptom || !diagnosis) {
-      return res.status(400).json({ error: 'symptom et diagnosis requis' });
-    }
+    const symptom = req.body.symptom;
+    const diagnosis = req.body.diagnosis;
+    const fuelType = req.body.fuelType;
+    const vehicleInfo = req.body.vehicleInfo;
+    if (!symptom || !diagnosis) return res.status(400).json({ error: 'symptom et diagnosis requis' });
     saveLearningFeedback(symptom, diagnosis, fuelType, vehicleInfo || {});
     res.json({ success: true, totalLearned: LEARNED_DIAGNOSTICS.length });
   } catch (error) {
-    res.status(500).json({ error: 'Erreur', details: error?.message });
+    res.status(500).json({ error: 'Erreur', details: error && error.message });
   }
 });
 
-/**
- * GET /api/learned-diagnostics — Liste les diagnostics appris
- */
-app.get('/api/learned-diagnostics', (req, res) => {
+app.get('/api/learned-diagnostics', function(req, res) {
   try {
-    const { symptom, fuelType } = req.query;
+    const symptom = req.query.symptom;
+    const fuelType = req.query.fuelType;
     if (symptom) {
       const lower = symptom.toLowerCase();
-      const filtered = LEARNED_DIAGNOSTICS.filter(d =>
-        d.symptom.toLowerCase().includes(lower) &&
-        (!fuelType || !d.fuel_type || d.fuel_type === fuelType)
-      ).sort((a, b) => b.confidence_score - a.confidence_score);
+      const filtered = LEARNED_DIAGNOSTICS.filter(function(d) {
+        return d.symptom.toLowerCase().includes(lower) && (!fuelType || !d.fuel_type || d.fuel_type === fuelType);
+      }).sort(function(a, b) { return b.confidence_score - a.confidence_score; });
       return res.json({ count: filtered.length, diagnostics: filtered });
     }
     res.json({
       count: LEARNED_DIAGNOSTICS.length,
-      diagnostics: LEARNED_DIAGNOSTICS.sort((a, b) => b.confidence_score - a.confidence_score)
+      diagnostics: LEARNED_DIAGNOSTICS.sort(function(a, b) { return b.confidence_score - a.confidence_score; })
     });
   } catch (error) {
-    res.status(500).json({ error: 'Erreur', details: error?.message });
+    res.status(500).json({ error: 'Erreur', details: error && error.message });
   }
 });
 
 // ─────────────────────────────────────────────────────────
-// DÉMARRAGE
+// DEMARRAGE
 // ─────────────────────────────────────────────────────────
 
-app.listen(PORT, HOST, () => {
-  const isDev = (process.env.NODE_ENV || 'development') !== 'production';
-  console.log(`✅ Serveur démarré sur port ${PORT}`);
-  console.log(`   Chat (Groq)    : POST /api/chat`);
-  console.log(`   Photo (LLaVA)  : POST /api/analyze-photo ✅`);
-  console.log(`   Save diagnosis : POST /api/save-diagnosis`);
-  console.log(`   Ping keep-alive: GET  /api/ping`);
+app.listen(PORT, HOST, function() {
+  console.log('Serveur demarre sur port ' + PORT);
+  console.log('   Chat (Groq)    : POST /api/chat');
+  console.log('   Photo (LLaVA)  : POST /api/analyze-photo');
+  console.log('   Save diagnosis : POST /api/save-diagnosis');
+  console.log('   Ping keep-alive: GET  /api/ping');
+  console.log('   SerpApi web    : ' + (getSerpApiKey() ? 'OK - ' + getSerpApiKey().substring(0, 8) + '...' : 'CLE MANQUANTE'));
 });

@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ZENOCCAZ — Vente de véhicules d'occasion</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="chat-fullscreen.css">
 </head>
 <body>
   <header class="site-header">
@@ -249,9 +248,9 @@
         const name = document.getElementById('review-name').value.trim();
         const comment = document.getElementById('review-comment').value.trim();
         // ✅ localStorage (cohérent avec le reste)
-        const clientData = localStorage.getItem('clientData');
+        const clientData = sessionStorage.getItem('clientData');
         if (!clientData) {
-          localStorage.setItem('pendingReview', JSON.stringify({ name, comment, rating: selectedRating }));
+          sessionStorage.setItem('pendingReview', JSON.stringify({ name, comment, rating: selectedRating }));
           openLoginModal();
           return;
         }
@@ -275,13 +274,29 @@
       function updateAccountButton() {
         const raw = localStorage.getItem('clientData');
         const btn = document.getElementById('account-btn');
+        let logoutBtn = document.getElementById('logout-btn');
         if (!btn) return;
         if (raw) {
           const client = JSON.parse(raw);
           const prenom = client.name ? client.name.split(' ')[0] : 'Mon compte';
-          btn.textContent = `👤 ${prenom}`;
+          btn.textContent = '👤 ' + prenom;
+          if (!logoutBtn) {
+            logoutBtn = document.createElement('button');
+            logoutBtn.id = 'logout-btn';
+            logoutBtn.textContent = 'Déconnexion';
+            logoutBtn.className = 'btn';
+            logoutBtn.style.cssText = 'background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);color:#fca5a5;font-size:13px;padding:6px 12px;';
+            logoutBtn.addEventListener('click', function() {
+              localStorage.removeItem('clientData');
+              window.dispatchEvent(new CustomEvent('clientLogout'));
+              updateAccountButton();
+            });
+            btn.parentNode.insertBefore(logoutBtn, btn.nextSibling);
+          }
+          logoutBtn.style.display = 'inline-flex';
         } else {
           btn.textContent = 'mon compte';
+          if (logoutBtn) logoutBtn.style.display = 'none';
         }
       }
       updateAccountButton();
@@ -329,7 +344,7 @@
           const clientData = { id: data.id, email: data.email, name: data.name, connectedAt: new Date().toISOString() };
 
           // ✅ localStorage pour partager avec chatbot
-          localStorage.setItem('clientData', JSON.stringify(clientData));
+          sessionStorage.setItem('clientData', JSON.stringify(clientData));
 
           // ✅ Notifier le chatbot instantanément
           window.dispatchEvent(new CustomEvent('clientLogin', { detail: clientData }));
@@ -340,7 +355,7 @@
           closeLoginModal();
 
           // Gérer avis en attente
-          const pendingReview = localStorage.getItem('pendingReview');
+          const pendingReview = sessionStorage.getItem('pendingReview');
           if (pendingReview) {
             const review = JSON.parse(pendingReview);
             document.getElementById('review-name').value = review.name;
@@ -348,7 +363,7 @@
             selectedRating = review.rating;
             ratingValue.value = review.rating;
             updateStars(review.rating);
-            localStorage.removeItem('pendingReview');
+            sessionStorage.removeItem('pendingReview');
             setTimeout(async () => {
               try {
                 const { error } = await supabaseClient.from('reviews').insert([{ id: Date.now(), client_name: review.name, comment: review.comment, rating: review.rating }]);
