@@ -109,7 +109,9 @@ async function searchWeb(query) {
     const encoded = encodeURIComponent(query);
     const result = await httpGet('serpapi.com', '/search.json?q=' + encoded + '&hl=fr&gl=fr&api_key=' + key + '&num=3');
     if (!result || !result.organic_results) return null;
-    const snippets = result.organic_results.slice(0, 3).map(function(r) { return r.snippet || r.title; }).filter(Boolean).join(' | ');
+    const snippets = result.organic_results.slice(0, 3).map(function(r) {
+      return (r.title ? r.title + ' : ' : '') + (r.snippet || '');
+    }).filter(Boolean).join(' | ');
     console.log('SerpApi resultat:', snippets.substring(0, 150));
     return snippets || null;
   } catch (e) {
@@ -182,7 +184,7 @@ function isBuyQuestion(message) {
 
 function buildSearchQuery(message) {
   const ref = extractPartRef(message);
-  if (ref) return ref + ' piece detachee auto';
+  if (ref) return '"' + ref + '" piece auto';
   return message + ' automobile';
 }
 
