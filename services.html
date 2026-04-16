@@ -768,16 +768,6 @@
       function $$(s,root=document){return Array.from(root.querySelectorAll(s))}
       function $(s,root=document){return root.querySelector(s)}
 
-      function haversineKm([lat1,lon1],[lat2,lon2]){
-        const toRad = r=> r*Math.PI/180;
-        const R=6371; // km
-        const dLat = toRad(lat2-lat1);
-        const dLon = toRad(lon2-lon1);
-        const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
-        const c = 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R*c;
-      }
-
       async function geocode(query){
         const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(query);
         try{
@@ -785,6 +775,19 @@
           const data = await res.json();
           if(data && data.length) return {lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon)};
         }catch(e){console.warn('geocode error',e)}
+        return null;
+      }
+
+      // Distance routière réelle via OSRM (pas à vol d'oiseau)
+      async function routeKm(origin, dest){
+        const url = `https://router.project-osrm.org/route/v1/driving/${origin.lon},${origin.lat};${dest.lon},${dest.lat}?overview=false`;
+        try{
+          const res = await fetch(url, {headers:{'Accept':'application/json'}});
+          const data = await res.json();
+          if(data && data.routes && data.routes.length){
+            return data.routes[0].distance / 1000; // mètres → km
+          }
+        }catch(e){console.warn('osrm error',e)}
         return null;
       }
 
@@ -829,7 +832,8 @@
         const destCoords = await geocode(dest);
         if(!destCoords){ distanceResult.textContent = 'Adresse introuvable.'; return }
         if(!originCoords){ originCoords = await geocode(ORIGIN); if(!originCoords){ distanceResult.textContent = 'Impossible de géocoder l\'origine.'; return } }
-        const km = haversineKm([originCoords.lat, originCoords.lon],[destCoords.lat,destCoords.lon]);
+        const km = await routeKm(originCoords, destCoords);
+        if(km === null){ distanceResult.textContent = 'Impossible de calculer la distance routière.'; return }
         const kmRounded = Math.max(0, Math.round(km*10)/10);
         const extra = Math.max(0, kmRounded - KM_FREE);
         const travelFee = Math.round(extra * KM_PRICE * 100)/100;
