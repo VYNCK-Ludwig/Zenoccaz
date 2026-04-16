@@ -4,93 +4,567 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Nos Services — ZENOCCAZ</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- <link rel="stylesheet" href="styles.css"> -->
+  <link rel="stylesheet" href="services-premium.css">
+
   <style>
-    /* Auth modal polished styling */
-    #auth-modal{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(2,6,23,0.6); z-index:1200; }
-    #auth-modal.hidden{ display:none }
-    #auth-modal .modal-content{ background:linear-gradient(180deg,#07202a 0%, #0b1220 100%); color:#e6eef2; padding:20px; border-radius:12px; box-shadow:0 12px 40px rgba(2,6,23,0.7); border:1px solid rgba(255,255,255,0.04); width:100%; max-width:520px }
-    #auth-modal h2{ margin:0 0 6px; color:#fff; font-size:18px }
-    #auth-modal p{ color:#9fb1b7; margin:0 0 12px }
-    #auth-tabs{ display:flex; gap:8px; margin-bottom:6px }
-    #auth-tabs .btn{ background:transparent; border:1px solid rgba(255,255,255,0.06); color:#cfe8e4; padding:8px 12px; border-radius:8px; }
-    #auth-tabs .btn.primary{ background:#10b981; color:#fff; border-color:transparent; box-shadow:0 8px 20px rgba(16,185,129,0.12) }
-    #auth-form input{ width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:#e6eef2; outline:none }
-    #auth-form input::placeholder{ color:#9fb1b7 }
-    #auth-form .btn{ padding:8px 12px; border-radius:8px }
-    #auth-form .btn.primary{ background:#10b981; color:#fff; border:0; box-shadow:0 8px 20px rgba(16,185,129,0.12) }
-    #auth-form .btn:not(.primary){ background:transparent; border:1px solid rgba(255,255,255,0.06); color:#cfe8e4 }
-    /* make inputs and stacked layout consistent */
-    #reg-fields, #login-fields{ display:flex; flex-direction:column; gap:8px }
-    /* small-screen adjustments */
-    @media (max-width:600px){ #auth-modal .modal-content{ padding:16px; border-radius:10px; margin:20px } }
+    /* ── Modaux premium animés ── */
+    @keyframes svc-border-spin {
+      0%   { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes svc-in {
+      from { opacity:0; transform:scale(.94) translateY(16px); }
+      to   { opacity:1; transform:scale(1) translateY(0); }
+    }
+    @keyframes svc-glow-pulse {
+      0%,100% { opacity:.6; }
+      50%      { opacity:1; }
+    }
+
+    /* Wrapper externe pour la bordure tournante */
+    .svc-modal-wrapper {
+      position: relative;
+      max-width: 480px;
+      width: 100%;
+      border-radius: 30px;
+      animation: svc-in .35s cubic-bezier(.4,0,.2,1) both;
+    }
+
+    .svc-modal-box {
+      position: relative;
+      background: linear-gradient(160deg, #0a0e1a, #060910);
+      border-radius: 28px;
+      padding: 36px 30px 30px;
+      width: 100%;
+      box-sizing: border-box;
+      max-height: 88vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      font-family: 'Inter', -apple-system, sans-serif;
+      scrollbar-width: none;
+      z-index: 2;
+      position: relative;
+    }
+
+    .svc-modal-box::-webkit-scrollbar { display: none; }
+
+    /* Bordure tournante */
+    .svc-border-wrap {
+      position: absolute;
+      inset: -2px;
+      border-radius: 30px;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .svc-border-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -100%;
+      background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        transparent 60deg,
+        currentColor 120deg,
+        transparent 180deg,
+        transparent 240deg,
+        currentColor 300deg,
+        transparent 360deg
+      );
+      animation: svc-border-spin 3s linear infinite;
+    }
+
+    .svc-border-inner {
+      position: absolute;
+      inset: 2px;
+      border-radius: 28px;
+      background: linear-gradient(160deg, #0a0e1a, #060910);
+      z-index: 1;
+    }
+
+    .svc-modal-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Icône SVG premium */
+    .svc-icon-wrap {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .svc-icon-wrap svg {
+      width: 36px;
+      height: 36px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .svc-icon-glow {
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      opacity: .5;
+      filter: blur(12px);
+      animation: svc-glow-pulse 2s ease-in-out infinite;
+    }
+
+    .svc-field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 7px;
+    }
+
+    .svc-field input, .svc-field textarea {
+      width: 100%;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 13px;
+      color: #e2e8f0;
+      font-size: 14px;
+      font-family: inherit;
+      box-sizing: border-box;
+      transition: border-color .2s, background .2s, box-shadow .2s;
+    }
+
+    .svc-field input:focus, .svc-field textarea:focus {
+      outline: none;
+      border-color: rgba(var(--svc-rgb), .5);
+      background: rgba(var(--svc-rgb), .04);
+      box-shadow: 0 0 0 3px rgba(var(--svc-rgb), .1);
+    }
+
+    .svc-field input::placeholder, .svc-field textarea::placeholder { color: #334155; }
+
+    .svc-client-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      border-radius: 14px;
+      margin-bottom: 22px;
+      border: 1px solid;
+    }
+
+    .svc-client-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .svc-client-avatar svg { width: 18px; height: 18px; }
+    .svc-client-name { font-size: 14px; font-weight: 700; color: #fff; }
+    .svc-client-sub  { font-size: 12px; color: #64748b; margin-top: 1px; }
+
+    .svc-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .svc-btn-primary {
+      padding: 13px 28px;
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .svc-btn-primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,.12);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .svc-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+
+    /* Selects dark theme pour le tunnel reprise */
+    select.rep-select-dark {
+      color-scheme: dark;
+    }
+    select.rep-select-dark option {
+      background: #0d1117;
+      color: #e2e8f0;
+      padding: 8px;
+    }
+    select.rep-select-dark option:hover,
+    select.rep-select-dark option:checked {
+      background: #10b981;
+      color: #fff;
+    }
+    .svc-btn-primary:hover::before { opacity: 1; }
+
+    .svc-btn-cancel {
+      padding: 13px 20px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .2s;
+    }
+    .svc-btn-cancel:hover { background: rgba(255,255,255,.1); color: #fff; }
+
+    .svc-error {
+      display: none;
+      background: rgba(239,68,68,.1);
+      border: 1px solid rgba(239,68,68,.3);
+      border-radius: 11px;
+      padding: 11px 14px;
+      font-size: 13px;
+      color: #fca5a5;
+      margin-bottom: 16px;
+    }
   </style>
 </head>
 <body>
+  <!-- Scroll progress bar -->
+  <div class="scroll-indicator" id="scroll-indicator"></div>
+
+  <style>
+    /* ── HEADER PREMIUM SERVICES ── */
+    @keyframes hdr-shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position:  200% center; }
+    }
+    @keyframes hdr-dot-pulse {
+      0%,100% { transform:scale(1); opacity:1; }
+      50%      { transform:scale(1.4); opacity:.6; }
+    }
+    @keyframes hdr-fade-in {
+      from { opacity:0; transform:translateY(-8px); }
+      to   { opacity:1; transform:none; }
+    }
+
+    .zn-header {
+      position: sticky; top: 0; z-index: 1000;
+      background: rgba(6,9,18,0.92);
+      backdrop-filter: blur(28px) saturate(180%);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      animation: hdr-fade-in .4s ease both;
+    }
+
+    /* Barre shimmer en haut */
+    .zn-header::before {
+      content: '';
+      display: block; height: 2px;
+      background: linear-gradient(90deg,
+        transparent, #10b981, #3b82f6, #a855f7, #10b981, transparent
+      );
+      background-size: 300% auto;
+      animation: hdr-shimmer 4s linear infinite;
+    }
+
+    .zn-header-inner {
+      max-width: 1400px; margin: 0 auto;
+      padding: 0 32px;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      gap: 24px; height: 68px;
+    }
+
+    /* Logo */
+    .zn-logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .zn-logo-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(59,130,246,0.15));
+      border: 1px solid rgba(16,185,129,0.3);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .zn-logo-icon svg { width: 20px; height: 20px; }
+    .zn-logo-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 20px; font-weight: 800; letter-spacing: -0.5px;
+    }
+    .zn-logo-text .z1 { color: #fff; }
+    .zn-logo-text .z2 { color: #10b981; }
+    .zn-logo-text .z3 { color: #f97316; }
+
+    /* Badge page active */
+    .zn-page-badge {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 20px;
+      background: rgba(16,185,129,0.08);
+      border: 1px solid rgba(16,185,129,0.2);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 1.2px; text-transform: uppercase;
+      color: #10b981;
+    }
+    .zn-page-badge-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #10b981;
+      animation: hdr-dot-pulse 2s ease-in-out infinite;
+    }
+
+    /* Nav links */
+    .zn-nav {
+      display: flex; align-items: center; gap: 4px;
+      flex: 1; justify-content: center;
+    }
+    .zn-nav-link {
+      padding: 8px 16px; border-radius: 10px;
+      font-size: 13px; font-weight: 500;
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      transition: all .2s; white-space: nowrap;
+      border: 1px solid transparent;
+    }
+    .zn-nav-link:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.08);
+    }
+    .zn-nav-link.active {
+      color: #10b981;
+      background: rgba(16,185,129,0.08);
+      border-color: rgba(16,185,129,0.2);
+      font-weight: 700;
+    }
+    .zn-nav-parrainage {
+      position: relative;
+    }
+    .zn-nav-parrainage-badge {
+      position: absolute; top: -6px; right: -6px;
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      color: #fff; font-size: 9px; font-weight: 800;
+      padding: 2px 6px; border-radius: 8px;
+      letter-spacing: .3px;
+    }
+
+    /* Actions droite */
+    .zn-header-actions {
+      display: flex; align-items: center; gap: 10px;
+      flex-shrink: 0;
+    }
+
+    /* Bouton compte */
+    .zn-btn-compte {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 20px; border-radius: 12px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border: none; color: #fff;
+      font-size: 13px; font-weight: 700;
+      text-decoration: none; cursor: pointer;
+      transition: all .2s; white-space: nowrap;
+      box-shadow: 0 4px 14px rgba(16,185,129,0.3);
+      font-family: inherit;
+    }
+    .zn-btn-compte:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(16,185,129,0.45);
+    }
+    .zn-btn-compte svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* User connecté */
+    .zn-user-info {
+      display: none; align-items: center; gap: 8px;
+      padding: 7px 14px; border-radius: 12px;
+      background: rgba(16,185,129,0.08);
+      border: 1px solid rgba(16,185,129,0.2);
+    }
+    .zn-user-info.visible { display: flex; }
+    .zn-user-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: linear-gradient(135deg, #10b981, #059669);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; color: #fff; flex-shrink: 0;
+    }
+    .zn-user-name { font-size: 13px; font-weight: 700; color: #fff; }
+    .zn-user-sep  { color: rgba(255,255,255,0.2); font-size: 12px; }
+    .zn-user-logout {
+      font-size: 12px; color: #f97316; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      transition: color .2s;
+    }
+    .zn-user-logout:hover { color: #ef4444; }
+
+    @media (max-width: 900px) {
+      .zn-nav { display: none; }
+      .zn-header-inner { padding: 0 16px; }
+      .zn-page-badge { display: none; }
+    }
+  </style>
+
   <header class="site-header">
     <div class="admin-header">
-      <div class="admin-title">
-        <h1 style="margin:0;font-size:28px;font-weight:700;"><span style="color:white;">zen</span> <span style="color:#10b981;">occaz</span> <span style="color:#f97316;">.fr</span></h1>
-        <p class="tag">Votre spécialiste en véhicules d'occasion premium</p>
+
+      <!-- Logo -->
+      <a href="index.html" class="admin-title">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 11L6.5 6.5C6.8 5.6 7.6 5 8.5 5H15.5C16.4 5 17.2 5.6 17.5 6.5L19 11"/>
+            <rect x="2" y="11" width="20" height="7" rx="2"/>
+            <circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>
+          </svg>
+        </div>
+        <div>
+          <div class="logo-text"><span class="l1">zen</span><span class="l2">occaz</span><span class="l3">.com</span></div>
+          <div class="logo-sub">Véhicules d'occasion premium</div>
+        </div>
+      </a>
+
+      <!-- Badge page -->
+      <div class="page-badge">
+        <span class="page-badge-dot"></span>
+        Nos Services
       </div>
-      <div class="admin-actions">
-        <a href="index.html#accueil" class="btn">accueil</a>
-        <a href="index.html#vehicules" class="btn">véhicules</a>
-        <a href="services.html" class="btn">services</a>
-        <a href="index.html#contact" class="btn">contact</a>
-        <a href="client-account.html" class="btn" style="background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;">mon compte</a>
-        <span id="user-status" style="color:var(--muted);font-size:14px;margin-left:16px;"></span>
+
+      <!-- Nav centrale -->
+      <nav class="admin-actions">
+        <a href="index.html" class="btn">Accueil</a>
+        <a href="index.html#vehicules" class="btn">Véhicules</a>
+        <a href="services.html" class="btn active">Services</a>
+        <a href="parrainage.html" class="btn btn-parrainage">
+          Parrainage
+          <span class="badge-250">250€</span>
+        </a>
+        <a href="index.html#contact" class="btn">Contact</a>
+      </nav>
+
+      <!-- Actions droite -->
+      <div class="header-right">
+        <!-- User connecté -->
+        <div class="user-chip" id="hdr-user-chip">
+          <div class="user-chip-avatar" id="hdr-user-avatar">?</div>
+          <span class="user-chip-name" id="hdr-user-name">—</span>
+          <span class="user-chip-sep">|</span>
+          <a href="client-account.html" class="user-chip-link">Mon compte</a>
+          <span class="user-chip-sep">|</span>
+          <a class="user-chip-logout" onclick="window.logoutUser && window.logoutUser(); return false;">Déconnexion</a>
+        </div>
+        <!-- Bouton si pas connecté -->
+        <a href="client-account.html" class="btn primary" id="hdr-btn-compte">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px;">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          Mon compte
+        </a>
       </div>
+
     </div>
   </header>
 
-  <main style="max-width:1200px;margin:0 auto;padding:40px 20px;background:linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.05));border-radius:12px;margin-top:20px;margin-bottom:20px;border:1px solid rgba(255,255,255,0.08);">
+  <script>
+    (function updateHeader() {
+      const raw = localStorage.getItem('clientData');
+      let client = null;
+      try { client = raw ? JSON.parse(raw) : null; } catch(e) {}
+      const chip   = document.getElementById('hdr-user-chip');
+      const btn    = document.getElementById('hdr-btn-compte');
+      const name   = document.getElementById('hdr-user-name');
+      const avatar = document.getElementById('hdr-user-avatar');
+      if (client && client.name) {
+        chip?.classList.add('visible');
+        if (btn) btn.style.display = 'none';
+        if (name)   name.textContent   = client.name.split(' ')[0] || client.name;
+        if (avatar) avatar.textContent = client.name.charAt(0).toUpperCase();
+      } else {
+        chip?.classList.remove('visible');
+        if (btn) btn.style.display = '';
+      }
+      window.addEventListener('clientLogin',  () => setTimeout(updateHeader, 100));
+      window.addEventListener('clientLogout', () => setTimeout(updateHeader, 100));
+    })();
+  </script>
+
+  <!-- Hero Services -->
+  <section class="services-hero">
+    <div class="services-hero-content">
+      <div class="hero-badge">🔧 Nos Services</div>
+      <h1>Une expertise<br><span>complète</span></h1>
+      <p>De l'achat à la revente, en passant par le diagnostic, nous vous accompagnons à chaque étape</p>
+    </div>
+  </section>
+
+  <main class="services-main">
+    <!-- Section Services Principaux -->
     <section class="services-section">
-      <h2 style="font-size:48px;margin:0 0 12px;color:var(--text);text-align:center;">nos services</h2>
-      <p style="font-size:16px;margin:0 0 40px;color:var(--muted);text-align:center;">une expertise automobile complète pour votre sérénité</p>
-      <div class="services-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:48px;">
+      <div class="services-grid">
         <!-- Service 1: Expertise Achat -->
-        <div class="service-card" style="background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:32px 24px;border-radius:12px;text-align:center;position:relative;">
-          <div style="position:absolute;top:-12px;right:-20px;background:#f97316;padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;color:white;">POPULAIRE</div>
-          <div style="width:80px;height:80px;border-radius:999px;background:#f97316;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 24px;">🔍</div>
-          <h3 style="margin:0 0 16px;color:var(--text);font-size:22px;">expertise achat</h3>
-          <p style="margin:0 0 24px;color:var(--muted);font-size:14px;">accompagnement personnalisé pour votre prochain véhicule</p>
-          <ul style="list-style:none;padding:0;margin:0 0 24px;text-align:left;">
-            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#f97316;">✓</span>recherche ciblée selon vos critères</li>
-            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#f97316;">✓</span>vérification technique approfondie</li>
-            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#f97316;">✓</span>négociation du meilleur prix</li>
-            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#f97316;">✓</span>accompagnement jusqu'à la livraison</li>
+        <div class="service-card">
+          <div class="service-badge">POPULAIRE</div>
+          <div class="service-icon service-icon-orange">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+              <path d="M11 8a3 3 0 1 0 0 6"></path>
+            </svg>
+          </div>
+          <h3>Expertise Achat</h3>
+          <p class="service-description">Accompagnement personnalisé pour votre prochain véhicule</p>
+          <ul class="service-features">
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>Recherche ciblée selon vos critères</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>Vérification technique approfondie</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>Négociation du meilleur prix</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>Accompagnement jusqu'à la livraison</li>
           </ul>
-          <button style="background:#f97316;color:white;border:0;padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:600;width:100%;">demander un accompagnement</button>
+          <button class="service-btn service-btn-orange" onclick="ouvrirDemandeAccompagnement()">Demander un accompagnement</button>
         </div>
 
         <!-- Service 2: Reprise Équitable -->
-        <div class="service-card" style="background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:32px 24px;border-radius:12px;text-align:center;">
-          <div style="width:80px;height:80px;border-radius:999px;background:#10b981;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 24px;">💰</div>
-          <h3 style="margin:0 0 16px;color:var(--text);font-size:22px;">reprise équitable</h3>
-          <p style="margin:0 0 24px;color:var(--muted);font-size:14px;">estimation juste et transparente de votre véhicule</p>
-          <ul style="list-style:none;padding:0;margin:0 0 24px;text-align:left;">
-            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#10b981;">✓</span>évaluation gratuite et immédiate</li>
-            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#10b981;">✓</span>prix de reprise garanti 48h</li>
-            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#10b981;">✓</span>démarches administratives incluses</li>
-            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#10b981;">✓</span>paiement sécurisé</li>
+        <div class="service-card">
+          <div class="service-icon service-icon-green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+          </div>
+          <h3>Reprise Équitable</h3>
+          <p class="service-description">Estimation juste et transparente de votre véhicule</p>
+          <ul class="service-features">
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>Évaluation gratuite et immédiate</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>Prix de reprise garanti 48h</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>Démarches administratives incluses</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>Paiement sécurisé</li>
           </ul>
-          <button style="background:#10b981;color:white;border:0;padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:600;width:100%;">demander une évaluation</button>
+          <button class="service-btn service-btn-green" onclick="ouvrirDemandeReprise()">Demander une évaluation</button>
         </div>
 
         <!-- Service 3: Vente via Zenoccaz -->
-        <div class="service-card" style="background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:32px 24px;border-radius:12px;text-align:center;position:relative;">
-          <div style="position:absolute;top:-12px;right:-20px;background:#f97316;padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;color:white;">PRIME</div>
-          <div style="width:80px;height:80px;border-radius:999px;background:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 24px;">👑</div>
-          <h3 style="margin:0 0 16px;color:var(--text);font-size:22px;">vente via zenoccaz</h3>
-          <p style="margin:0 0 24px;color:var(--muted);font-size:14px;">mise en valeur professionnelle de votre véhicule</p>
-          <ul style="list-style:none;padding:0;margin:0 0 24px;text-align:left;">
-            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#f59e0b;">✓</span>diagnostic complet professionnel</li>
-            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#f59e0b;">✓</span>mise en valeur professionnelle de votre véhicule</li>
-            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#f59e0b;">✓</span>confiance renforcée pour l'acheteur</li>
-            <li style="margin-bottom:12px;color:var(--muted);display:flex;align-items:center;gap:8px;"><span style="color:#f59e0b;">✓</span>vente facilitée et sécurisée</li>
+        <div class="service-card">
+          <div class="service-badge service-badge-purple">PRIME</div>
+          <div class="service-icon service-icon-purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+              <path d="M2 17l10 5 10-5"></path>
+              <path d="M2 12l10 5 10-5"></path>
+            </svg>
+          </div>
+          <h3>Vente via Zenoccaz</h3>
+          <p class="service-description">Mise en valeur professionnelle de votre véhicule</p>
+          <ul class="service-features">
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>Diagnostic complet professionnel</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>Mise en valeur professionnelle</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>Confiance renforcée pour l'acheteur</li>
+            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>Vente facilitée et sécurisée</li>
           </ul>
-          <button style="background:#f97316;color:white;border:0;padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:600;width:100%;">découvrir nos véhicules</button>
+          <button class="service-btn service-btn-purple" onclick="window.location.href='index.html#vehicules'">Découvrir nos véhicules</button>
         </div>
       </div>
     </section>
@@ -161,91 +635,94 @@
   <footer class="site-footer">© ZENOCCAZ — Vente de véhicules d'occasion premium</footer>
 
   <!-- Diagnostic modal (choix pack + calcul déplacement) -->
+  <!-- Diagnostic modal (choix pack + calcul déplacement) -->
   <div id="diagnostic-modal" class="modal hidden" aria-hidden="true" role="dialog" aria-labelledby="diag-title">
-    <div class="modal-content" style="max-width:720px;">
+    <div class="modal-content">
       <h2 id="diag-title">Demander un diagnostic — Pack ZenScan</h2>
-      <p style="color:var(--muted);margin-top:6px;margin-bottom:14px;">Choisissez les services souhaités. Pour le déplacement à domicile, saisissez l'adresse du client pour calculer le kilométrage et le tarif (20 km offerts, puis 0,50€/km).</p>
+      <p>Choisissez les services souhaités. Pour le déplacement à domicile, saisissez l'adresse du client pour calculer le kilométrage et le tarif (20 km offerts, puis 0,50€/km).</p>
 
-      <form id="diag-form" style="display:grid;gap:12px;">
-        <div style="display:flex;flex-direction:column;gap:12px;max-height:420px;overflow:auto;padding-right:6px;">
-          <!-- Card style entries -->
-          <label class="diag-card" style="display:flex;align-items:flex-start;gap:14px;border:1px solid rgba(255,255,255,0.03);padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(0,0,0,0.04), rgba(255,255,255,0.01));">
-            <input type="checkbox" name="service" value="num1" data-price="45" data-title="Numérisation complète" style="margin-top:6px;" />
-            <div style="flex:1;">
-              <div style="font-weight:700;color:var(--text);font-size:16px;margin-bottom:6px;">Numérisation complète</div>
-              <div style="color:var(--muted);font-size:13px;margin-bottom:8px;">Lecture des défauts + explication orale + effacement si possible</div>
-              <div style="color:#f97316;font-size:13px;font-weight:700;">Diagnostic rapide</div>
+      <form id="diag-form">
+        <div>
+          <label class="diag-card">
+            <input type="checkbox" name="service" value="num1" data-price="45" data-title="Numérisation complète" />
+            <div class="card-content">
+              <div class="card-title">Numérisation complète</div>
+              <div class="card-desc">Lecture des défauts + explication orale + effacement si possible</div>
+              <div class="card-badge">Diagnostic rapide</div>
             </div>
-            <div style="min-width:72px;text-align:right;color:#10b981;font-weight:700;font-size:16px;">45 €</div>
+            <div class="card-price">45 €</div>
           </label>
 
-          <label class="diag-card" style="display:flex;align-items:flex-start;gap:14px;border:1px solid rgba(255,255,255,0.03);padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(0,0,0,0.04), rgba(255,255,255,0.01));">
-            <input type="checkbox" name="service" value="num2" data-price="69" data-title="Numérisation + rapport PDF" style="margin-top:6px;" />
-            <div style="flex:1;">
-              <div style="font-weight:700;color:var(--text);font-size:16px;margin-bottom:6px;">Numérisation + rapport PDF</div>
-              <div style="color:var(--muted);font-size:13px;margin-bottom:8px;">Scan complet + rapport clair + conseils personnalisés</div>
-              <div style="color:#f97316;font-size:13px;font-weight:700;">Suivi écrit détaillé</div>
+          <label class="diag-card">
+            <input type="checkbox" name="service" value="num2" data-price="69" data-title="Numérisation + rapport PDF" />
+            <div class="card-content">
+              <div class="card-title">Numérisation + rapport PDF</div>
+              <div class="card-desc">Scan complet + rapport clair + conseils personnalisés</div>
+              <div class="card-badge">Suivi écrit détaillé</div>
             </div>
-            <div style="min-width:72px;text-align:right;color:#10b981;font-weight:700;font-size:16px;">69 €</div>
+            <div class="card-price">69 €</div>
           </label>
 
-          <label class="diag-card" style="display:flex;align-items:flex-start;gap:14px;border:1px solid rgba(255,255,255,0.03);padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(0,0,0,0.04), rgba(255,255,255,0.01));">
-            <input type="checkbox" name="service" value="prect" data-price="79" data-title="Technique de précontrôle" style="margin-top:6px;" />
-            <div style="flex:1;">
-              <div style="font-weight:700;color:var(--text);font-size:16px;margin-bottom:6px;">Technique de précontrôle</div>
-              <div style="color:var(--muted);font-size:13px;margin-bottom:8px;">Scan complet + checklist CT + rapport + recommandations</div>
-              <div style="color:#f97316;font-size:13px;font-weight:700;">Préparation CT optimale</div>
+          <label class="diag-card">
+            <input type="checkbox" name="service" value="prect" data-price="79" data-title="Technique de précontrôle" />
+            <div class="card-content">
+              <div class="card-title">Technique de précontrôle</div>
+              <div class="card-desc">Scan complet + checklist CT + rapport + recommandations</div>
+              <div class="card-badge">Préparation CT optimale</div>
             </div>
-            <div style="min-width:72px;text-align:right;color:#10b981;font-weight:700;font-size:16px;">79 €</div>
+            <div class="card-price">79 €</div>
           </label>
 
-          <label class="diag-card" style="display:flex;align-items:flex-start;gap:14px;border:1px solid rgba(255,255,255,0.03);padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(0,0,0,0.04), rgba(255,255,255,0.01));">
-            <input type="checkbox" name="service" value="interv" data-price="129" data-title="Scan + intervention mineure" style="margin-top:6px;" />
-            <div style="flex:1;">
-              <div style="font-weight:700;color:var(--text);font-size:16px;margin-bottom:6px;">Scan + intervention mineure</div>
-              <div style="color:var(--muted);font-size:13px;margin-bottom:8px;">Scan complet + intervention mineure (capteur, fusible...)</div>
-              <div style="color:#f97316;font-size:13px;font-weight:700;">Réparation immédiate</div>
+          <label class="diag-card">
+            <input type="checkbox" name="service" value="interv" data-price="129" data-title="Scan + intervention mineure" />
+            <div class="card-content">
+              <div class="card-title">Scan + intervention mineure</div>
+              <div class="card-desc">Scan complet + intervention mineure (capteur, fusible...)</div>
+              <div class="card-badge">Réparation immédiate</div>
             </div>
-            <div style="min-width:72px;text-align:right;color:#10b981;font-weight:700;font-size:16px;">129 €</div>
+            <div class="card-price">129 €</div>
           </label>
 
-          <label class="diag-card" style="display:flex;align-items:flex-start;gap:14px;border:1px solid rgba(255,255,255,0.03);padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(0,0,0,0.04), rgba(255,255,255,0.01));">
-            <input type="checkbox" name="service" value="form" data-price="89" data-title="Formation express" style="margin-top:6px;" />
-            <div style="flex:1;">
-              <div style="font-weight:700;color:var(--text);font-size:16px;margin-bottom:6px;">Formation express</div>
-              <div style="color:var(--muted);font-size:13px;margin-bottom:8px;">Scan complet + initiation à la lecture des défauts</div>
-              <div style="color:#f97316;font-size:13px;font-weight:700;">Autonomie diagnostic</div>
+          <label class="diag-card">
+            <input type="checkbox" name="service" value="form" data-price="89" data-title="Formation express" />
+            <div class="card-content">
+              <div class="card-title">Formation express</div>
+              <div class="card-desc">Scan complet + initiation à la lecture des défauts</div>
+              <div class="card-badge">Autonomie diagnostic</div>
             </div>
-            <div style="min-width:72px;text-align:right;color:#10b981;font-weight:700;font-size:16px;">89 €</div>
+            <div class="card-price">89 €</div>
           </label>
 
-          <label class="diag-card" style="display:flex;align-items:flex-start;gap:14px;border:1px solid rgba(255,255,255,0.03);padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(0,0,0,0.04), rgba(255,255,255,0.01));">
-            <input type="checkbox" name="service" value="deplacement" data-price="0" data-title="Déplacement à domicile" style="margin-top:6px;" />
-            <div style="flex:1;">
-              <div style="font-weight:700;color:var(--text);font-size:16px;margin-bottom:6px;">Déplacement à domicile</div>
-              <div style="color:var(--muted);font-size:13px;margin-bottom:8px;">Tous les services ZenScan disponibles chez vous - inclus dans un rayon de 20km, au-delà de 0.50€/km</div>
-              <div style="color:#f97316;font-size:13px;font-weight:700;">Confort maximal</div>
+          <label class="diag-card">
+            <input type="checkbox" name="service" value="deplacement" data-price="0" data-title="Déplacement à domicile" />
+            <div class="card-content">
+              <div class="card-title">Déplacement à domicile</div>
+              <div class="card-desc">Tous les services ZenScan disponibles chez vous - inclus dans un rayon de 20km, au-delà de 0.50€/km</div>
+              <div class="card-badge">Confort maximal</div>
             </div>
-            <div style="min-width:72px;text-align:right;color:#10b981;font-weight:700;font-size:16px;">inclus</div>
+            <div class="card-price">inclus</div>
           </label>
         </div>
 
-        <div id="depl-block" style="display:none;flex-direction:column;gap:8px;margin-top:6px;">
-          <div style="font-size:13px;color:var(--muted);">Origine (départ) : <strong>2 chemin de la baleyte, 03380 Huriel, France</strong></div>
-          <label style="display:flex;flex-direction:column;gap:6px;"><span style="color:var(--muted);font-size:13px">Adresse du client / destination</span><input id="dest-address" type="text" placeholder="Adresse complète du client" style="padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);" /></label>
-          <div style="display:flex;gap:8px;align-items:center;">
+        <div id="depl-block">
+          <div>Origine (départ) : <strong>2 chemin de la baleyte, 03380 Huriel, France</strong></div>
+          <label>
+            <span>Adresse du client / destination</span>
+            <input id="dest-address" type="text" placeholder="Adresse complète du client" />
+          </label>
+          <div>
             <button type="button" id="calc-distance" class="btn">Calculer la distance</button>
-            <div id="distance-result" style="color:var(--muted);font-size:14px;"></div>
+            <div id="distance-result"></div>
           </div>
         </div>
 
-        <div style="border-top:1px dashed rgba(255,255,255,0.04);padding-top:10px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
-          <div style="min-width:220px;">
-            <div style="color:var(--muted);font-size:13px">Total estimé</div>
-            <div id="price-total" style="font-weight:700;font-size:18px;color:var(--text);">0,00 €</div>
-            <div id="price-breakdown" style="color:var(--muted);font-size:13px;margin-top:6px;"></div>
+        <div>
+          <div>
+            <div>Total estimé</div>
+            <div id="price-total">0,00 €</div>
+            <div id="price-breakdown"></div>
           </div>
-          <div style="display:flex;gap:8px;">
+          <div>
             <button type="button" id="confirm-diagnostic" class="btn primary">Envoyer la demande</button>
             <button type="button" id="close-diagnostic" class="btn">Annuler</button>
           </div>
@@ -253,7 +730,6 @@
       </form>
     </div>
   </div>
-
   <!-- Load Supabase from CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module">
@@ -406,8 +882,15 @@
       // Session utilisateur : uniquement ID et nom en localStorage (pas de données complètes)
       function getCurrentUser(){ try{ const raw = sessionStorage.getItem('zenoccaz_current_user'); return raw ? JSON.parse(raw) : null }catch(e){ return null } }
       function setCurrentUser(obj){ 
-        try{ 
+        try{
           sessionStorage.setItem('zenoccaz_current_user', JSON.stringify(obj));
+          // Synchroniser dans localStorage pour client-account.html — toujours écraser
+          localStorage.setItem('clientData', JSON.stringify({
+            id: obj.id,
+            name: obj.name,
+            email: obj.email || '',
+            connectedAt: new Date().toISOString()
+          }));
           updateUserStatus();
           console.log('✅ Session utilisateur créée:', obj.name);
         }catch(e){} 
@@ -416,11 +899,13 @@
       window.logoutUser = function(){
         try{
           sessionStorage.removeItem('zenoccaz_current_user');
-          updateUserStatus();
-          alert('✅ Déconnexion réussie');
-          console.log('🔓 Utilisateur déconnecté');
+          localStorage.removeItem('clientData');
+          window.dispatchEvent(new CustomEvent('clientLogout'));
+          // Rediriger vers l'accueil
+          window.location.href = 'index.html';
         }catch(e){
           console.error('Erreur déconnexion:', e);
+          window.location.href = 'index.html';
         }
       }
 
@@ -452,33 +937,110 @@
 
       // create an auth modal for register/login
       const authModalHtml = `
-      <div id="auth-modal" class="modal hidden" aria-hidden="true" role="dialog" aria-labelledby="auth-title">
-        <div class="modal-content" style="max-width:520px;">
-          <h2 id="auth-title">Identifiez-vous ou créez un compte</h2>
-          <p style="color:var(--muted);margin-top:6px;margin-bottom:12px;">Créez un compte pour finaliser la demande. Vos coordonnées (nom, adresse, plaque) seront enregistrées dans le panneau d'administration.</p>
-          <div style="display:grid;gap:12px;">
-            <div id="auth-tabs" style="display:flex;gap:8px;">
-              <button id="auth-tab-login" class="btn">Se connecter</button>
-              <button id="auth-tab-register" class="btn primary">Créer un compte</button>
-            </div>
-            <form id="auth-form" style="display:grid;gap:8px;">
-              <!-- register fields -->
-              <div id="reg-fields" style="display:none;flex-direction:column;gap:8px;">
-                <input id="reg-first" placeholder="Prénom" />
-                <input id="reg-last" placeholder="Nom" />
-                <input id="reg-email" placeholder="Email (optionnel)" />
-                <input id="reg-phone" placeholder="Téléphone (optionnel)" />
-                <input id="reg-address" placeholder="Adresse complète" />
-                <input id="reg-plate" placeholder="Plaque d'immatriculation" />
-                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px;"><button type="button" id="reg-submit" class="btn primary">Créer</button><button type="button" id="reg-cancel" class="btn">Annuler</button></div>
-              </div>
-              <!-- login fields -->
-              <div id="login-fields" style="display:none;flex-direction:column;gap:8px;">
-                <input id="login-email" placeholder="Email ou téléphone" />
-                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px;"><button type="button" id="login-submit" class="btn primary">Se connecter</button><button type="button" id="login-cancel" class="btn">Annuler</button></div>
-              </div>
-            </form>
+      <style>
+        #auth-modal {
+          position:fixed;
+          top:0; left:0; right:0; bottom:0;
+          margin:0; padding:16px;
+          background:rgba(5,8,18,0.88);
+          backdrop-filter:blur(16px);
+          z-index:9999;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          overflow-y:auto;
+          box-sizing:border-box;
+          width:100vw;
+          height:100vh;
+        }
+        #auth-form, #reg-fields, #login-fields { width:100%;box-sizing:border-box; }
+        .auth-box { margin:auto; flex-shrink:0; }
+        @media(max-width:520px) {
+          .auth-box { padding:24px 18px; }
+          .auth-2col { grid-template-columns:1fr; }
+        }
+        #auth-modal.hidden { display:none; }
+        .auth-box {
+          background:linear-gradient(160deg,#0d1220,#080c18);
+          border:1px solid rgba(255,255,255,0.1);
+          border-radius:24px; padding:32px 28px;
+          max-width:480px; width:calc(100vw - 40px); box-sizing:border-box;
+          box-shadow:0 32px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.04);
+          position:relative; overflow:hidden;
+          font-family:'Inter',-apple-system,sans-serif;
+          animation:auth-in .3s cubic-bezier(.4,0,.2,1);
+          max-height:90vh; overflow-y:auto;
+        }
+        @keyframes auth-in { from{opacity:0;transform:translateY(20px) scale(.97)} to{opacity:1;transform:none} }
+        .auth-box::before { content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#10b981,#3b82f6,transparent); }
+        .auth-icon { font-size:48px;text-align:center;margin-bottom:16px; }
+        .auth-title { font-size:22px;font-weight:800;color:#fff;text-align:center;margin:0 0 6px;letter-spacing:-.3px; }
+        .auth-sub { font-size:13px;color:#94a3b8;text-align:center;margin:0 0 28px;line-height:1.6; }
+        .auth-tabs { display:flex;gap:6px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:4px;margin-bottom:24px; }
+        .auth-tab { flex:1;padding:10px;border-radius:10px;border:none;background:transparent;color:#94a3b8;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s; }
+        .auth-tab.active { background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 14px rgba(16,185,129,0.35); }
+        .auth-field { display:flex;flex-direction:column;gap:6px;margin-bottom:14px; }
+        .auth-field label { font-size:12px;font-weight:700;color:#94a3b8;letter-spacing:.5px;text-transform:uppercase; }
+        .auth-field input {
+          padding:12px 14px;
+          background:rgba(255,255,255,0.05);
+          border:1px solid rgba(255,255,255,0.1);
+          border-radius:12px; color:#fff;
+          font-size:14px; font-family:inherit;
+          transition:border-color .2s,background .2s;
+          width:100%; box-sizing:border-box;
+        }
+        .auth-field input:focus { outline:none;border-color:rgba(16,185,129,0.5);background:rgba(16,185,129,0.04);box-shadow:0 0 0 3px rgba(16,185,129,0.1); }
+        .auth-field input::placeholder { color:#4b5563; }
+        .auth-2col { display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;box-sizing:border-box; }
+        .auth-actions { display:flex;gap:10px;justify-content:flex-end;margin-top:20px; }
+        .auth-btn-primary { padding:12px 28px;background:linear-gradient(135deg,#10b981,#059669);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;box-shadow:0 4px 14px rgba(16,185,129,0.3); }
+        .auth-btn-primary:hover { transform:translateY(-2px);box-shadow:0 8px 20px rgba(16,185,129,0.4); }
+        .auth-btn-cancel { padding:12px 20px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#94a3b8;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s; }
+        .auth-btn-cancel:hover { background:rgba(255,255,255,0.1);color:#fff; }
+        .auth-required { color:#f472b6;margin-left:2px; }
+      </style>
+      <div id="auth-modal" class="hidden" aria-hidden="true" role="dialog" aria-labelledby="auth-title">
+        <div class="auth-box">
+          <div class="auth-icon">🔐</div>
+          <h2 class="auth-title" id="auth-title">Identifiez-vous</h2>
+          <p class="auth-sub">Finalisez votre demande ZenScan en vous connectant ou en créant un compte gratuit.</p>
+
+          <div class="auth-tabs">
+            <button id="auth-tab-register" class="auth-tab active">✨ Créer un compte</button>
+            <button id="auth-tab-login" class="auth-tab">Se connecter</button>
           </div>
+
+          <form id="auth-form">
+            <!-- Inscription -->
+            <div id="reg-fields" style="display:flex;flex-direction:column;">
+              <div class="auth-2col">
+                <div class="auth-field"><label>Prénom <span class="auth-required">*</span></label><input id="reg-first" placeholder="Jean" /></div>
+                <div class="auth-field"><label>Nom <span class="auth-required">*</span></label><input id="reg-last" placeholder="Dupont" /></div>
+              </div>
+              <div class="auth-2col">
+                <div class="auth-field"><label>Email</label><input id="reg-email" type="email" placeholder="jean@email.com" /></div>
+                <div class="auth-field"><label>Téléphone</label><input id="reg-phone" type="tel" placeholder="06 12 34 56 78" /></div>
+              </div>
+              <div class="auth-field"><label>Adresse complète <span class="auth-required">*</span></label><input id="reg-address" placeholder="12 rue de la Paix, 75001 Paris" /></div>
+              <div class="auth-field"><label>Plaque d'immatriculation <span class="auth-required">*</span></label><input id="reg-plate" placeholder="AB-123-CD" style="text-transform:uppercase;letter-spacing:2px;font-weight:700;" /></div>
+              <div class="auth-field"><label>Mot de passe <span class="auth-required">*</span></label><input id="reg-password" type="password" placeholder="Minimum 6 caractères" /></div>
+              <div class="auth-actions">
+                <button type="button" id="reg-cancel" class="auth-btn-cancel">Annuler</button>
+                <button type="button" id="reg-submit" class="auth-btn-primary">✅ Créer & Envoyer</button>
+              </div>
+            </div>
+
+            <!-- Connexion -->
+            <div id="login-fields" style="display:none;flex-direction:column;">
+              <div class="auth-field"><label>Email <span class="auth-required">*</span></label><input id="login-email" type="email" placeholder="votre@email.com" /></div>
+              <div class="auth-field"><label>Mot de passe <span class="auth-required">*</span></label><input id="login-password" type="password" placeholder="••••••••" /></div>
+              <div class="auth-actions">
+                <button type="button" id="login-cancel" class="auth-btn-cancel">Annuler</button>
+                <button type="button" id="login-submit" class="auth-btn-primary">✅ Se connecter</button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>`;
 
@@ -493,108 +1055,188 @@
       const loginSubmit = $('#login-submit');
       const loginCancel = $('#login-cancel');
 
-      function openAuthModal(mode){ authModal.classList.remove('hidden'); authModal.setAttribute('aria-hidden','false'); if(mode==='login'){ loginFields.style.display='flex'; regFields.style.display='none'; authTabLogin.classList.add('primary'); authTabRegister.classList.remove('primary'); } else { loginFields.style.display='none'; regFields.style.display='flex'; authTabRegister.classList.add('primary'); authTabLogin.classList.remove('primary'); } }
+      function openAuthModal(mode){
+        authModal.classList.remove('hidden');
+        authModal.setAttribute('aria-hidden','false');
+        if(mode==='login'){
+          loginFields.style.display='flex';
+          regFields.style.display='none';
+          authTabLogin.classList.add('active');
+          authTabRegister.classList.remove('active');
+        } else {
+          loginFields.style.display='flex';
+          regFields.style.display='flex';
+          loginFields.style.display='none';
+          regFields.style.display='flex';
+          authTabRegister.classList.add('active');
+          authTabLogin.classList.remove('active');
+        }
+      }
+      window.showZenToast = function showZenToast(msg, type) {
+        const ex = document.getElementById('zen-toast');
+        if (ex) ex.remove();
+        const toast = document.createElement('div');
+        toast.id = 'zen-toast';
+        const bg = type === 'success'
+          ? 'linear-gradient(135deg,#10b981,#059669)'
+          : 'linear-gradient(135deg,#ef4444,#dc2626)';
+        toast.style.cssText = [
+          'position:fixed','bottom:32px','left:50%',
+          'transform:translateX(-50%)',
+          'background:' + bg,
+          'color:#fff','padding:16px 28px','border-radius:16px',
+          'font-family:Inter,sans-serif','font-size:14px','font-weight:600',
+          'box-shadow:0 8px 32px rgba(0,0,0,0.4)',
+          'z-index:99999','max-width:500px','width:calc(100vw - 40px)',
+          'text-align:center','line-height:1.5',
+        ].join(';');
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transition = 'opacity .4s';
+          setTimeout(() => toast.remove(), 400);
+        }, 5000);
+      }
+
       function closeAuthModal(){ authModal.classList.add('hidden'); authModal.setAttribute('aria-hidden','true'); }
+
+      function showAuthError(msg) {
+        let el = document.getElementById('auth-error-msg');
+        if (!el) {
+          el = document.createElement('div');
+          el.id = 'auth-error-msg';
+          el.style.cssText = 'background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:12px 16px;font-size:13px;color:#fca5a5;margin-bottom:16px;display:flex;align-items:center;gap:8px;';
+          const form = document.getElementById('auth-form');
+          if (form) form.insertBefore(el, form.firstChild);
+        }
+        el.innerHTML = '❌ ' + msg;
+        el.style.display = 'flex';
+        setTimeout(() => { if (el) el.style.display = 'none'; }, 4000);
+      }
       
       // Rendre openAuthModal accessible globalement
       window.openAuthModalGlobal = openAuthModal;
 
-      authTabLogin.addEventListener('click', ()=> openAuthModal('login'));
-      authTabRegister.addEventListener('click', ()=> openAuthModal('register'));
+      authTabLogin.addEventListener('click', () => openAuthModal('login'));
+      authTabRegister.addEventListener('click', () => openAuthModal('register'));
       regCancel.addEventListener('click', ()=> closeAuthModal());
       loginCancel.addEventListener('click', ()=> closeAuthModal());
 
       // Register handler: create contact directly in Supabase
-      regSubmit.addEventListener('click', async ()=>{
-        const first = ($('#reg-first').value||'').trim();
-        const last = ($('#reg-last').value||'').trim();
-        const email = ($('#reg-email').value||'').trim();
-        const phone = ($('#reg-phone').value||'').trim();
-        const addr = ($('#reg-address').value||'').trim();
-        const plate = ($('#reg-plate').value||'').trim();
-        if(!first || !last || !addr || !plate){ alert('❌ Prénom, nom, adresse et plaque sont requis.'); return }
-        
-        console.log('📝 Création du contact...');
-        const id = Date.now();
-        const contact = { 
-          id, 
-          name: last + ' ' + first, 
-          first_name: first, 
-          last_name: last, 
-          email, 
-          phone, 
-          address: addr, 
-          plates: [plate]
-          // created_at sera automatiquement ajouté par Supabase (DEFAULT now())
+      regSubmit.addEventListener('click', async () => {
+        const first    = ($('#reg-first').value||'').trim();
+        const last     = ($('#reg-last').value||'').trim();
+        const email    = ($('#reg-email').value||'').trim();
+        const phone    = ($('#reg-phone').value||'').trim();
+        const addr     = ($('#reg-address').value||'').trim();
+        const plate    = ($('#reg-plate').value||'').trim();
+        const password = ($('#reg-password').value||'').trim();
+
+        if (!first || !last || !plate) {
+          showAuthError('Prénom, nom et plaque sont obligatoires.');
+          return;
         }
-        
-        // Enregistrer directement dans Supabase
-        try{
-          if(!window.supabase){
-            alert('❌ Erreur: Supabase non initialisé');
-            return;
+        if (password.length < 6) {
+          showAuthError('Le mot de passe doit contenir au moins 6 caractères.');
+          return;
+        }
+
+        try {
+          if (!window.supabase) { showAuthError('Erreur de connexion. Réessayez.'); return; }
+
+          // Vérifier si email déjà utilisé
+          if (email) {
+            const { data: existing } = await window.supabase.from('clients').select('id').eq('email', email).single();
+            if (existing) { showAuthError('Cet email est déjà utilisé. Connectez-vous.'); return; }
           }
-          
-          const { data, error } = await window.supabase.from('contacts').insert([contact]).select();
-          
-          if(error){
-            console.error('❌ Erreur Supabase:', error);
-            alert('❌ Erreur lors de la création du compte: ' + error.message);
-            return;
-          }
-          
-          console.log('✅ Contact créé dans Supabase:', data);
-          setCurrentUser({id: id, name: contact.name});
+
+          const newId = Date.now();
+          const code  = 'ZEN' + String(newId).padStart(5, '0');
+
+          // Créer le compte dans 'clients'
+          const { error: clientErr } = await window.supabase.from('clients').insert([{
+            id: newId, name: last + ' ' + first,
+            email: email || null, phone: phone || null,
+            password: password, code_parrainage: code,
+          }]);
+          if (clientErr) { showAuthError('Erreur création compte : ' + clientErr.message); return; }
+
+          // Enregistrer aussi dans 'contacts' pour l'admin ZenScan
+          await window.supabase.from('contacts').insert([{
+            id: newId + 1, name: last + ' ' + first,
+            email: email || null, phone: phone || null,
+
+          }]);
+
+          // Sauvegarder en localStorage
+          const clientData = { id: newId, name: last + ' ' + first, email, connectedAt: new Date().toISOString() };
+          localStorage.setItem('clientData', JSON.stringify(clientData));
+          window.dispatchEvent(new CustomEvent('clientLogin', { detail: clientData }));
+
+          setCurrentUser({ id: newId, name: clientData.name });
           closeAuthModal();
-          
-          // Enregistrer la demande ZenScan
-          await finalizeZenscanRequest(id);
-        }catch(e){
-          console.error('❌ Exception:', e);
-          alert('❌ Erreur: ' + e.message);
+          // Le contact a été créé avec id = newId+1
+          await finalizeZenscanRequest(newId + 1);
+
+        } catch(e) {
+          showAuthError('Erreur : ' + e.message);
         }
       });
 
       // Simple login: by email or phone from Supabase
-      loginSubmit.addEventListener('click', async ()=>{
-        const key = ($('#login-email').value||'').trim();
-        if(!key){ alert('❌ Saisissez votre email ou téléphone.'); return }
-        
-        console.log('🔍 Recherche du compte...');
-        
-        try{
-          if(!window.supabase){
-            alert('❌ Erreur: Supabase non initialisé');
-            return;
-          }
-          
-          // Chercher par email OU téléphone
+      loginSubmit.addEventListener('click', async () => {
+        const email    = ($('#login-email').value||'').trim();
+        const password = ($('#login-password').value||'').trim();
+        if (!email || !password) { showAuthError('Email et mot de passe requis.'); return; }
+
+        try {
+          if (!window.supabase) { showAuthError('Erreur de connexion. Réessayez.'); return; }
+
           const { data, error } = await window.supabase
-            .from('contacts')
+            .from('clients')
             .select('*')
-            .or(`email.eq.${key},phone.eq.${key.replace(/\s+/g, '')}`);
-          
-          if(error){
-            console.error('❌ Erreur Supabase:', error);
-            alert('❌ Erreur lors de la connexion: ' + error.message);
-            return;
-          }
-          
-          if(!data || data.length === 0){
-            alert('❌ Compte non trouvé. Veuillez créer un compte.');
-            return;
-          }
-          
-          const found = data[0];
-          console.log('✅ Compte trouvé:', found.name);
-          setCurrentUser({id: found.id, name: found.name});
+            .eq('email', email)
+            .eq('password', password)
+            .single();
+
+          if (error || !data) { showAuthError('Email ou mot de passe incorrect.'); return; }
+
+          const clientData = { id: data.id, name: data.name, email: data.email, connectedAt: new Date().toISOString() };
+          localStorage.setItem('clientData', JSON.stringify(clientData));
+          window.dispatchEvent(new CustomEvent('clientLogin', { detail: clientData }));
+
+          setCurrentUser({ id: data.id, name: data.name });
           closeAuthModal();
-          
-          // Enregistrer la demande ZenScan
-          await finalizeZenscanRequest(found.id);
+
+          // Vérifier si ce client existe dans contacts (FK zenscan_requests)
+          // Si non, le créer automatiquement
+          let contactId = data.id;
+          const { data: existingContact } = await window.supabase
+            .from('contacts')
+            .select('id')
+            .eq('id', data.id)
+            .single();
+
+          if (!existingContact) {
+            // Créer dans contacts avec le même ID
+            const { data: newContact } = await window.supabase
+              .from('contacts')
+              .insert([{
+                id: data.id,
+                name: data.name,
+                email: data.email || null,
+                phone: data.phone || null,
+              }])
+              .select()
+              .single();
+            if (newContact) contactId = newContact.id;
+          }
+
+          await finalizeZenscanRequest(contactId);
         }catch(e){
           console.error('❌ Exception:', e);
-          alert('❌ Erreur: ' + e.message);
+          showZenToast('❌ Erreur : ' + e.message, 'error');
         }
       });
 
@@ -602,7 +1244,7 @@
       async function finalizeZenscanRequest(contactId){
         const checkedEls = $$('input[name="service"]:checked', modal);
         const checked = checkedEls.map(i=> (i.dataset.title || i.value) );
-        if(checked.length===0){ alert('❌ Sélectionnez au moins un service.'); return }
+        if(checked.length===0){ showZenToast('❌ Sélectionnez au moins un service.', 'error'); return }
         
         const summary = priceBreakdownEl.innerText || '—';
         const total = priceTotalEl.textContent;
@@ -620,7 +1262,7 @@
         
         try{
           if(!window.supabase){
-            alert('❌ Erreur: Supabase non initialisé');
+            showAuthError('❌ Erreur: Supabase non initialisé');
             return;
           }
           
@@ -628,16 +1270,16 @@
           
           if(error){
             console.error('❌ Erreur Supabase:', error);
-            alert('❌ Erreur lors de l\'enregistrement: ' + error.message);
+            showZenToast('❌ Erreur lors de l\'enregistrement : ' + error.message, 'error');
             return;
           }
           
           console.log('✅ Demande ZenScan enregistrée:', data);
-          alert('✅ Demande enregistrée avec succès! Merci.');
+          showZenToast('✅ Votre demande ZenScan a bien été enregistrée ! Nous vous contactons rapidement.', 'success');
           closeModal();
         }catch(e){
           console.error('❌ Exception:', e);
-          alert('❌ Erreur: ' + e.message);
+          showZenToast('❌ Erreur : ' + e.message, 'error');
         }
       }
 
@@ -647,7 +1289,753 @@
       // close modal when clicking outside content
       modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
 
+
+      // ── Modal Demande de Reprise ──
     })();
+  </script>
+
+  <script>
+  // ══════════════════════════════════════════════════════════
+  // TUNNEL ESTIMATION REPRISE — Style Argus/La Centrale
+  // ══════════════════════════════════════════════════════════
+
+  const MARQUES = ['Audi','BMW','Citroën','Dacia','Fiat','Ford','Honda','Hyundai','Kia','Mazda','Mercedes','Nissan','Opel','Peugeot','Renault','Seat','Skoda','Toyota','Volkswagen','Volvo','Alpine','DS','Jeep','Land Rover','Lexus','Maserati','Mini','Mitsubishi','Porsche','Subaru','Suzuki','Tesla','Autre'];
+  const CARBURANTS = ['Essence','Diesel','Hybride','Hybride rechargeable','Électrique','GPL'];
+  const BOITES = ['Manuelle','Automatique','Semi-automatique'];
+  const ETATS = [
+    { val:'excellent', label:'Excellent', desc:'Aucun défaut visible, entretien parfait', mult:1.00 },
+    { val:'bon',       label:'Bon',       desc:'Usure normale pour l\'âge',              mult:0.88 },
+    { val:'a_reparer', label:'À réparer', desc:'Pannes ou dégâts importants — valeur pièces', mult:0.18 }
+  ];
+
+  // Base de prix de référence par marque (prix moyen marché)
+  // ── Prix neuf de référence par marque (valeur neuf moyenne en €) ──
+  // Calibré sur les cotes réelles : L'Argus, La Centrale, Spoticar (2024-2025)
+  const PRIX_NEUF_REF = {
+    'Audi':42000,'BMW':48000,'Mercedes':50000,'Volkswagen':32000,'Porsche':95000,
+    'Renault':22000,'Peugeot':23000,'Citroën':21000,'DS':35000,'Alpine':62000,
+    'Ford':25000,'Opel':22000,'Seat':24000,'Skoda':26000,'Dacia':16000,
+    'Toyota':28000,'Honda':26000,'Mazda':27000,'Mitsubishi':24000,'Subaru':28000,
+    'Hyundai':25000,'Kia':25000,'Nissan':24000,'Fiat':20000,'Mini':32000,
+    'Volvo':45000,'Land Rover':60000,'Lexus':48000,'Maserati':90000,
+    'Tesla':55000,'Suzuki':18000,'Jeep':38000,'Autre':25000
+  };
+
+  // ── Courbe de dépréciation calibrée sur données marché français réelles ──
+  // Les voitures de +10 ans conservent une valeur plancher plus élevée qu'on pense
+  const DEPRECIATION = {
+    0:1.00, 1:0.80, 2:0.70, 3:0.62, 4:0.55, 5:0.49,
+    6:0.44, 7:0.40, 8:0.36, 9:0.32, 10:0.29,
+    11:0.27, 12:0.25, 13:0.23, 14:0.21, 15:0.20,
+    16:0.19, 17:0.18, 18:0.17, 19:0.16, 20:0.15
+  };
+
+  function getDepreciation(age) {
+    if (age <= 0) return DEPRECIATION[0];
+    const a = Math.min(Math.floor(age), 20);
+    const b = Math.min(Math.ceil(age), 20);
+    if (a === b) return DEPRECIATION[a];
+    return DEPRECIATION[a] + (DEPRECIATION[b] - DEPRECIATION[a]) * (age - a);
+  }
+
+  function calculerEstimation(marque, annee, km, carburant, etat, options, motorisation, finition) {
+    const age      = new Date().getFullYear() - parseInt(annee);
+    const prixNeuf = PRIX_NEUF_REF[marque] || 25000;
+    const kmInt    = parseInt(km) || 0;
+
+    // 1. Prix de base avec dépréciation réaliste
+    let prix = prixNeuf * getDepreciation(age);
+
+    // 2. Correction kilométrage — malus relatif au prix déprécié (pas au neuf)
+    // 0.12% du prix actuel par tranche de 1000 km au-dessus de la référence
+    const kmRef  = age * 15000;
+    const kmDiff = kmInt - kmRef;
+    const kmMalus = (kmDiff / 1000) * (prix * 0.0012);
+    prix -= kmMalus;
+
+    // 3. Correction carburant (marché 2025)
+    if (carburant === 'Diesel') {
+      prix *= age >= 10 ? 0.93 : 0.97;   // malus diesel léger, plus fort sur vieux
+    }
+    if (carburant === 'Hybride')              prix *= 1.06;
+    if (carburant === 'Hybride rechargeable') prix *= 1.10;
+    if (carburant === 'Électrique')           prix *= 1.08;
+    if (carburant === 'GPL')                  prix *= 0.87;
+
+    // 4. Correction état — calibré sur données marché réelles (LeBonCoin, Argus, La Centrale)
+    const etatsMultipliers = {
+      'excellent': 1.00,
+      'bon':       0.88,
+      'a_reparer': 0.18
+    };
+    prix *= (etatsMultipliers[etat] || 0.88);
+
+    // 5. Correction motorisation (cylindrée, type moteur)
+    if (motorisation) {
+      const m = motorisation.toLowerCase();
+      // Grosses cylindrées / moteurs premium
+      if (/v8|v10|v12|biturbo|bi-turbo|4\.0|5\.0|6\.0/.test(m))        prix *= 1.18;
+      else if (/v6|3\.0|2\.9|2\.8|2\.7|3\.5/.test(m))                   prix *= 1.10;
+      else if (/2\.5|2\.4|2\.3|rs|amg|m sport|gti|gtd|st|s3|s4|s5/.test(m)) prix *= 1.08;
+      else if (/2\.0 tsi|2\.0 tfsi|2\.0t|thp|tce 200|tce 205/.test(m)) prix *= 1.05;
+      else if (/1\.4 tsi|1\.5 tsi|1\.2 tsi|turbo/.test(m))             prix *= 1.03;
+      else if (/électrique|ev|bev|phev/.test(m))                        prix *= 1.08;
+      // Petits moteurs d'entrée de gamme
+      else if (/1\.0|1\.2|1\.1|three.cyl|3.cyl/.test(m))               prix *= 0.95;
+    }
+
+    // 6. Correction finition (niveau d'équipement)
+    if (finition) {
+      const f = finition.toLowerCase();
+      // Finitions ultra-premium
+      if (/black edition|nürburgring|pista|trofeo|sv|superleggera|mansory|brabus/.test(f)) prix *= 1.20;
+      // Finitions sport/luxe haut de gamme
+      else if (/amg|m sport|rs |r-line|fr |st |gti|gtd|cupra|svr|autobiography|lounge s/.test(f)) prix *= 1.15;
+      // Finitions premium intermédiaires
+      else if (/s line|s-line|sport|r sport|gt line|allure|signature|titanium|limited|prestige|executive|elegance/.test(f)) prix *= 1.08;
+      // Finitions intermédiaires
+      else if (/business|confort|comfort|active|style|design|dynamique|trend|edition/.test(f)) prix *= 1.04;
+      // Finitions de base
+      else if (/access|base|entry|essential|life|like|tonic|expression/.test(f)) prix *= 0.96;
+    }
+
+    // 7. Bonus options
+    if (options.includes('ct_ok'))         prix *= 1.04;
+    if (options.includes('carnet'))        prix *= 1.03;
+    if (options.includes('premiere_main')) prix *= 1.05;
+    if (options.includes('garantie'))      prix *= 1.03;
+
+    // 8. Prix plancher réaliste selon état et âge
+    let plancher;
+    if (etat === 'a_reparer') {
+      plancher = age <= 5 ? 500 : age <= 10 ? 350 : 250;
+    } else {
+      plancher = age <= 3 ? 3000 : age <= 6 ? 2000 : age <= 10 ? 1500 : age <= 15 ? 800 : 500;
+    }
+    prix = Math.max(plancher, prix);
+
+    // 9. Fourchette ±10% arrondie à 50€
+    const moy = Math.round(prix / 50) * 50;
+    const min = Math.round(prix * 0.90 / 50) * 50;
+    const max = Math.round(prix * 1.10 / 50) * 50;
+    return { min, max, moy };
+  }
+
+  window.ouvrirDemandeReprise = async function() {
+    const existing = document.getElementById('reprise-modal-overlay');
+    if (existing) existing.remove();
+
+    let client = null;
+    try { const raw = localStorage.getItem('clientData'); client = raw ? JSON.parse(raw) : null; } catch(e) {}
+    if (!client || !client.id) {
+      if (typeof window.openAuthModalGlobal === 'function') {
+        window._pendingServiceCallback = () => window.ouvrirDemandeReprise();
+        window.openAuthModalGlobal('login');
+      }
+      return;
+    }
+
+    let phone = '', email = client.email || '';
+    if (window.supabase) {
+      const { data } = await window.supabase.from('clients').select('phone,email').eq('id', client.id).single();
+      if (data) { phone = data.phone || ''; email = data.email || email; }
+    }
+    const clientName = client.name || '';
+
+    // État du tunnel
+    let step = 1;
+    const totalSteps = 4;
+    const formData = { marque:'', modele:'', annee:'', km:'', carburant:'', boite:'', etat:'', options:[], plaque:'', tel:phone, message:'' };
+
+    const overlay = document.createElement('div');
+    overlay.id = 'reprise-modal-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(5,8,18,0.92);backdrop-filter:blur(20px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;overflow-y:auto;';
+
+    function renderStep() {
+      const steps = [
+        { num:1, label:'Véhicule' },
+        { num:2, label:'État' },
+        { num:3, label:'Estimation' },
+        { num:4, label:'Confirmation' }
+      ];
+      const progressBar = steps.map(s => `
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
+          <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;transition:all 0.3s;
+            ${step > s.num ? 'background:#10b981;color:#fff;box-shadow:0 0 12px rgba(16,185,129,0.5);' :
+              step === s.num ? 'background:rgba(16,185,129,0.15);border:2px solid #10b981;color:#10b981;' :
+              'background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#475569;'}">
+            ${step > s.num ? '✓' : s.num}
+          </div>
+          <span style="font-size:10px;font-weight:600;letter-spacing:0.5px;${step >= s.num ? 'color:#10b981;' : 'color:#334155;'}">${s.label}</span>
+        </div>
+        ${s.num < steps.length ? `<div style="flex:1;height:2px;margin-top:15px;background:${step > s.num ? '#10b981' : 'rgba(255,255,255,0.06)'};border-radius:2px;transition:background 0.3s;"></div>` : ''}
+      `).join('');
+
+      let stepContent = '';
+
+      if (step === 1) {
+        stepContent = `
+          <h3 style="font-size:18px;font-weight:800;color:#fff;margin:0 0 6px;text-align:center;">Votre véhicule</h3>
+          <p style="font-size:12px;color:#475569;text-align:center;margin:0 0 24px;">Renseignez les informations de base</p>
+
+          <div class="svc-2col" style="margin-bottom:14px;">
+            <div class="svc-field">
+              <label>Marque *</label>
+              <select id="rep-marque" style="width:100%;padding:12px 14px;background:#0d1117;border:1px solid rgba(255,255,255,0.12);border-radius:13px;color:#e2e8f0;font-size:14px;box-sizing:border-box;cursor:pointer;appearance:auto;-webkit-appearance:auto;" class="rep-select-dark">
+                <option value="">Choisir...</option>
+                ${MARQUES.map(m => `<option value="${m}" ${formData.marque===m?'selected':''}>${m}</option>`).join('')}
+              </select>
+            </div>
+            <div class="svc-field">
+              <label>Modèle *</label>
+              <input id="rep-modele" placeholder="Ex: Clio, 308, Golf..." value="${formData.modele}" />
+            </div>
+          </div>
+
+          <div class="svc-2col" style="margin-bottom:14px;">
+            <div class="svc-field">
+              <label>Année *</label>
+              <select id="rep-annee" style="width:100%;padding:12px 14px;background:#0d1117;border:1px solid rgba(255,255,255,0.12);border-radius:13px;color:#e2e8f0;font-size:14px;box-sizing:border-box;cursor:pointer;appearance:auto;-webkit-appearance:auto;" class="rep-select-dark">
+                <option value="">Année...</option>
+                ${Array.from({length:25},(_,i)=>2024-i).map(y=>`<option value="${y}" ${formData.annee==y?'selected':''}>${y}</option>`).join('')}
+              </select>
+            </div>
+            <div class="svc-field">
+              <label>Kilométrage *</label>
+              <input id="rep-km" type="number" placeholder="Ex: 85000" value="${formData.km}" />
+            </div>
+          </div>
+
+          <div class="svc-2col" style="margin-bottom:14px;">
+            <div class="svc-field">
+              <label>Carburant *</label>
+              <select id="rep-carburant" style="width:100%;padding:12px 14px;background:#0d1117;border:1px solid rgba(255,255,255,0.12);border-radius:13px;color:#e2e8f0;font-size:14px;box-sizing:border-box;cursor:pointer;appearance:auto;-webkit-appearance:auto;" class="rep-select-dark">
+                <option value="">Choisir...</option>
+                ${CARBURANTS.map(c=>`<option value="${c}" ${formData.carburant===c?'selected':''}>${c}</option>`).join('')}
+              </select>
+            </div>
+            <div class="svc-field">
+              <label>Boîte de vitesses</label>
+              <select id="rep-boite" style="width:100%;padding:12px 14px;background:#0d1117;border:1px solid rgba(255,255,255,0.12);border-radius:13px;color:#e2e8f0;font-size:14px;box-sizing:border-box;cursor:pointer;appearance:auto;-webkit-appearance:auto;" class="rep-select-dark">
+                <option value="">Choisir...</option>
+                ${BOITES.map(b=>`<option value="${b}" ${formData.boite===b?'selected':''}>${b}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+
+          <div class="svc-field" style="margin-bottom:14px;">
+            <label>Immatriculation (optionnel)</label>
+            <input id="rep-plaque" placeholder="AA-123-BB" value="${formData.plaque}" />
+          </div>
+
+          <div class="svc-2col" style="margin-bottom:14px;">
+            <div class="svc-field">
+              <label>Puissance réelle (CH)</label>
+              <input id="rep-ch" type="number" placeholder="Ex: 190" value="${formData.ch||''}" min="1" max="2000" />
+            </div>
+            <div class="svc-field">
+              <label>Puissance fiscale (CV)</label>
+              <input id="rep-cv" type="number" placeholder="Ex: 11" value="${formData.cv||''}" min="1" max="99" />
+            </div>
+          </div>
+
+          <div class="svc-field" style="margin-bottom:14px;">
+            <label>Motorisation</label>
+            <input id="rep-motorisation" placeholder="Ex: 2.7 TDI V6, 1.6 HDi, 2.0 TSI..." value="${formData.motorisation||''}" />
+            <div style="font-size:10px;color:#334155;margin-top:5px;">Cylindrée, type moteur, technologie (turbo, bi-turbo, TFSI...)</div>
+          </div>
+
+          <div class="svc-field" style="margin-bottom:0;">
+            <label>Finition / Équipement</label>
+            <input id="rep-finition" placeholder="Ex: S Line, Lounge, GT Line, AMG, M Sport..." value="${formData.finition||''}" />
+            <div style="font-size:10px;color:#334155;margin-top:5px;">Niveau d'équipement ou pack (sport, luxe, base...)</div>
+          </div>
+        `;
+      }
+
+      if (step === 2) {
+        stepContent = `
+          <h3 style="font-size:18px;font-weight:800;color:#fff;margin:0 0 6px;text-align:center;">État du véhicule</h3>
+          <p style="font-size:12px;color:#475569;text-align:center;margin:0 0 20px;">Soyez honnête pour une estimation précise</p>
+
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+            ${ETATS.map(e => `
+              <label style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;cursor:pointer;border:1.5px solid ${formData.etat===e.val?'#10b981':'rgba(255,255,255,0.07)'};background:${formData.etat===e.val?'rgba(16,185,129,0.08)':'rgba(255,255,255,0.02)'};transition:all 0.2s;">
+                <input type="radio" name="rep-etat" value="${e.val}" ${formData.etat===e.val?'checked':''} style="accent-color:#10b981;width:16px;height:16px;flex-shrink:0;" />
+                <div style="flex:1;">
+                  <div style="font-weight:700;color:#e2e8f0;font-size:14px;margin-bottom:2px;">${e.label}</div>
+                  <div style="font-size:11px;color:#475569;">${e.desc}</div>
+                </div>
+
+              </label>
+            `).join('')}
+          </div>
+
+          <div style="margin-bottom:0;">
+            <p style="font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#64748b;margin:0 0 12px;">Options valorisantes</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              ${[
+                {val:'ct_ok',label:'✅ CT valide'},
+                {val:'carnet',label:'📋 Carnet entretien'},
+                {val:'premiere_main',label:'👤 1ère main'},
+                {val:'garantie',label:'🛡️ Garantie restante'}
+              ].map(o=>`
+                <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;cursor:pointer;border:1px solid ${formData.options.includes(o.val)?'rgba(16,185,129,0.4)':'rgba(255,255,255,0.06)'};background:${formData.options.includes(o.val)?'rgba(16,185,129,0.07)':'rgba(255,255,255,0.02)'};transition:all 0.2s;">
+                  <input type="checkbox" value="${o.val}" class="rep-option" ${formData.options.includes(o.val)?'checked':''} style="accent-color:#10b981;width:14px;height:14px;" />
+                  <span style="font-size:12px;font-weight:600;color:#cbd5e1;">${o.label}</span>
+                </label>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      if (step === 3) {
+        // Afficher loader pendant la recherche
+        stepContent = `
+          <div style="text-align:center;padding:40px 20px;">
+            <div style="width:48px;height:48px;border:3px solid rgba(16,185,129,0.2);border-top-color:#10b981;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 20px;"></div>
+            <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px;">Analyse du marché en cours...</div>
+            <div style="font-size:12px;color:#475569;">Recherche sur LeBonCoin, La Centrale, AutoScout24</div>
+          </div>
+          <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+        `;
+        // On rend d'abord le loader, puis on appelle l'API
+        setTimeout(async () => {
+          try {
+            // Appel au serveur pour estimation réelle
+            const SERVER_URL = window.ZENOCCAZ_SERVER_URL || 'https://zenoccaz.onrender.com';
+            const response = await fetch(SERVER_URL + '/api/estimation-reprise', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                marque:       formData.marque,
+                modele:       formData.modele,
+                annee:        formData.annee,
+                km:           formData.km,
+                carburant:    formData.carburant,
+                boite:        formData.boite,
+                etat:         formData.etat,
+                motorisation: formData.motorisation,
+                finition:     formData.finition,
+                ch:           formData.ch,
+                cv:           formData.cv,
+                options:      formData.options
+              })
+            });
+            const data = await response.json();
+
+            if (!data.success || !data.estimation) {
+              const stepEl = document.getElementById('rep-step-content');
+              if (stepEl) stepEl.innerHTML = `
+                <div style="text-align:center;padding:32px 20px;">
+                  <div style="font-size:36px;margin-bottom:16px;">📡</div>
+                  <div style="font-size:15px;font-weight:700;color:#ef4444;margin-bottom:8px;">Recherche marché indisponible</div>
+                  <div style="font-size:12px;color:#475569;margin-bottom:20px;">Impossible d'obtenir les prix du marché en ce moment. Réessayez dans quelques instants.</div>
+                  <button onclick="window._repriseRetry && window._repriseRetry()" style="background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.3);padding:10px 24px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;">🔄 Réessayer</button>
+                </div>`;
+              window._repriseRetry = () => { step = 3; renderStep(); };
+              return;
+            }
+            const est = data.estimation;
+
+            formData._estimation = { min: est.est_min, max: est.est_max, moy: est.est_moy };
+            window._repriseEstimation = formData._estimation;
+            window._repriseFormData   = {...formData};
+
+            const etatsObj = ETATS.find(e=>e.val===formData.etat);
+            const sourceLabel = est.source === 'web'
+              ? '<span style="color:#10b981;font-size:10px;">✓ Basé sur les annonces du marché</span>'
+              : '<span style="color:#64748b;font-size:10px;">Estimation IA (marché non disponible)</span>';
+
+            // Mettre à jour le contenu de l'étape
+            const stepEl = document.getElementById('rep-step-content');
+            if (stepEl) {
+              stepEl.innerHTML = `
+                <h3 style="font-size:18px;font-weight:800;color:#fff;margin:0 0 4px;text-align:center;">Votre estimation</h3>
+                <p style="font-size:12px;color:#475569;text-align:center;margin:0 0 4px;">${formData.marque} ${formData.modele} ${formData.annee} · ${parseInt(formData.km).toLocaleString('fr-FR')} km</p>
+                <p style="text-align:center;margin:0 0 16px;">${sourceLabel}</p>
+
+                <!-- Prix marché si dispo -->
+                ${est.prix_marche_min ? `
+                <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
+                  <div style="font-size:11px;color:#475569;">Prix de vente marché</div>
+                  <div style="font-size:14px;font-weight:700;color:#64748b;">${est.prix_marche_min.toLocaleString('fr-FR')} € — ${est.prix_marche_max.toLocaleString('fr-FR')} €</div>
+                </div>` : ''}
+
+                <!-- Fourchette reprise -->
+                <div style="background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(6,182,212,0.05));border:1px solid rgba(16,185,129,0.25);border-radius:18px;padding:24px;text-align:center;margin-bottom:16px;">
+                  <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#475569;margin-bottom:12px;">Estimation de reprise</div>
+                  <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:8px;">
+                    <div style="text-align:center;">
+                      <div style="font-size:13px;color:#475569;margin-bottom:4px;">Minimum</div>
+                      <div style="font-size:22px;font-weight:800;color:#94a3b8;">${est.est_min.toLocaleString('fr-FR')} €</div>
+                    </div>
+                    <div style="font-size:28px;color:#10b981;">—</div>
+                    <div style="text-align:center;">
+                      <div style="font-size:13px;color:#475569;margin-bottom:4px;">Maximum</div>
+                      <div style="font-size:22px;font-weight:800;color:#94a3b8;">${est.est_max.toLocaleString('fr-FR')} €</div>
+                    </div>
+                  </div>
+                  <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:14px;margin-top:4px;">
+                    <div style="font-size:11px;color:#64748b;margin-bottom:6px;letter-spacing:0.5px;">ESTIMATION ZENOCCAZ</div>
+                    <div style="font-size:38px;font-weight:900;color:#10b981;text-shadow:0 0 20px rgba(16,185,129,0.4);letter-spacing:-1px;">${est.est_moy.toLocaleString('fr-FR')} €</div>
+                  </div>
+                </div>
+
+                <!-- Critères -->
+                <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:14px;margin-bottom:14px;">
+                  <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#334155;margin-bottom:10px;">Critères pris en compte</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                    ${[
+                      ['Carburant', formData.carburant],
+                      ['Boîte', formData.boite||'Non renseignée'],
+                      ['Puissance', formData.ch ? formData.ch+' CH · '+(formData.cv||'?')+' CV' : 'Non renseignée'],
+                      ['Motorisation', formData.motorisation||'Non renseignée'],
+                      ['Finition', formData.finition||'Non renseignée'],
+                      ['État', etatsObj?.label||formData.etat],
+                      ['Options', formData.options.length > 0 ? '+'+formData.options.length+' bonus' : 'Aucune']
+                    ].map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:6px 8px;background:rgba(255,255,255,0.02);border-radius:8px;"><span style="font-size:11px;color:#475569;">${k}</span><span style="font-size:11px;font-weight:600;color:#94a3b8;">${v}</span></div>`).join('')}
+                  </div>
+                </div>
+
+                ${est.explication ? `<div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:10px;padding:12px;font-size:11px;color:#94a3b8;line-height:1.6;margin-bottom:12px;">💡 ${est.explication}</div>` : ''}
+
+                <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:12px;font-size:11px;color:#92400e;line-height:1.5;margin-bottom:0;">
+                  ⚠️ Cette estimation est indicative, basée sur les données du marché. Le prix définitif sera confirmé après inspection physique du véhicule par nos experts.
+                </div>
+              `;
+            }
+          } catch(err) {
+            console.error('Estimation reprise erreur:', err.message);
+            const stepEl = document.getElementById('rep-step-content');
+            if (stepEl) stepEl.innerHTML = `
+              <div style="text-align:center;padding:32px 20px;">
+                <div style="font-size:36px;margin-bottom:16px;">📡</div>
+                <div style="font-size:15px;font-weight:700;color:#ef4444;margin-bottom:8px;">Connexion au serveur impossible</div>
+                <div style="font-size:12px;color:#475569;margin-bottom:20px;">Le service d'estimation est temporairement indisponible. Réessayez dans quelques secondes.</div>
+                <button onclick="window._repriseRetry && window._repriseRetry()" style="background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.3);padding:10px 24px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;">🔄 Réessayer</button>
+              </div>`;
+            window._repriseRetry = () => { step = 3; renderStep(); };
+          }
+        }, 100);
+      }
+
+      if (step === 4) {
+        const est = formData._estimation;
+        stepContent = `
+          <h3 style="font-size:18px;font-weight:800;color:#fff;margin:0 0 6px;text-align:center;">Confirmer la demande</h3>
+          <p style="font-size:12px;color:#475569;text-align:center;margin:0 0 20px;">Nous vous contactons pour finaliser l'estimation</p>
+
+          <!-- Récap véhicule -->
+          <div style="background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.15);border-radius:14px;padding:16px;margin-bottom:14px;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#10b981;margin-bottom:10px;">Récapitulatif</div>
+            <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:4px;">${formData.marque} ${formData.modele} ${formData.annee}</div>
+            <div style="font-size:12px;color:#64748b;">${parseInt(formData.km).toLocaleString('fr-FR')} km · ${formData.carburant} · ${ETATS.find(e=>e.val===formData.etat)?.label||''}</div>
+            <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:12px;color:#475569;">Estimation ZENOCCAZ</span>
+              <span style="font-size:20px;font-weight:900;color:#10b981;">${est?.moy?.toLocaleString('fr-FR')} €</span>
+            </div>
+          </div>
+
+          <!-- Infos contact -->
+          <div class="svc-field" style="margin-bottom:12px;">
+            <label>Téléphone *</label>
+            <input id="rep-tel-final" placeholder="06 12 34 56 78" value="${phone}" />
+          </div>
+          <div class="svc-field" style="margin-bottom:12px;">
+            <label>Message (optionnel)</label>
+            <textarea id="rep-message-final" placeholder="Précisions sur l'état, disponibilités..." rows="2"></textarea>
+          </div>
+
+          <div id="reprise-error" style="display:none;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:12px;font-size:13px;color:#fca5a5;margin-bottom:10px;"></div>
+        `;
+      }
+
+      overlay.innerHTML = `
+        <div class="svc-modal-wrapper" style="max-width:540px;">
+          <div class="svc-border-wrap" style="color:#10b981;"><div class="svc-border-inner"></div></div>
+          <div class="svc-modal-box" style="--svc-rgb:16,185,129;">
+            <div class="svc-modal-content">
+
+              <!-- Header -->
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div style="width:36px;height:36px;border-radius:10px;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round"><path d="M5 11L6.5 6.5C6.8 5.6 7.6 5 8.5 5H15.5C16.4 5 17.2 5.6 17.5 6.5L19 11"/><rect x="2" y="11" width="20" height="7" rx="2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+                  </div>
+                  <div>
+                    <div style="font-size:14px;font-weight:800;color:#fff;">Estimation reprise</div>
+                    <div style="font-size:11px;color:#475569;">Étape ${step} sur ${totalSteps}</div>
+                  </div>
+                </div>
+                <button onclick="document.getElementById('reprise-modal-overlay').remove()" style="background:rgba(255,255,255,0.06);border:none;border-radius:8px;width:28px;height:28px;color:#64748b;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;">✕</button>
+              </div>
+
+              <!-- Barre de progression -->
+              <div style="display:flex;align-items:flex-start;margin-bottom:28px;">
+                ${progressBar}
+              </div>
+
+              <!-- Contenu étape -->
+              <div id="rep-step-content">
+                ${stepContent}
+              </div>
+
+              <!-- Boutons navigation -->
+              <div style="display:flex;gap:10px;justify-content:space-between;margin-top:24px;">
+                ${step > 1 ? `<button id="rep-prev-btn" class="svc-btn-cancel" style="flex:1;">← Retour</button>` : `<button onclick="document.getElementById('reprise-modal-overlay').remove()" class="svc-btn-cancel" style="flex:1;">Annuler</button>`}
+                ${step < totalSteps
+                  ? `<button id="rep-next-btn" class="svc-btn-primary" style="flex:2;background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 20px rgba(16,185,129,0.3);">
+                      ${step === 3 ? 'Confirmer l\'estimation →' : 'Continuer →'}
+                    </button>`
+                  : `<button id="rep-submit-btn" class="svc-btn-primary" style="flex:2;background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 20px rgba(16,185,129,0.3);">
+                      ✅ Envoyer ma demande
+                    </button>`
+                }
+              </div>
+
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Listeners navigation
+      document.getElementById('rep-prev-btn')?.addEventListener('click', () => {
+        saveCurrentStep();
+        step--;
+        renderStep();
+      });
+      document.getElementById('rep-next-btn')?.addEventListener('click', () => {
+        if (!validateStep()) return;
+        saveCurrentStep();
+        step++;
+        renderStep();
+      });
+      document.getElementById('rep-submit-btn')?.addEventListener('click', () => {
+        envoyerEstimationReprise(client.id, clientName, email);
+      });
+
+      // Fermer en cliquant dehors
+      overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
+    }
+
+    function saveCurrentStep() {
+      if (step === 1) {
+        formData.marque     = document.getElementById('rep-marque')?.value || '';
+        formData.modele     = document.getElementById('rep-modele')?.value || '';
+        formData.annee      = document.getElementById('rep-annee')?.value || '';
+        formData.km         = document.getElementById('rep-km')?.value || '';
+        formData.carburant  = document.getElementById('rep-carburant')?.value || '';
+        formData.boite      = document.getElementById('rep-boite')?.value || '';
+        formData.plaque     = document.getElementById('rep-plaque')?.value || '';
+        formData.ch          = document.getElementById('rep-ch')?.value || '';
+        formData.cv          = document.getElementById('rep-cv')?.value || '';
+        formData.motorisation = document.getElementById('rep-motorisation')?.value || '';
+        formData.finition     = document.getElementById('rep-finition')?.value || '';
+      }
+      if (step === 2) {
+        formData.etat    = document.querySelector('input[name="rep-etat"]:checked')?.value || '';
+        formData.options = [...document.querySelectorAll('.rep-option:checked')].map(c => c.value);
+        window._repriseFormData = {...formData};
+      }
+    }
+
+    function validateStep() {
+      if (step === 1) {
+        const marque = document.getElementById('rep-marque')?.value;
+        const modele = document.getElementById('rep-modele')?.value?.trim();
+        const annee  = document.getElementById('rep-annee')?.value;
+        const km     = document.getElementById('rep-km')?.value;
+        const carb   = document.getElementById('rep-carburant')?.value;
+        if (!marque) { showZenToast('❌ Sélectionnez la marque', 'error'); return false; }
+        if (!modele) { showZenToast('❌ Renseignez le modèle', 'error'); return false; }
+        if (!annee)  { showZenToast('❌ Sélectionnez l\'année', 'error'); return false; }
+        if (!km || isNaN(parseInt(km))) { showZenToast('❌ Renseignez le kilométrage', 'error'); return false; }
+        if (!carb)   { showZenToast('❌ Sélectionnez le carburant', 'error'); return false; }
+      }
+      if (step === 2) {
+        const etat = document.querySelector('input[name="rep-etat"]:checked')?.value;
+        if (!etat) { showZenToast('❌ Sélectionnez l\'état du véhicule', 'error'); return false; }
+      }
+      return true;
+    }
+
+    overlay.id = 'reprise-modal-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(5,8,18,0.92);backdrop-filter:blur(20px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;overflow-y:auto;';
+    document.body.appendChild(overlay);
+    renderStep();
+  };
+
+  async function envoyerEstimationReprise(clientId, clientName, email) {
+    const tel     = (document.getElementById('rep-tel-final')?.value||'').trim();
+    const message = (document.getElementById('rep-message-final')?.value||'').trim();
+    const errEl   = document.getElementById('reprise-error');
+    const formData = window._repriseTmpData || {};
+
+    if (!tel) { errEl.textContent = '❌ Le téléphone est obligatoire.'; errEl.style.display='block'; return; }
+
+    const btn = document.getElementById('rep-submit-btn');
+    if (btn) { btn.disabled=true; btn.textContent='⏳ Envoi...'; }
+
+    try {
+      if (!window.supabase) throw new Error('Connexion Supabase indisponible');
+
+      // Récupérer formData depuis le DOM via dataset du bouton
+      const est = window._repriseEstimation || {};
+      const fd  = window._repriseFormData  || {};
+
+      const detail = `🚗 ESTIMATION REPRISE\n` +
+        `Véhicule : ${fd.marque||''} ${fd.modele||''} ${fd.annee||''}\n` +
+        `Kilométrage : ${fd.km ? parseInt(fd.km).toLocaleString('fr-FR')+' km' : 'N/A'}\n` +
+        `Carburant : ${fd.carburant||'N/A'} · Boîte : ${fd.boite||'N/A'}\n` +
+        `État : ${ETATS.find(e=>e.val===fd.etat)?.label||fd.etat||'N/A'}\n` +
+        `Options : ${fd.options?.length ? fd.options.join(', ') : 'Aucune'}\n` +
+        `Plaque : ${fd.plaque||'N/A'}\n` +
+        `Estimation : ${est.min?.toLocaleString('fr-FR')} € — ${est.max?.toLocaleString('fr-FR')} € (moy: ${est.moy?.toLocaleString('fr-FR')} €)\n` +
+        (message ? `Message : ${message}` : '');
+
+      const { error } = await window.supabase.from('reprise_estimations').insert([{
+        id:          Date.now(),
+        client_id:   clientId,
+        client_name: clientName,
+        client_email:email,
+        client_phone:tel,
+        marque:      fd.marque||'',
+        modele:      fd.modele||'',
+        annee:       fd.annee||'',
+        km:          parseInt(fd.km)||0,
+        carburant:   fd.carburant||'',
+        boite:       fd.boite||'',
+        ch:           parseInt(fd.ch)||null,
+        cv:           parseInt(fd.cv)||null,
+        motorisation: fd.motorisation||null,
+        finition:     fd.finition||null,
+        etat:        fd.etat||'',
+        options:     fd.options||[],
+        plaque:      fd.plaque||'',
+        est_min:     est.min||0,
+        est_max:     est.max||0,
+        est_moy:     est.moy||0,
+        message:     message||null,
+        status:      'en_attente'
+      }]);
+      if (error) throw error;
+
+      document.getElementById('reprise-modal-overlay')?.remove();
+      showZenToast('✅ Estimation envoyée ! Nous vous contactons sous 48h pour confirmer.', 'success');
+    } catch(e) {
+      if (errEl) { errEl.textContent = '❌ ' + e.message; errEl.style.display='block'; }
+      if (btn) { btn.disabled=false; btn.textContent='✅ Envoyer ma demande'; }
+    }
+  }
+
+  window.ouvrirDemandeAccompagnement = async function() {
+    const existing = document.getElementById('accomp-modal-overlay');
+    if (existing) { existing.remove(); }
+
+    let client = null;
+    try { const raw = localStorage.getItem('clientData'); client = raw ? JSON.parse(raw) : null; } catch(e) {}
+
+    if (!client || !client.id) {
+      if (typeof window.openAuthModalGlobal === 'function') {
+    window._pendingServiceCallback = () => window.ouvrirDemandeAccompagnement();
+    window.openAuthModalGlobal('login');
+      }
+      return;
+    }
+
+    let phone = '', email = client.email || '';
+    if (window.supabase) {
+      const { data } = await window.supabase.from('clients').select('phone,email').eq('id', client.id).single();
+      if (data) { phone = data.phone || ''; email = data.email || email; }
+    }
+    const nameParts = (client.name || '').split(' ');
+    const prenom = nameParts.slice(1).join(' ') || '';
+    const nom    = nameParts[0] || '';
+
+    const overlay = document.createElement('div');
+    overlay.id = 'accomp-modal-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(5,8,18,0.88);backdrop-filter:blur(16px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;width:100vw;height:100vh;';
+    overlay.innerHTML = `
+      <div class="svc-modal-wrapper">
+        <div class="svc-border-wrap" style="color:#f97316;"><div class="svc-border-inner"></div></div>
+        <div class="svc-modal-box" style="--svc-rgb:249,115,22;">
+        <div class="svc-modal-content">
+          <div class="svc-icon-wrap" style="background:rgba(249,115,22,0.1);">
+            <div class="svc-icon-glow" style="background:#f97316;"></div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"/>
+              <path d="M21 21l-4.35-4.35"/>
+              <path d="M11 8v6M8 11h6"/>
+            </svg>
+          </div>
+          <h2 style="font-size:22px;font-weight:900;color:#fff;text-align:center;margin:0 0 4px;">Expertise Achat</h2>
+          <p style="font-size:13px;color:#475569;text-align:center;margin:0 0 22px;">Nous trouvons le véhicule idéal pour vous</p>
+          <div class="svc-client-card" style="background:rgba(249,115,22,0.06);border-color:rgba(249,115,22,0.2);">
+            <div class="svc-client-avatar" style="background:rgba(249,115,22,0.15);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div>
+              <div class="svc-client-name">${prenom} ${nom}</div>
+              <div class="svc-client-sub">${phone ? phone + ' · ' : ''}${email || 'Connecté'}</div>
+    </div>
+      </div>
+
+      <div id="accomp-error" style="display:none;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:12px;font-size:13px;color:#fca5a5;margin-bottom:14px;"></div>
+
+<div class="svc-field" style="margin-bottom:14px;"><label>Téléphone *</label>
+      <input id="accomp-tel" placeholder="06 12 34 56 78" value="${phone}" /></div>
+
+      <div class="svc-field" style="margin-bottom:14px;"><label>Type de véhicule recherché *</label>
+      <input id="accomp-vehicule" placeholder="Ex: SUV familial, berline diesel..." /></div>
+
+      <div class="svc-2col" style="margin-bottom:14px;">
+        <div class="svc-field"><label>Budget max</label><input id="accomp-budget" placeholder="Ex: 15 000 €" /></div>
+        <div class="svc-field"><label>Km max</label><input id="accomp-km" placeholder="Ex: 80 000 km" /></div>
+      </div>
+
+      <div class="svc-field" style="margin-bottom:20px;"><label>Critères importants (optionnel)</label>
+      <textarea id="accomp-message" placeholder="Carburant préféré, options souhaitées, urgence..." rows="3" ></textarea></div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px;">
+        <button onclick="document.getElementById('accomp-modal-overlay').remove()" class="svc-btn-cancel">Annuler</button>
+        <button id="accomp-submit-btn" data-cid="${client.id}" data-cname="${prenom} ${nom}" data-cphone="${phone}" data-cemail="${email}" class="svc-btn-primary" style="background:linear-gradient(135deg,#f97316,#ea580c);box-shadow:0 4px 20px rgba(249,115,22,0.35);">✅ Envoyer</button>
+      </div>
+      </div></div></div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+    document.getElementById('accomp-submit-btn').addEventListener('click', function() {
+      const d = this.dataset;
+      window.envoyerDemandeAccompagnement(d.cid, d.cname, d.cphone, d.cemail);
+    });
+  }
+
+  window.envoyerDemandeAccompagnement = async function(clientId, clientName, phone, email) {
+    const vehicule = (document.getElementById('accomp-vehicule')?.value||'').trim();
+    const budget   = (document.getElementById('accomp-budget')?.value||'').trim();
+    const km   = (document.getElementById('accomp-km')?.value||'').trim();
+    const message  = (document.getElementById('accomp-message')?.value||'').trim();
+    const tel      = (document.getElementById('accomp-tel')?.value||'').trim() || phone;
+    const errEl    = document.getElementById('accomp-error');
+
+    if (!vehicule) { errEl.textContent = '❌ Le type de véhicule est obligatoire.'; errEl.style.display = 'block'; return; }
+    if (!tel) { errEl.textContent = '❌ Le téléphone est obligatoire.'; errEl.style.display = 'block'; return; }
+    try {
+      if (!window.supabase) { errEl.textContent = '❌ Erreur connexion.'; errEl.style.display = 'block'; return; }
+      const detail = '🔍 EXPERTISE ACHAT — ' + vehicule + (budget?' · Budget: '+budget:'') + (km?' · Km max: '+km:'') + (message?' · '+message:'');
+      const { error } = await window.supabase.from('contacts').insert([{
+        id: Date.now(),
+        name: clientName + ' | ' + detail,
+        phone: tel||null,
+        email: email||null,
+      }]);
+      if (error) throw error;
+      document.getElementById('accomp-modal-overlay')?.remove();
+      showZenToast('✅ Demande d\'accompagnement envoyée ! Nous vous contactons rapidement.', 'success');
+    } catch(e) { errEl.textContent = '❌ ' + e.message; errEl.style.display = 'block'; }
+  }
+
   </script>
 
   <script src="app.js"></script>

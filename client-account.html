@@ -4,51 +4,22 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Mon Compte — ZENOCCAZ</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    .account-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-    .account-header { background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05)); border: 1px solid rgba(16,185,129,0.2); border-radius: 16px; padding: 32px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
-    .account-info h1 { margin: 0 0 8px; color: var(--text); font-size: 32px; }
-    .account-info p { margin: 0; color: var(--muted); }
-    .account-actions { display: flex; gap: 12px; }
-    .section-card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.04); border-radius: 12px; padding: 32px; margin-bottom: 24px; }
-    .section-title { font-size: 24px; color: var(--text); margin: 0 0 24px; display: flex; align-items: center; gap: 12px; }
-    .demand-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px; margin-bottom: 16px; transition: all 0.3s; }
-    .demand-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(16,185,129,0.3); transform: translateY(-2px); }
-    .demand-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
-    .demand-title { font-size: 20px; font-weight: 600; color: var(--text); margin: 0 0 4px; }
-    .demand-date { color: var(--muted); font-size: 14px; }
-    .demand-status { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; }
-    .status-pending { background: rgba(245,158,11,0.12); color: #f59e0b; }
-    .status-in-progress { background: rgba(59,130,246,0.12); color: #3b82f6; }
-    .status-completed { background: rgba(16,185,129,0.12); color: #10b981; }
-    .demand-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); }
-    .detail-item { display: flex; flex-direction: column; gap: 4px; }
-    .detail-label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .detail-value { color: var(--text); font-weight: 600; font-size: 15px; }
-    .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
-    .empty-state-icon { font-size: 64px; margin-bottom: 20px; opacity: 0.3; }
-    .login-prompt { background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05)); border: 2px solid rgba(16,185,129,0.3); border-radius: 16px; padding: 48px; text-align: center; max-width: 600px; margin: 60px auto; }
-    .login-prompt h2 { color: var(--text); margin: 0 0 16px; font-size: 28px; }
-    .login-prompt p { color: var(--muted); margin: 0 0 32px; font-size: 16px; }
-    /* Conversations */
-    .conv-card { background: rgba(16,185,129,0.04); border: 1px solid rgba(16,185,129,0.15); border-radius: 12px; padding: 20px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; }
-    .conv-card:hover { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.3); }
-    .conv-subject { font-weight: 600; color: var(--text); margin-bottom: 6px; }
-    .conv-meta { color: var(--muted); font-size: 13px; display: flex; gap: 16px; }
-    .conv-preview { color: var(--muted); font-size: 13px; margin-top: 8px; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .conv-messages { display: none; margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; }
-    .conv-msg { padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; font-size: 14px; line-height: 1.5; }
-    .conv-msg.user { background: rgba(16,185,129,0.15); color: var(--text); text-align: right; }
-    .conv-msg.bot { background: rgba(255,255,255,0.04); color: var(--text); }
-    .conv-msg-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="client-account.css">
 </head>
 <body>
+  
+  <!-- Header -->
   <header class="site-header">
     <div class="admin-header">
       <div class="admin-title">
-        <h1 style="margin:0;font-size:28px;font-weight:700;"><span style="color:white;">zen</span> <span style="color:#10b981;">occaz</span> <span style="color:#f97316;">.fr</span></h1>
+        <h1 style="margin:0;font-size:28px;font-weight:700;">
+          <span style="color:white;">zen</span> 
+          <span style="color:#10b981;">occaz</span> 
+          <span style="color:#f97316;">.com</span>
+        </h1>
         <p class="tag">Votre spécialiste en véhicules d'occasion premium</p>
       </div>
       <div class="admin-actions">
@@ -56,111 +27,265 @@
         <a href="index.html#vehicules" class="btn">véhicules</a>
         <a href="services.html" class="btn">services</a>
         <a href="index.html#contact" class="btn">contact</a>
-        <a href="client-account.html" class="btn" style="background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;">mon compte</a>
+        <a href="client-account.html" class="btn primary">mon compte</a>
       </div>
     </div>
   </header>
 
+  <!-- Login prompt (quand pas connecté) -->
   <div id="login-prompt" class="login-prompt">
-    <div style="font-size:64px;margin-bottom:20px;">🔐</div>
+    <div style="font-size:80px;margin-bottom:24px;">🔐</div>
     <h2>Connectez-vous à votre compte</h2>
-    <p>Pour accéder à votre espace client et consulter vos demandes, veuillez vous connecter.</p>
+    <p>Pour accéder à votre espace client, consulter vos demandes, votre code de parrainage et bénéficier de récompenses exclusives, veuillez vous connecter.</p>
     <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
-      <button onclick="openLoginModal()" class="btn primary" style="padding:14px 32px;font-size:16px;">Se connecter</button>
-      <a href="index.html" class="btn" style="padding:14px 32px;font-size:16px;text-decoration:none;">Retour à l'accueil</a>
+      <button onclick="openLoginModal()" class="btn primary" style="padding:16px 40px;font-size:16px;">
+        ✨ Se connecter
+      </button>
+      <a href="index.html" class="btn secondary" style="padding:16px 40px;font-size:16px;text-decoration:none;">
+        ← Retour à l'accueil
+      </a>
     </div>
   </div>
 
+  <!-- Contenu du compte (quand connecté) -->
   <div id="account-content" class="account-container" style="display:none;">
+    
+    <!-- Header du compte -->
     <div class="account-header">
       <div class="account-info">
         <h1>👋 Bonjour <span id="client-name">Client</span></h1>
-        <p id="client-email">email@example.com</p>
+        <p id="client-email" style="font-size:16px;margin-top:8px;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e88d85898184a88d90898598848dc68b8785">[email&#160;protected]</a></p>
       </div>
       <div class="account-actions">
-        <button onclick="logout()" class="btn" style="padding:12px 24px;">Déconnexion</button>
+        <button onclick="logout()" class="btn" style="padding:12px 24px;">
+          🚪 Déconnexion
+        </button>
+      </div>
+    </div>
+
+    <!-- Section Parrainage -->
+    <div class="parrainage-container">
+      <div class="parrainage-header">
+        <h2>🎁 Programme de Parrainage</h2>
+        <p class="parrainage-subtitle">Parrainez vos amis et gagnez jusqu'à 250€ de récompenses !</p>
+      </div>
+
+      <!-- Code de parrainage -->
+      <div class="code-container">
+        <div class="code-label">Votre code de parrainage unique</div>
+        <div id="parrainage-code" class="code-display">ZENXXXXX</div>
+        <div class="code-actions">
+          <button onclick="copyCode()" class="copy-btn">
+            <span>📋</span>
+            <span>Copier le code</span>
+          </button>
+          <button onclick="shareCode()" class="share-btn">
+            <span>📤</span>
+            <span>Partager</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats de parrainage -->
+      <div class="parrainage-stats">
+        <div class="stat-item">
+          <div class="stat-icon">👥</div>
+          <div class="stat-label">Filleuls actifs</div>
+          <div id="stat-filleuls" class="stat-value">0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">✅</div>
+          <div class="stat-label">Conversions</div>
+          <div id="stat-conversions" class="stat-value">0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">💰</div>
+          <div class="stat-label">Récompenses gagnées</div>
+          <div id="stat-rewards" class="stat-value">0€</div>
+        </div>
+      </div>
+
+      <!-- Liste des filleuls -->
+      <div class="filleuls-list">
+        <h3 style="color:var(--text);margin:0 0 20px;font-size:20px;font-family:'Orbitron',sans-serif;">
+          👥 Mes filleuls
+        </h3>
+        <div id="filleuls-container">
+          <div class="empty-state">
+            <div class="empty-state-icon">🎯</div>
+            <p style="font-size:16px;margin:0 0 8px;">Aucun filleul pour le moment</p>
+            <p style="font-size:14px;margin:0;">Partagez votre code et commencez à gagner des récompenses !</p>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Conversations IA -->
     <div class="section-card">
-      <h2 class="section-title"><span style="font-size:32px;">💬</span> Mes conversations avec l'IA</h2>
-      <div id="conversations-list"></div>
+      <h2 class="section-title">
+        <span style="font-size:32px;">💬</span>
+        <span>Mes conversations avec l'IA</span>
+      </h2>
+      <div id="conversations-list">
+        <div class="empty-state">
+          <div class="empty-state-icon">💬</div>
+          <p style="font-size:16px;margin:0 0 8px;">Aucune conversation</p>
+          <p style="font-size:14px;margin:0;">Vos conversations avec l'assistant IA apparaîtront ici.</p>
+        </div>
+      </div>
     </div>
 
     <!-- Demandes de Reprise -->
     <div class="section-card">
-      <h2 class="section-title"><span style="font-size:32px;">🚗</span> Mes demandes de reprise</h2>
-      <div id="reprises-list"></div>
+      <h2 class="section-title">
+        <span style="font-size:32px;">🚗</span>
+        <span>Mes demandes de reprise</span>
+      </h2>
+      <div id="reprises-list">
+        <div class="empty-state">
+          <div class="empty-state-icon">🚗</div>
+          <p style="font-size:16px;margin:0 0 8px;">Aucune demande de reprise</p>
+          <p style="font-size:14px;margin:0 0 24px;">Vous n'avez pas encore fait de demande de reprise.</p>
+          <a href="services.html" class="btn primary" style="display:inline-block;text-decoration:none;padding:12px 32px;">
+            Faire une demande
+          </a>
+        </div>
+      </div>
     </div>
 
     <!-- Demandes ZenScan -->
     <div class="section-card">
-      <h2 class="section-title"><span style="font-size:32px;">🔍</span> Mes demandes ZenScan</h2>
-      <div id="zenscan-list"></div>
+      <h2 class="section-title">
+        <span style="font-size:32px;">🔍</span>
+        <span>Mes demandes ZenScan</span>
+      </h2>
+      <div id="zenscan-list">
+        <div class="empty-state">
+          <div class="empty-state-icon">🔍</div>
+          <p style="font-size:16px;margin:0 0 8px;">Aucune demande ZenScan</p>
+          <p style="font-size:14px;margin:0 0 24px;">Le diagnostic à distance n'a jamais été aussi simple.</p>
+          <a href="services.html" class="btn primary" style="display:inline-block;text-decoration:none;padding:12px 32px;">
+            Demander un ZenScan
+          </a>
+        </div>
+      </div>
     </div>
 
     <!-- Avis -->
     <div class="section-card">
-      <h2 class="section-title"><span style="font-size:32px;">⭐</span> Mes avis</h2>
-      <div id="reviews-list"></div>
+      <h2 class="section-title">
+        <span style="font-size:32px;">⭐</span>
+        <span>Mes avis</span>
+      </h2>
+      <div id="reviews-list">
+        <div class="empty-state">
+          <div class="empty-state-icon">⭐</div>
+          <p style="font-size:16px;margin:0 0 8px;">Aucun avis publié</p>
+          <p style="font-size:14px;margin:0 0 24px;">Partagez votre expérience avec la communauté.</p>
+          <a href="index.html#avis" class="btn primary" style="display:inline-block;text-decoration:none;padding:12px 32px;">
+            Laisser un avis
+          </a>
+        </div>
+      </div>
     </div>
+
+    <!-- Mes Offres Saisonnières -->
+    <div class="section-card" id="offres-section-card">
+      <h2 class="section-title">
+        <span style="font-size:32px;">🎁</span>
+        <span>Mes Offres &amp; Avantages</span>
+      </h2>
+      <div id="offres-client-list">
+        <div class="empty-state">
+          <div class="empty-state-icon">🎁</div>
+          <p style="font-size:16px;margin:0 0 8px;">Aucune offre activée</p>
+          <p style="font-size:14px;margin:0 0 24px;">Les offres saisonnières que vous activez apparaîtront ici.</p>
+          <a href="index.html" class="btn primary" style="display:inline-block;text-decoration:none;padding:12px 32px;">
+            Voir les offres en cours
+          </a>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Modal connexion/inscription -->
-  <div id="client-login-modal" class="modal hidden" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;z-index:10000;">
-    <div style="background:#1a1a2e;padding:40px;border-radius:16px;max-width:450px;width:90%;border:1px solid rgba(255,255,255,0.1);">
+  <div id="client-login-modal" class="modal hidden">
+    <div class="modal-content" style="max-width:500px;">
       <div style="text-align:center;margin-bottom:32px;">
-        <h2 style="margin:0 0 8px;color:var(--text);font-size:28px;">🔐 Connexion Client</h2>
-        <p style="color:var(--muted);font-size:14px;">Connectez-vous ou créez un compte</p>
+        <h2 style="margin:0 0 8px;color:var(--text);font-size:32px;font-family:'Orbitron',sans-serif;">
+          🔐 Espace Client
+        </h2>
+        <p style="color:var(--muted);font-size:14px;margin:0;">Connectez-vous ou créez un compte</p>
       </div>
-      <div style="display:flex;gap:8px;margin-bottom:24px;">
-        <button id="tab-login" onclick="switchClientTab('login')" class="btn" style="flex:1;padding:12px;background:linear-gradient(135deg,#10b981,#059669);border:none;color:#fff;">Connexion</button>
-        <button id="tab-signup" onclick="switchClientTab('signup')" class="btn" style="flex:1;padding:12px;background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--text);">Inscription</button>
+
+      <!-- Tabs -->
+      <div style="display:flex;gap:8px;margin-bottom:32px;">
+        <button id="tab-login" onclick="switchClientTab('login')" class="btn primary" style="flex:1;padding:12px;">
+          Connexion
+        </button>
+        <button id="tab-signup" onclick="switchClientTab('signup')" class="btn" style="flex:1;padding:12px;">
+          Inscription
+        </button>
       </div>
+
+      <!-- Formulaire connexion -->
       <form id="client-login-form" style="display:flex;flex-direction:column;gap:20px;">
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Email</label>
-          <input type="email" id="login-client-email" placeholder="votre@email.com" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+          <input type="email" id="login-client-email" placeholder="votre@email.com" required style="width:100%;padding:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--text);font-family:inherit;font-size:15px;" />
         </div>
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Mot de passe</label>
-          <input type="password" id="login-client-password" placeholder="••••••••" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+          <input type="password" id="login-client-password" placeholder="••••••••" required style="width:100%;padding:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--text);font-family:inherit;font-size:15px;" />
         </div>
-        <button type="submit" class="btn primary" style="padding:14px;font-size:16px;font-weight:600;margin-top:8px;">✅ Se connecter</button>
-        <button type="button" onclick="closeLoginModal()" class="btn" style="padding:12px;font-size:14px;background:transparent;border:1px solid rgba(255,255,255,0.2);">Annuler</button>
+        <button type="submit" class="btn primary" style="padding:16px;font-size:16px;font-weight:600;margin-top:8px;">
+          ✅ Se connecter
+        </button>
+        <button type="button" onclick="closeLoginModal()" class="btn" style="padding:12px;font-size:14px;">
+          Annuler
+        </button>
       </form>
+
+      <!-- Formulaire inscription -->
       <form id="client-signup-form" style="display:none;flex-direction:column;gap:20px;">
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Nom complet</label>
-          <input type="text" id="signup-client-name" placeholder="Jean Dupont" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+          <input type="text" id="signup-client-name" placeholder="Jean Dupont" required style="width:100%;padding:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--text);font-family:inherit;font-size:15px;" />
         </div>
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Email</label>
-          <input type="email" id="signup-client-email" placeholder="votre@email.com" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+          <input type="email" id="signup-client-email" placeholder="votre@email.com" required style="width:100%;padding:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--text);font-family:inherit;font-size:15px;" />
         </div>
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Mot de passe</label>
-          <input type="password" id="signup-client-password" placeholder="••••••••" required minlength="6" style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+          <input type="password" id="signup-client-password" placeholder="••••••••" required minlength="6" style="width:100%;padding:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--text);font-family:inherit;font-size:15px;" />
         </div>
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Confirmer le mot de passe</label>
-          <input type="password" id="signup-client-password-confirm" placeholder="••••••••" required minlength="6" style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+          <input type="password" id="signup-client-password-confirm" placeholder="••••••••" required minlength="6" style="width:100%;padding:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--text);font-family:inherit;font-size:15px;" />
         </div>
-        <button type="submit" class="btn primary" style="padding:14px;font-size:16px;font-weight:600;margin-top:8px;">✨ Créer mon compte</button>
-        <button type="button" onclick="closeLoginModal()" class="btn" style="padding:12px;font-size:14px;background:transparent;border:1px solid rgba(255,255,255,0.2);">Annuler</button>
+        <button type="submit" class="btn primary" style="padding:16px;font-size:16px;font-weight:600;margin-top:8px;">
+          ✨ Créer mon compte
+        </button>
+        <button type="button" onclick="closeLoginModal()" class="btn" style="padding:12px;font-size:14px;">
+          Annuler
+        </button>
       </form>
     </div>
   </div>
 
+  <!-- Footer -->
   <footer class="site-footer">
     © ZENOCCAZ — Vente de véhicules d'occasion premium
     <span style="margin:0 8px;">|</span>
     <a href="mentions-legales.html" style="color:var(--muted);text-decoration:none;">Mentions légales</a>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Scripts -->
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    // Configuration Supabase
     const SUPABASE_URL = 'https://zxnnzpzujmjzhnfqndle.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4bm56cHp1am1qemhuZnFuZGxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNjc5NzQsImV4cCI6MjA3Nzg0Mzk3NH0.rHvMKPDV_3H_vpt-9HUORANLrqQ_Yvq_y1GD2RGD8_k';
     let supabaseClient = null;
@@ -170,38 +295,177 @@
       supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       console.log('✅ Supabase initialisé');
     } catch (e) {
-      console.error('❌ Supabase:', e);
+      console.error('❌ Erreur Supabase:', e);
     }
 
-    window.addEventListener('DOMContentLoaded', loadClientData);
+    // Au chargement de la page
+    window.addEventListener('DOMContentLoaded', async function() {
+      await loadClientData();
+    });
 
+    // Vérification authentification
     function checkAuth() {
-      const raw = localStorage.getItem('clientData');
+      let raw = localStorage.getItem('clientData');
+
+      // Cloudflare encode parfois les emails — on nettoie
+      if (raw) {
+        raw = raw.replace(/\[email protected\]/g, '')
+                 .replace(/\[email protected\]/g, '');
+      }
+
       if (!raw) {
         document.getElementById('login-prompt').style.display = 'block';
         document.getElementById('account-content').style.display = 'none';
         return null;
       }
-      const client = JSON.parse(raw);
+
+      let client;
+      try {
+        client = JSON.parse(raw);
+      } catch(e) {
+        // JSON corrompu — effacer et redemander connexion
+        localStorage.removeItem('clientData');
+        document.getElementById('login-prompt').style.display = 'block';
+        document.getElementById('account-content').style.display = 'none';
+        return null;
+      }
+
+      if (!client || !client.id) {
+        document.getElementById('login-prompt').style.display = 'block';
+        document.getElementById('account-content').style.display = 'none';
+        return null;
+      }
+
       document.getElementById('login-prompt').style.display = 'none';
       document.getElementById('account-content').style.display = 'block';
       document.getElementById('client-name').textContent = client.name || 'Client';
       document.getElementById('client-email').textContent = client.email || '';
+
       return client;
     }
 
+    // Chargement des données
     async function loadClientData() {
       const client = checkAuth();
       if (!client) return;
+
       await Promise.all([
+        loadParrainageData(client),
         loadConversations(client.id),
         loadReprises(client.email),
         loadZenScan(client.email),
-        loadReviews(client)
+        loadReviews(client),
+        loadOffresClient(client)
       ]);
     }
 
-    // ── CONVERSATIONS IA ──────────────────────────────────────
+    // ═══════════════════════════════════════════════════════
+    // SECTION PARRAINAGE
+    // ═══════════════════════════════════════════════════════
+
+    async function loadParrainageData(client) {
+      try {
+        // Charger le client complet avec son code de parrainage
+        const { data: clientData, error: clientError } = await supabaseClient
+          .from('clients')
+          .select('code_parrainage')
+          .eq('id', client.id)
+          .single();
+
+        if (clientError) throw clientError;
+
+        // Afficher le code de parrainage
+        const code = clientData.code_parrainage || 'ZEN' + String(client.id).padStart(5, '0');
+        document.getElementById('parrainage-code').textContent = code;
+
+        // Charger les stats de parrainage
+        const { data: parrainages, error: parrainagesError } = await supabaseClient
+          .from('parrainages')
+          .select('*')
+          .eq('parrain_email', client.email);
+
+        if (parrainagesError) throw parrainagesError;
+
+        const total = parrainages?.length || 0;
+        const conversions = parrainages?.filter(p => p.status === 'fini').length || 0;
+        const rewards = parrainages?.reduce((sum, p) => sum + (parseFloat(p.commission) || 0), 0) || 0;
+
+        document.getElementById('stat-filleuls').textContent = total;
+        document.getElementById('stat-conversions').textContent = conversions;
+        document.getElementById('stat-rewards').textContent = rewards.toFixed(0) + '€';
+
+        // Afficher la liste des filleuls
+        if (total > 0) {
+          const container = document.getElementById('filleuls-container');
+          container.innerHTML = parrainages.map(p => {
+            const date = new Date(p.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+            const isCompleted = p.status === 'fini';
+            
+            return `
+              <div class="filleul-card">
+                <div class="filleul-info">
+                  <h4>👤 ${p.filleul || 'Filleul anonyme'}</h4>
+                  <div class="filleul-date">📅 Parrainé le ${date}</div>
+                </div>
+                <div class="reward-badge ${isCompleted ? '' : 'pending'}">
+                  ${isCompleted ? '✅' : '⏳'}
+                  ${isCompleted ? p.commission + '€ gagnés' : 'En attente'}
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+
+      } catch (e) {
+        console.error('❌ Erreur parrainage:', e);
+      }
+    }
+
+    // Copier le code
+    window.copyCode = async function() {
+      const code = document.getElementById('parrainage-code').textContent;
+      try {
+        await navigator.clipboard.writeText(code);
+        alert('✅ Code copié : ' + code);
+      } catch (e) {
+        // Fallback pour navigateurs ne supportant pas clipboard API
+        const input = document.createElement('input');
+        input.value = code;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        alert('✅ Code copié : ' + code);
+      }
+    };
+
+    // Partager le code
+    window.shareCode = async function() {
+      const code = document.getElementById('parrainage-code').textContent;
+      const text = `Rejoignez ZENOCCAZ avec mon code parrain ${code} et bénéficiez d'avantages exclusifs ! 🚗✨`;
+      const url = 'https://zen-occaz.com';
+
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: 'ZENOCCAZ - Code Parrainage', text: text, url: url });
+        } catch (e) {
+          console.log('Partage annulé');
+        }
+      } else {
+        // Fallback: copier le texte
+        try {
+          await navigator.clipboard.writeText(text + '\n' + url);
+          alert('✅ Message de parrainage copié !');
+        } catch (e) {
+          alert('📋 Partagez ce message:\n\n' + text + '\n' + url);
+        }
+      }
+    };
+
+    // ═══════════════════════════════════════════════════════
+    // CONVERSATIONS IA
+    // ═══════════════════════════════════════════════════════
+
     async function loadConversations(clientId) {
       const div = document.getElementById('conversations-list');
       try {
@@ -264,69 +528,180 @@
       el.style.display = el.style.display === 'block' ? 'none' : 'block';
     }
 
-    // ── REPRISES ─────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════
+    // REPRISES
+    // ═══════════════════════════════════════════════════════
+
     async function loadReprises(email) {
       const div = document.getElementById('reprises-list');
       try {
-        const { data, error } = await supabaseClient.from('contacts').select('*').eq('email', email).eq('type', 'reprise');
+        const { data, error } = await supabaseClient
+          .from('contacts')
+          .select('*')
+          .eq('email', email)
+          .or('name.ilike.%DEMANDE REPRISE%,name.ilike.%EXPERTISE ACHAT%');
+
         if (error) throw error;
+
         if (!data || data.length === 0) {
-          div.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🚗</div><p style="font-size:16px;margin:0 0 8px;">Aucune demande de reprise</p><a href="services.html" class="btn primary" style="margin-top:24px;display:inline-block;text-decoration:none;">Faire une demande</a></div>`;
+          div.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">🚗</div>
+              <p style="font-size:16px;margin:0 0 8px;">Aucune demande de reprise</p>
+              <p style="font-size:14px;margin:0 0 24px;">Vous n'avez pas encore fait de demande de reprise.</p>
+              <a href="services.html" class="btn primary" style="display:inline-block;text-decoration:none;padding:12px 32px;">Faire une demande</a>
+            </div>`;
           return;
         }
+
         div.innerHTML = data.map(c => {
           const date = new Date(c.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-          const plates = c.plates?.join(', ') || 'Non renseignée';
-          return `<div class="demand-card"><div class="demand-header"><div><div class="demand-title">Demande de reprise</div><div class="demand-date">Le ${date}</div></div><span class="demand-status status-pending">En attente</span></div><div class="demand-details"><div class="detail-item"><span class="detail-label">Immatriculation</span><span class="detail-value">${plates}</span></div><div class="detail-item"><span class="detail-label">Téléphone</span><span class="detail-value">${c.phone || '—'}</span></div></div></div>`;
+          const isAccomp = (c.name||'').includes('EXPERTISE ACHAT');
+          const icon  = isAccomp ? '🔍' : '🚗';
+          const titre = isAccomp ? 'Expertise Achat' : 'Demande de Reprise';
+          const plates = c.plates?.join(', ') || null;
+          return `
+            <div class="demand-card">
+              <div class="demand-header">
+                <div>
+                  <div class="demand-title">${icon} ${titre}</div>
+                  <div class="demand-date">📅 Le ${date}</div>
+                </div>
+                <span class="demand-status status-pending">⏳ En attente</span>
+              </div>
+              <div class="demand-details">
+                ${plates ? `<div class="detail-item"><span class="detail-label">Immatriculation</span><span class="detail-value">${plates}</span></div>` : ''}
+                <div class="detail-item"><span class="detail-label">Téléphone</span><span class="detail-value">${c.phone || '—'}</span></div>
+                ${c.name ? `<div class="detail-item" style="grid-column:1/-1"><span class="detail-label">Détails</span><span class="detail-value" style="font-size:13px;">${c.name.replace(/^[^—]*—\s*/,'')}</span></div>` : ''}
+              </div>
+            </div>`;
         }).join('');
+
       } catch (e) {
-        div.innerHTML = `<div class="empty-state"><p style="color:#ef4444;">Erreur</p></div>`;
+        console.error('❌ Reprises:', e);
+        div.innerHTML = `<div class="empty-state"><p style="color:#ef4444;">Erreur de chargement</p></div>`;
       }
     }
 
-    // ── ZENSCAN ──────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════
+    // ZENSCAN
+    // ═══════════════════════════════════════════════════════
+
     async function loadZenScan(email) {
       const div = document.getElementById('zenscan-list');
       try {
-        const { data, error } = await supabaseClient.from('contacts').select('*').eq('email', email).eq('type', 'zenscan');
-        if (error) throw error;
-        if (!data || data.length === 0) {
-          div.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🔍</div><p style="font-size:16px;margin:0 0 8px;">Aucune demande ZenScan</p><a href="services.html" class="btn primary" style="margin-top:24px;display:inline-block;text-decoration:none;">Demander un ZenScan</a></div>`;
+        // Trouver le contact lié à cet email
+        const { data: contacts } = await supabaseClient
+          .from('contacts')
+          .select('id')
+          .eq('email', email);
+
+        const client = JSON.parse(localStorage.getItem('clientData') || '{}');
+        const ids = [...new Set([
+          ...(contacts || []).map(c => c.id),
+          client.id
+        ].filter(Boolean))];
+
+        if (!ids.length) {
+          div.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🔍</div><p style="font-size:16px;margin:0 0 8px;">Aucune demande ZenScan</p><p style="font-size:14px;margin:0 0 24px;">Le diagnostic à distance n'a jamais été aussi simple.</p><a href="services.html" class="btn primary" style="display:inline-block;text-decoration:none;padding:12px 32px;">Demander un ZenScan</a></div>`;
           return;
         }
-        div.innerHTML = data.map(c => {
-          const date = new Date(c.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-          const plates = c.plates?.join(', ') || 'Non renseignée';
-          return `<div class="demand-card"><div class="demand-header"><div><div class="demand-title">Demande ZenScan</div><div class="demand-date">Le ${date}</div></div><span class="demand-status status-pending">En attente</span></div><div class="demand-details"><div class="detail-item"><span class="detail-label">Immatriculation</span><span class="detail-value">${plates}</span></div><div class="detail-item"><span class="detail-label">Téléphone</span><span class="detail-value">${c.phone || '—'}</span></div></div></div>`;
+
+        const { data, error } = await supabaseClient
+          .from('zenscan_requests')
+          .select('*')
+          .in('contact_id', ids)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+          div.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🔍</div><p style="font-size:16px;margin:0 0 8px;">Aucune demande ZenScan</p><p style="font-size:14px;margin:0 0 24px;">Le diagnostic à distance n'a jamais été aussi simple.</p><a href="services.html" class="btn primary" style="display:inline-block;text-decoration:none;padding:12px 32px;">Demander un ZenScan</a></div>`;
+          return;
+        }
+
+        div.innerHTML = data.map(z => {
+          const date = new Date(z.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+          const services = Array.isArray(z.services) ? z.services.join(', ') : (z.services || '—');
+          return `
+            <div class="demand-card">
+              <div class="demand-header">
+                <div>
+                  <div class="demand-title">🔍 Demande ZenScan</div>
+                  <div class="demand-date">📅 Le ${date}</div>
+                </div>
+                <span class="demand-status status-pending">⏳ En attente</span>
+              </div>
+              <div class="demand-details">
+                <div class="detail-item">
+                  <span class="detail-label">Services</span>
+                  <span class="detail-value" style="font-size:13px;">${services}</span>
+                </div>
+                ${z.dest ? `<div class="detail-item"><span class="detail-label">Destination</span><span class="detail-value">${z.dest}</span></div>` : ''}
+                ${z.total ? `<div class="detail-item"><span class="detail-label">Total estimé</span><span class="detail-value" style="color:#10b981;font-weight:700;">${z.total}</span></div>` : ''}
+              </div>
+            </div>`;
         }).join('');
+
       } catch (e) {
-        div.innerHTML = `<div class="empty-state"><p style="color:#ef4444;">Erreur</p></div>`;
+        console.error('❌ ZenScan:', e);
+        div.innerHTML = `<div class="empty-state"><p style="color:#ef4444;">Erreur de chargement</p></div>`;
       }
     }
 
-    // ── AVIS ─────────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════
+    // AVIS
+    // ═══════════════════════════════════════════════════════
+
     async function loadReviews(client) {
       const div = document.getElementById('reviews-list');
       try {
-        const { data, error } = await supabaseClient.from('reviews').select('*').eq('client_name', client.name).order('created_at', { ascending: false });
+        const { data, error } = await supabaseClient
+          .from('reviews')
+          .select('*')
+          .eq('client_name', client.name)
+          .order('created_at', { ascending: false });
+
         if (error) throw error;
+
         if (!data || data.length === 0) {
-          div.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⭐</div><p style="font-size:16px;margin:0 0 8px;">Aucun avis publié</p><a href="index.html#avis" class="btn primary" style="margin-top:24px;display:inline-block;text-decoration:none;">Laisser un avis</a></div>`;
+          div.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">⭐</div>
+              <p style="font-size:16px;margin:0 0 8px;">Aucun avis publié</p>
+              <p style="font-size:14px;margin:0 0 24px;">Partagez votre expérience avec la communauté.</p>
+              <a href="index.html#avis" class="btn primary" style="display:inline-block;text-decoration:none;padding:12px 32px;">Laisser un avis</a>
+            </div>`;
           return;
         }
+
         div.innerHTML = data.map(r => {
           const date = new Date(r.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-          return `<div class="demand-card"><div class="demand-header"><div><div class="demand-title">${'⭐'.repeat(r.rating || 5)}</div><div class="demand-date">Le ${date}</div></div></div><div style="color:var(--text);margin-top:12px;line-height:1.6;">${r.comment || ''}</div></div>`;
+          return `
+            <div class="demand-card">
+              <div class="demand-header">
+                <div>
+                  <div class="demand-title">${'⭐'.repeat(r.rating || 5)}</div>
+                  <div class="demand-date">📅 Le ${date}</div>
+                </div>
+              </div>
+              <div style="color:var(--text);margin-top:16px;line-height:1.6;font-size:15px;">${r.comment || ''}</div>
+            </div>
+          `;
         }).join('');
+
       } catch (e) {
-        div.innerHTML = `<div class="empty-state"><p style="color:#ef4444;">Erreur</p></div>`;
+        console.error('❌ Avis:', e);
+        div.innerHTML = `<div class="empty-state"><p style="color:#ef4444;">Erreur de chargement</p></div>`;
       }
     }
 
-    // ── AUTH ─────────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════
+    // AUTHENTIFICATION
+    // ═══════════════════════════════════════════════════════
+
     window.logout = function() {
       localStorage.removeItem('clientData');
-      // Notifier le chatbot de la déconnexion
       window.dispatchEvent(new CustomEvent('clientLogout'));
       window.location.href = 'index.html';
     };
@@ -334,14 +709,108 @@
     window.openLoginModal = function() {
       const m = document.getElementById('client-login-modal');
       m.classList.remove('hidden');
-      m.style.display = 'flex';
       switchClientTab('login');
     };
 
     window.closeLoginModal = function() {
       const m = document.getElementById('client-login-modal');
       m.classList.add('hidden');
-      m.style.display = 'none';
+    };
+
+
+    // ═══════════════════════════════════════════════════════
+    // SECTION OFFRES SAISONNIÈRES
+    // ═══════════════════════════════════════════════════════
+
+    const OFFRES_DATA = {
+      printemps: {
+        id: 'printemps', emoji: '🌸', nom: 'Réveil de Printemps',
+        saison: 'Offre Printemps', couleur: '#f472b6',
+        gradient: 'linear-gradient(135deg,#f472b6,#fb923c)',
+        services: ['Contrôle sortie d\'hiver complet','Scan OBD diagnostic électronique','−10 % sur les filtres habitacle','Vérification courroies & durites','Contrôle fuites moteur'],
+      },
+      ete: {
+        id: 'ete', emoji: '☀️', nom: 'Prêt pour les Vacances',
+        saison: 'Offre Été', couleur: '#f59e0b',
+        gradient: 'linear-gradient(135deg,#f59e0b,#f97316)',
+        services: ['Test batterie & alternateur','Contrôle refroidissement visuel','−10 % sur les LDR (ampoules)','Pack vacances sécurité complet','Contrôle pression & état pneus'],
+      },
+      noel: {
+        id: 'noel', emoji: '🎄', nom: 'Cadeau Fidélité',
+        saison: 'Offre Noël', couleur: '#10b981',
+        gradient: 'linear-gradient(135deg,#10b981,#3b82f6)',
+        services: ['Chèque cadeau 100 € sur n\'importe quel site','Livré par email personnalisé'],
+      },
+    };
+
+    async function loadOffresClient(client) {
+      const container = document.getElementById('offres-client-list');
+      if (!container) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('client_offers')
+          .select('*')
+          .eq('client_id', client.id)
+          .order('activated_at', { ascending: false });
+
+        if (error) throw error;
+        if (!data || data.length === 0) return;
+
+        container.innerHTML = data.map(offer => {
+          const o = OFFRES_DATA[offer.offer_id] || {};
+          const date = new Date(offer.activated_at).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
+          const used = offer.used;
+          return `
+            <div style="
+              background:rgba(255,255,255,0.03);
+              border:1px solid ${used ? 'rgba(107,114,128,0.2)' : (o.couleur || '#10b981') + '44'};
+              border-radius:16px; padding:22px; margin-bottom:16px;
+              position:relative; overflow:hidden;
+              ${used ? 'opacity:0.6;' : ''}
+            ">
+              ${!used ? `<div style="position:absolute;top:0;left:0;right:0;height:2px;background:${o.gradient || 'var(--primary)'};"></div>` : ''}
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <span style="font-size:32px;">${o.emoji || '🎁'}</span>
+                  <div>
+                    <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:${o.couleur || '#10b981'};margin-bottom:3px;">${o.saison || offer.offer_id}</div>
+                    <div style="font-size:17px;font-weight:800;color:var(--text);">${o.nom || 'Offre activée'}</div>
+                    <div style="font-size:12px;color:var(--muted);margin-top:2px;">Activée le ${date} · Année ${offer.offer_year}</div>
+                  </div>
+                </div>
+                <span style="padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;${used ? 'background:rgba(107,114,128,0.15);color:#9ca3af;border:1px solid rgba(107,114,128,0.3);' : 'background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.3);'}">${used ? '✓ Utilisée' : '● Active'}</span>
+              </div>
+              ${o.services ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;">${o.services.map(s => `<span style="padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);">${s}</span>`).join('')}</div>` : ''}
+              
+              ${!used && offer.offer_id === 'noel' ? `<button onclick="demanderCadeauNoel(${offer.id})" style="margin-top:16px;padding:10px 20px;border-radius:10px;background:${o.gradient};border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">🎁 Recevoir mon chèque cadeau</button>` : ''}
+            </div>`;
+        }).join('');
+
+      } catch(e) { console.error('❌ loadOffresClient:', e); }
+    }
+
+    window.marquerOffreUtilisee = async function(offerId) {
+      if (!confirm('Confirmer que vous avez utilisé cette offre ?')) return;
+      try {
+        await supabaseClient.from('client_offers').update({ used: true }).eq('id', offerId);
+        const client = JSON.parse(localStorage.getItem('clientData'));
+        await loadOffresClient(client);
+      } catch(e) { alert('❌ Erreur: ' + e.message); }
+    };
+
+    window.demanderCadeauNoel = async function(offerId) {
+      const client = JSON.parse(localStorage.getItem('clientData'));
+      if (!client) return;
+      try {
+        await supabaseClient.from('contacts').insert([{
+          name: client.name || 'Client',
+          email: client.email,
+          message: '🎄 Demande chèque cadeau Noël 100€ — Client fidèle ' + new Date().getFullYear(),
+        }]);
+        await supabaseClient.from('client_offers').update({ used: true }).eq('id', offerId);
+        await loadOffresClient(client);
+        alert('🎁 Demande envoyée ! Vous recevrez votre chèque cadeau 100€ par email sous 48h.\nJoyeux Noël ! 🎄');
+      } catch(e) { alert('❌ Erreur: ' + e.message); }
     };
 
     window.switchClientTab = function(tab) {
@@ -349,14 +818,17 @@
       const ts = document.getElementById('tab-signup');
       const fl = document.getElementById('client-login-form');
       const fs = document.getElementById('client-signup-form');
+
       if (tab === 'login') {
-        tl.style.cssText = 'flex:1;padding:12px;background:linear-gradient(135deg,#10b981,#059669);border:none;color:#fff;';
-        ts.style.cssText = 'flex:1;padding:12px;background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--text);';
-        fl.style.display = 'flex'; fs.style.display = 'none';
+        tl.classList.add('primary');
+        ts.classList.remove('primary');
+        fl.style.display = 'flex';
+        fs.style.display = 'none';
       } else {
-        ts.style.cssText = 'flex:1;padding:12px;background:linear-gradient(135deg,#10b981,#059669);border:none;color:#fff;';
-        tl.style.cssText = 'flex:1;padding:12px;background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--text);';
-        fs.style.display = 'flex'; fl.style.display = 'none';
+        ts.classList.add('primary');
+        tl.classList.remove('primary');
+        fs.style.display = 'flex';
+        fl.style.display = 'none';
       }
     };
 
@@ -365,19 +837,32 @@
       e.preventDefault();
       const email = document.getElementById('login-client-email').value.trim();
       const password = document.getElementById('login-client-password').value;
-      try {
-        const { data, error } = await supabaseClient.from('clients').select('*').eq('email', email).eq('password', password).single();
-        if (error || !data) { alert('❌ Email ou mot de passe incorrect'); return; }
 
-        const clientData = { id: data.id, email: data.email, name: data.name, connectedAt: new Date().toISOString() };
+      try {
+        const { data, error } = await supabaseClient
+          .from('clients')
+          .select('*')
+          .eq('email', email)
+          .eq('password', password)
+          .single();
+
+        if (error || !data) {
+          alert('❌ Email ou mot de passe incorrect');
+          return;
+        }
+
+        const clientData = {
+          id: data.id,
+          email: data.email,
+          name: data.name,
+          connectedAt: new Date().toISOString()
+        };
         localStorage.setItem('clientData', JSON.stringify(clientData));
 
-        // ✅ Notifier le chatbot SANS recharger la page
+        // Notifier le chatbot
         window.dispatchEvent(new CustomEvent('clientLogin', { detail: clientData }));
 
         closeLoginModal();
-
-        // Afficher le contenu compte sans reload
         checkAuth();
         loadClientData();
 
@@ -393,20 +878,68 @@
       const email = document.getElementById('signup-client-email').value.trim();
       const password = document.getElementById('signup-client-password').value;
       const confirm = document.getElementById('signup-client-password-confirm').value;
-      if (password !== confirm) { alert('❌ Mots de passe différents'); return; }
-      if (password.length < 6) { alert('❌ Minimum 6 caractères'); return; }
+
+      if (password !== confirm) {
+        alert('❌ Les mots de passe ne correspondent pas');
+        return;
+      }
+
+      if (password.length < 6) {
+        alert('❌ Le mot de passe doit contenir au moins 6 caractères');
+        return;
+      }
+
       try {
-        const { data: existing } = await supabaseClient.from('clients').select('email').eq('email', email).single();
-        if (existing) { alert('❌ Email déjà utilisé'); switchClientTab('login'); return; }
-        const { error } = await supabaseClient.from('clients').insert([{ id: Date.now(), name, email, password }]);
-        if (error) { alert('❌ Erreur création compte'); return; }
-        alert('✅ Compte créé ! Connectez-vous.');
+        // Vérifier si l'email existe
+        const { data: existing } = await supabaseClient
+          .from('clients')
+          .select('email')
+          .eq('email', email)
+          .single();
+
+        if (existing) {
+          alert('❌ Cet email est déjà utilisé');
+          switchClientTab('login');
+          return;
+        }
+
+        // Générer un code de parrainage unique
+        const newId = Date.now();
+        const prenom = name.split(' ')[0].toUpperCase().replace(/[^A-Z]/g, '').substring(0, 8);
+        const chiffres = String(Math.floor(1000 + Math.random() * 9000));
+        const codeParrainage = prenom + chiffres;
+
+        // Créer le compte
+        const { error } = await supabaseClient
+          .from('clients')
+          .insert([{
+            id: newId,
+            name: name,
+            email: email,
+            password: password,
+            code_parrainage: codeParrainage
+          }]);
+
+        if (error) {
+          alert('❌ Erreur lors de la création du compte');
+          return;
+        }
+
+        alert('✅ Compte créé avec succès ! Vous pouvez maintenant vous connecter !');
         switchClientTab('login');
         document.getElementById('login-client-email').value = email;
+
       } catch (e) {
         alert('❌ Erreur: ' + e.message);
       }
     });
+
+    // Fermer modal en cliquant dehors
+    document.getElementById('client-login-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeLoginModal();
+    });
+
   </script>
+
 </body>
 </html>

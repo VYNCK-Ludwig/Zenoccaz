@@ -88,9 +88,6 @@ class ChatBot {
     btn.id = 'chat-photo-btn';
     btn.title = 'Envoyer des photos pour analyse';
     btn.innerHTML = '📷';
-    btn.style.cssText = 'background:#2a9d8f;border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;margin-right:6px;transition:background 0.2s;flex-shrink:0;';
-    btn.addEventListener('mouseenter', () => btn.style.background = '#21867a');
-    btn.addEventListener('mouseleave', () => btn.style.background = '#2a9d8f');
 
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -187,9 +184,6 @@ class ChatBot {
     btn.id = 'chat-resize-btn';
     btn.title = 'Agrandir';
     btn.innerHTML = '⛶';
-    btn.style.cssText = 'background:rgba(255,255,255,0.12);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.15);color:white;width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.3s;';
-    btn.addEventListener('mouseenter', () => btn.style.background = 'rgba(255,255,255,0.2)');
-    btn.addEventListener('mouseleave', () => btn.style.background = 'rgba(255,255,255,0.12)');
     btn.addEventListener('click', () => this.toggleFullscreen());
 
     let btnGroup = document.getElementById('chat-btn-group');
@@ -279,12 +273,12 @@ class ChatBot {
 
   showMainChoices() {
     this.addButtons('Choisis une option :', [
-      { label: "Discuter avec l'IA", value: 'ai_chat' },
+      { label: "🔧 Diagnostic Mecano IA", value: 'diagnostic' },
       { label: 'Vendre un vehicule (rapide)', value: 'sell' },
       { label: 'Acheter un vehicule (rapide)', value: 'buy' },
     ], (value) => {
       this.logChatChoice(value);
-      if (value === 'ai_chat') return this.promptLoginForAI();
+      if (value === 'diagnostic') return this.startDiagnosticMode();
       if (value === 'sell') return this.startSellFlow();
       if (value === 'buy') return this.startBuyFlow();
     });
@@ -309,7 +303,6 @@ class ChatBot {
 
   startAIChatMode() {
     this.state = { mode: 'ai_chat', step: 0, answers: {}, conversation: [], chatSubject: null, vehicleInfo: { brand: null, model: null, year: null, fuelType: null } };
-    this.enableFullscreen();
     const clientData = this.getConnectedClient();
     if (clientData) {
       this.offerResumeConversation().then(hasConv => {
@@ -384,11 +377,24 @@ class ChatBot {
       return;
     }
     if (this.state.mode === 'ai_chat') return this.handleAIChat(text);
+    if (this.state.mode === 'diagnostic') return this.handleDiagnosticMessage(text, false);
     this.addMessage('Choisis une option pour commencer.', 'bot');
     this.showMainChoices();
   }
 
   async handleAIChat(userMessage) {
+    // Mode diagnostic — rediriger AVANT tout le reste
+    if (this.state.mode === 'diagnostic') {
+      if (this.pendingTextHandler) {
+        const h = this.pendingTextHandler;
+        this.pendingTextHandler = null;
+        h(userMessage);
+      } else {
+        this.handleDiagnosticMessage(userMessage, false);
+      }
+      return;
+    }
+
     this.setLoading(true);
     if (!this.state.conversation) this.state.conversation = [];
     this.state.conversation.push({ role: 'user', content: userMessage });
@@ -572,6 +578,338 @@ class ChatBot {
         });
       }
     });
+  }
+
+
+  // ─────────────────────────────────────────────
+  // MODE DIAGNOSTIC MECANO IA
+  // ─────────────────────────────────────────────
+
+  startDiagnosticMode() {
+    this.state = {
+      mode: 'diagnostic',
+      step: 0,
+      diagLevel: 1,
+      answers: {},
+      conversation: [],
+      chatSubject: null,
+      currentSymptom: null,
+      currentDiagnosis: null,
+      vehicleInfo: { brand: null, model: null, year: null, km: null, fuelType: null }
+    };
+    this.enableFullscreen();
+    const self = this;
+
+    this.addMessage('🔧 Mode Diagnostic activé. Je suis ton mécano IA.', 'bot');
+    this.addMessage('Je vais te guider étape par étape, du plus simple au plus complexe. Suis bien les étapes — ça évite les fausses pistes et les dépenses inutiles.', 'bot');
+
+    // Demander le véhicule en premier
+    this.askText('Commence par me dire : quel véhicule tu as ? (marque, modèle, année et km)', async function(vehicleText) {
+      self.parsVehicleInfo(vehicleText);
+      self.state.chatSubject = vehicleText;
+
+      // Charger le profil technique du véhicule depuis le serveur
+      self.addMessage('Recherche du profil technique de ton véhicule...', 'bot');
+      const waitProfile = self.messages.length - 1;
+      try {
+        const profileRes = await fetch(self.apiUrl.replace('/api/chat', '/api/vehicle-profile'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(self.state.vehicleInfo)
+        });
+        if (profileRes.ok) {
+          const profileData = await profileRes.json();
+          if (profileData.profile) {
+            self.state.vehicleProfile = profileData.profile;
+            const p = profileData.profile;
+            let summary = '✅ Véhicule identifié !';
+            if (p.injection) summary += ' · Injection: ' + p.injection;
+            if (p.turbo) summary += ' · Turbo: ' + p.turbo;
+            if (p.distribution) summary += ' · Distribution: ' + p.distribution;
+            if (self.messages[waitProfile]) { self.messages[waitProfile].text = summary; self.renderMessages(); }
+          } else {
+            if (self.messages[waitProfile]) { self.messages[waitProfile].text = '✅ Véhicule noté — ' + vehicleText; self.renderMessages(); }
+          }
+        }
+      } catch(e) {
+        if (self.messages[waitProfile]) { self.messages[waitProfile].text = '✅ Véhicule noté — ' + vehicleText; self.renderMessages(); }
+      }
+
+      self.addMessage('Et quel est le problème exactement ? Décris-moi ce que tu constates.', 'bot');
+      self.pendingTextHandler = function(symptom) {
+        self.state.currentSymptom = symptom;
+        self.state.conversation.push({ role: 'user', content: 'Véhicule: ' + vehicleText + '. Problème: ' + symptom });
+        self.handleDiagnosticMessage(symptom, true);
+      };
+    });
+  }
+
+  parsVehicleInfo(text) {
+    const t = text.toLowerCase();
+    const brands = ['renault','peugeot','citroen','volkswagen','vw','audi','bmw','mercedes','ford','toyota','opel','nissan','fiat','seat','skoda','honda','hyundai','kia','dacia','volvo','mazda','mini','jeep','land rover','porsche','alfa romeo'];
+    for (const b of brands) {
+      if (t.includes(b)) { this.state.vehicleInfo.brand = b; break; }
+    }
+    const kmMatch = text.match(/(\d[\d\s]*)\s*(?:km|kilometres?)/i);
+    if (kmMatch) this.state.vehicleInfo.km = kmMatch[1].replace(/\s/g,'');
+    const yearMatch = text.match(/(19[89]\d|20[012]\d)/);
+    if (yearMatch) this.state.vehicleInfo.year = yearMatch[1];
+    if (t.includes('diesel') || t.includes('gazole')) this.state.vehicleInfo.fuelType = 'diesel';
+    else if (t.includes('essence')) this.state.vehicleInfo.fuelType = 'essence';
+    else if (t.includes('hybrid')) this.state.vehicleInfo.fuelType = 'hybride';
+    else if (t.includes('electr')) this.state.vehicleInfo.fuelType = 'electrique';
+  }
+
+  async handleDiagnosticMessage(userMessage, isFirstSymptom) {
+    if (!userMessage || !userMessage.trim()) return;
+    if (this.isLoading) return;
+    this.setLoading(true);
+
+    if (!isFirstSymptom) {
+      this.state.conversation.push({ role: 'user', content: userMessage });
+      if (!this.state.chatSubject) {
+        this.state.chatSubject = userMessage.substring(0, 50);
+        this.generateConversationTitle(userMessage);
+      }
+      this.updateFuelTypeFromMessage(userMessage);
+    }
+
+    // Détecter montée de niveau
+    const lowerMsg = userMessage.toLowerCase();
+    const levelUpKeywords = ['ok c est bon', 'verifie', 'c est fait', 'rien a signaler', 'normal', 'pas de probleme', 'ok niveau', 'fait le test', 'j ai fait'];
+    const shouldLevelUp = levelUpKeywords.some(k => lowerMsg.includes(k));
+    if (shouldLevelUp && this.state.diagLevel < 3) {
+      this.state.diagLevel++;
+    }
+
+    this.addDiagLevelIndicator();
+    this.addMessage('Analyse en cours...', 'bot');
+    const waitIdx = this.messages.length - 1;
+    const upd = (t) => { if (this.messages[waitIdx]) { this.messages[waitIdx].text = t; this.renderMessages(); } };
+    const t1 = setTimeout(() => upd('Connexion au serveur...'), 4000);
+    const t2 = setTimeout(() => upd('Le serveur démarre...'), 12000);
+    const clearT = () => { clearTimeout(t1); clearTimeout(t2); };
+
+    try {
+      const systemPrompt = this.buildDiagnosticSystemPrompt();
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), 55000);
+      const res = await fetch(this.apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userMessage,
+          systemPrompt: systemPrompt,
+          conversationHistory: this.state.conversation,
+          vehicleInfo: this.state.vehicleInfo,
+          diagMode: true,
+        }),
+        signal: ctrl.signal
+      });
+      clearTimeout(tid);
+      clearT();
+      this.messages.splice(waitIdx, 1);
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.response) {
+          this.state.conversation.push({ role: 'assistant', content: data.response });
+          this.addMessage(data.response, 'bot');
+          this.saveConversation();
+          this.updateChatLead({ last_message: userMessage, last_response: data.response });
+
+          // Détecter si résolution trouvée
+          const isResolved = data.response.toLowerCase().includes('c\'etait bien') ||
+                             data.response.toLowerCase().includes('probleme resolu') ||
+                             data.response.toLowerCase().includes('cause identifiee');
+          if (isResolved) {
+            this.state.diagLevel = 1;
+          }
+
+          // Proposer étape suivante ou photo
+          const self = this;
+          if (data.response.toLowerCase().includes('niveau 3') || this.state.diagLevel === 3) {
+            setTimeout(() => {
+              self.addButtons('On est au niveau avancé. Tu veux :', [
+                { label: '📸 Envoyer une photo', value: 'photo' },
+                { label: '🔧 ZenScan — diagnostic pro', value: 'zenscan' },
+                { label: 'Continuer le diagnostic', value: 'continue' },
+              ], (v) => {
+                if (v === 'photo') self.offerPhotoAnalysis(self.state.currentSymptom);
+                else if (v === 'zenscan') {
+                  self.addMessage('Le ZenScan c\'est notre diagnostic électronique professionnel sur place. On branche l\'outil, on lit tous les défauts, on te donne un rapport complet.', 'bot');
+                  self.offerContact();
+                }
+                else self.setDiagnosticInput();
+              });
+            }, 1500);
+          } else {
+            self.setDiagnosticInput();
+          }
+        }
+      } else {
+        this.messages.splice(waitIdx, 1);
+        this.addMessage('Souci technique, réessaie.', 'bot');
+      }
+    } catch (err) {
+      clearT();
+      if (this.messages[waitIdx]) { this.messages[waitIdx].text = 'Serveur injoignable. Réessaie dans 1 min.'; this.renderMessages(); }
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
+  setDiagnosticInput() {
+    // Rebrancher le handler texte pour continuer le diagnostic
+    const self = this;
+    this.pendingTextHandler = function(msg) {
+      self.handleDiagnosticMessage(msg, false);
+    };
+  }
+
+
+  addReduceButton() {
+    // Retirer un éventuel bouton existant
+    const existing = document.getElementById('diag-reduce-btn');
+    if (existing) existing.remove();
+
+    const btn = document.createElement('button');
+    btn.id = 'diag-reduce-btn';
+    btn.innerHTML = '⊡ Réduire la fenêtre';
+    btn.style.cssText = [
+      'position:absolute', 'top:10px', 'right:50px',
+      'padding:5px 12px', 'border-radius:8px',
+      'background:rgba(255,255,255,0.08)',
+      'border:1px solid rgba(255,255,255,0.15)',
+      'color:rgba(255,255,255,0.6)', 'font-size:11px',
+      'font-weight:600', 'cursor:pointer', 'font-family:inherit',
+      'transition:all .2s', 'z-index:10'
+    ].join(';');
+    btn.onmouseenter = () => { btn.style.background = 'rgba(255,255,255,0.15)'; btn.style.color = '#fff'; };
+    btn.onmouseleave = () => { btn.style.background = 'rgba(255,255,255,0.08)'; btn.style.color = 'rgba(255,255,255,0.6)'; };
+    btn.onclick = () => {
+      this.disableFullscreen();
+      btn.remove();
+      // Ajouter bouton pour re-agrandir
+      this.addExpandButton();
+    };
+
+    const chatBox = document.getElementById('chat-box');
+    if (chatBox) {
+      chatBox.style.position = 'relative';
+      chatBox.appendChild(btn);
+    }
+  }
+
+  addExpandButton() {
+    const existing = document.getElementById('diag-expand-btn');
+    if (existing) existing.remove();
+
+    const btn = document.createElement('button');
+    btn.id = 'diag-expand-btn';
+    btn.innerHTML = '⛶ Plein écran';
+    btn.style.cssText = [
+      'position:absolute', 'top:10px', 'right:50px',
+      'padding:5px 12px', 'border-radius:8px',
+      'background:rgba(16,185,129,0.15)',
+      'border:1px solid rgba(16,185,129,0.3)',
+      'color:#10b981', 'font-size:11px',
+      'font-weight:600', 'cursor:pointer', 'font-family:inherit',
+      'transition:all .2s', 'z-index:10'
+    ].join(';');
+    btn.onmouseenter = () => { btn.style.background = 'rgba(16,185,129,0.25)'; };
+    btn.onmouseleave = () => { btn.style.background = 'rgba(16,185,129,0.15)'; };
+    btn.onclick = () => {
+      this.enableFullscreen();
+      btn.remove();
+      this.addReduceButton();
+    };
+
+    const chatBox = document.getElementById('chat-box');
+    if (chatBox) chatBox.appendChild(btn);
+  }
+
+  addDiagLevelIndicator() {
+    const level = this.state.diagLevel || 1;
+    const labels = ['', '🟢 Niveau 1 — Vérifications simples', '🟡 Niveau 2 — Contrôles accessibles', '🔴 Niveau 3 — Diagnostic avancé'];
+    const colors = ['', 'rgba(16,185,129,0.15)', 'rgba(245,158,11,0.15)', 'rgba(239,68,68,0.15)'];
+    const borderColors = ['', '#10b981', '#f59e0b', '#ef4444'];
+
+    const indicator = document.createElement('div');
+    indicator.style.cssText = [
+      'display:flex', 'align-items:center', 'gap:8px',
+      'padding:7px 14px', 'border-radius:10px', 'margin:6px 0',
+      'background:' + colors[level],
+      'border:1px solid ' + borderColors[level],
+      'font-size:12px', 'font-weight:700', 'color:' + borderColors[level],
+      'font-family:inherit', 'letter-spacing:.3px'
+    ].join(';');
+    indicator.textContent = labels[level];
+    if (this.chatMessages) { this.chatMessages.appendChild(indicator); this.chatMessages.scrollTop = this.chatMessages.scrollHeight; }
+  }
+
+  buildDiagnosticSystemPrompt() {
+    const v = this.state.vehicleInfo;
+    const p = this.state.vehicleProfile || {};
+    const vehicleContext = [
+      v.brand ? 'Marque: ' + v.brand : '',
+      v.model ? 'Modèle: ' + v.model : '',
+      v.year  ? 'Année: ' + v.year   : '',
+      v.km    ? 'Km: ' + v.km        : '',
+      v.fuelType ? 'Carburant: ' + v.fuelType : '',
+      v.engine ? 'Moteur: ' + v.engine : '',
+      p.injection ? 'Système injection: ' + p.injection : '',
+      p.turbo ? 'Turbo: ' + p.turbo : '',
+      p.distribution ? 'Distribution: ' + p.distribution : '',
+      p.points_faibles && p.points_faibles.length ? 'Points faibles connus: ' + p.points_faibles.join(', ') : '',
+      p.pieces_surveillance && p.pieces_surveillance.length ? 'Pièces à surveiller: ' + p.pieces_surveillance.join(', ') : '',
+    ].filter(Boolean).join('\n');
+
+    const level = this.state.diagLevel || 1;
+    const levelInstructions = level === 1
+      ? 'Tu es au NIVEAU 1. Propose UNIQUEMENT des vérifications sans outil, sans démontage : niveaux liquides, fusibles, connexions, voyants, bruits caractéristiques, comportement à froid/chaud. Maximum 2-3 vérifications par réponse.'
+      : level === 2
+      ? 'Tu es au NIVEAU 2. Les vérifications simples sont OK. Propose des contrôles accessibles avec outillage basique : multimètre, pince ampèremétrique, pressions, capteurs accessibles. Explique comment faire concrètement.'
+      : 'Tu es au NIVEAU 3. Les contrôles basiques sont OK. Aborde les diagnostics avancés : injection, calculateur, distribution, mécanique interne. Sois précis sur les symptômes distinctifs. Recommande un ZenScan si nécessaire.';
+
+    return `Tu es Marco, mécanicien-ingénieur automobile avec 25 ans de terrain. Tu penses à voix haute, tu raisonnes en direct avec le client, comme si vous étiez tous les deux sous le capot.
+
+${vehicleContext ? '🚗 Véhicule: ' + vehicleContext : ''}
+
+TON STYLE — CE QUI TE DIFFÉRENCIE D'UN CHATBOT LAMBDA :
+Tu ne proposes pas juste des tests. Tu RÉFLÉCHIS à voix haute. Tu dis ce que TU penses vraiment.
+Exemple : "Attends, si la pompe tourne mais t'as pas de débit, l'impeller peut tourner dans le vide — ça arrive souvent sur ce type de pompe quand la turbine se désolidarise de l'axe. Avant de changer la pompe, vérifie..."
+Tu anticipes les pièges, tu parles des cas que tu as déjà vus, tu donnes ton avis personnel sur ce qui est probable.
+
+COMMENT TU FONCTIONNES :
+1. **Tu analyses d'abord** ce qui s'est passé mécaniquement/électriquement — cause à effet, physique du problème.
+2. **Tu classes par probabilité** — la cause la plus probable d'abord, toujours. Jamais les fusibles avant l'ampoule si c'est une ampoule qui a claké.
+3. **Tu anticipes les pièges** — "attention, même si X fonctionne, ça ne veut pas dire que Y est bon car..."
+4. **Tu ne laisses rien de côté** — si une pièce peut être HS même en tournant, tu le dis.
+5. **Maximum 2 vérifications** par réponse, pas plus. On avance pas à pas.
+6. **Une seule question** à la fin pour avancer.
+
+FORMAT DE RÉPONSE :
+→ D'abord ton analyse : ce qui s'est probablement passé, pourquoi, le mécanisme physique.
+→ Ensuite 1-2 vérifications concrètes classées par probabilité.
+→ Pour chaque vérification :
+  **🔍 [Ce qu'on vérifie] — [Pourquoi c'est la cause la plus probable]**
+  → Geste concret : [1 phrase précise]
+  → Si c'est ça : [ce que tu verras/mesureras]
+  → Piège à éviter : [ce qui peut induire en erreur]
+→ Termine par UNE question précise.
+
+RÈGLES NON NÉGOCIABLES :
+- ANTI-HALLUCINATION ABSOLUE : si tu n'es pas certain à 100% d'un détail technique précis, tu dis "je ne suis pas certain, vérifie dans la doc ou sur un forum spécialisé". Tu ne combles JAMAIS un vide de connaissance par une approximation.
+- Tu ne sautes jamais une étape même si le client pense connaître la cause.
+- Tu parles vrai : "j'ai vu ça des dizaines de fois", "méfie-toi de...", "c'est con mais vérifie d'abord..."
+- Ton niveau de détail technique s'adapte au client.
+- ${levelInstructions}
+
+CONNAISSANCES TECHNIQUES SPÉCIFIQUES — POMPES INJECTION DIESEL :
+VP37/VP44 (pompes rotatives Bosch) : L'amorçage se fait par DÉPRESSION, pas par remplissage. Il n'y a pas de réservoir interne à remplir. Procédure correcte : 1) Remplir le filtre à gasoil (c'est lui qui alimente la pompe). 2) Desserrer légèrement les tuyaux HP pour purger l'air. 3) Amorçage par dépression : poire d'amorçage sur le circuit basse pression OU tours de démarreur répétés. 4) L'électrovanne sur la VP37 est une vanne ON/OFF, pas une pompe — ne pas confondre. Sans purge de l'air dans les HP, le moteur ne démarrera jamais même si la pompe est bonne.
+
+PRINCIPE GÉNÉRAL DIESEL : Un diesel qui ne démarre pas après remplacement de pompe = air dans le circuit haute pression. Toujours purger les HP avant de conclure que la pompe est défectueuse.`;
   }
 
   startSellFlow() {

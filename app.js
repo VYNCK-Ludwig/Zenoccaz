@@ -106,19 +106,32 @@ async function loadVehicles(){
   render();
 }
 
+const SOLD_DISPLAY_DAYS = 7; // Nombre de jours pendant lesquels un véhicule vendu reste visible
+
 function render(){
   if(!vehiclesEl) return
   vehiclesEl.innerHTML = ''
-  // Filtrer les véhicules : afficher seulement ceux qui sont "Disponible" (ou sans status)
-  const availableVehicles = vehicles.filter(v => !v.status || v.status === 'Disponible')
-  availableVehicles.forEach(v=> vehiclesEl.appendChild(vehicleCard(v)))
-  // rebuild carousel to reflect current vehicles images
+  const now = new Date();
+  const visibleVehicles = vehicles.filter(v => {
+    if (!v.status || v.status === 'Disponible') return true;
+    if (v.status === 'Vendu') {
+      // Afficher pendant 7 jours après la vente
+      if (!v.sold_at) return false;
+      const soldDate = new Date(v.sold_at);
+      const diffDays = (now - soldDate) / (1000 * 60 * 60 * 24);
+      return diffDays <= SOLD_DISPLAY_DAYS;
+    }
+    return false;
+  });
+  visibleVehicles.forEach(v=> vehiclesEl.appendChild(vehicleCard(v)))
   try{ buildCarousel() }catch(e){/* ignore */}
 }
 
 function vehicleCard(v){
   const card = document.createElement('article')
   card.className = 'vehicle-card'
+  card.style.position = 'relative'
+  card.style.overflow = 'hidden'
 
   const img = document.createElement('img')
   img.src = v.image || 'https://via.placeholder.com/600x400?text=Voiture'
@@ -161,6 +174,36 @@ function vehicleCard(v){
     actions.appendChild(delBtn)
   }
 
+  // Ruban VENDU diagonal si statut vendu
+  if (v.status === 'Vendu') {
+    const ribbon = document.createElement('div')
+    ribbon.style.cssText = [
+      'position:absolute',
+      'top:22px',
+      'right:-30px',
+      'width:140px',
+      'background:linear-gradient(135deg,#cc2200,#ff3311)',
+      'color:#f0c040',
+      'text-align:center',
+      'font-family:Courier New,monospace',
+      'font-size:12px',
+      'font-weight:900',
+      'letter-spacing:0.2em',
+      'padding:6px 0',
+      'transform:rotate(35deg)',
+      'box-shadow:0 2px 10px rgba(204,34,0,0.6)',
+      'border-top:1px solid rgba(240,192,64,0.5)',
+      'border-bottom:1px solid rgba(240,192,64,0.5)',
+      'z-index:10',
+      'pointer-events:none'
+    ].join(';')
+    ribbon.textContent = 'VENDU'
+    card.appendChild(ribbon)
+
+    // Overlay sombre sur l'image
+    img.style.filter = 'grayscale(40%) brightness(0.75)'
+  }
+
   card.appendChild(img)
   card.appendChild(title)
   card.appendChild(desc)
@@ -174,32 +217,18 @@ function save(){
 }
 
 function editVehicle(id){
-  const v = vehicles.find(x=>x.id===id)
-  if(!v) return
-  const make = prompt('Marque', v.make) || v.make
-  const model = prompt('Modèle', v.model) || v.model
-  const year = prompt('Année', v.year) || v.year
-  const price = prompt('Prix (€)', v.price) || v.price
-  v.make = make; v.model = model; v.year = year; v.price = price
-  save()
+  // Redirige vers l'admin pour édition complète
+  window.location.href = 'admin.html#vehicules';
 }
 
 function deleteVehicle(id){
-  if(!confirm('Supprimer ce véhicule ?')) return
-  vehicles = vehicles.filter(v=>v.id!==id)
-  save()
+  // Redirige vers l'admin pour suppression
+  window.location.href = 'admin.html#vehicules';
 }
 
 function addVehicle(){
-  const make = prompt('Marque')
-  if(!make) return
-  const model = prompt('Modèle')||''
-  const year = prompt('Année')||''
-  const price = prompt('Prix (€)')||'0'
-  const id = Date.now()
-  const newV = {id, make, model, year, price, description:'Ajouté via interface admin'}
-  vehicles.unshift(newV)
-  save()
+  // Redirige vers l'admin pour ajout
+  window.location.href = 'admin.html#vehicules';
 }
 
 function setAdmin(on){
@@ -272,26 +301,43 @@ document.addEventListener('keydown', (e)=>{
 addBtn && addBtn.addEventListener('click', addVehicle)
 toggleAdminBtn && toggleAdminBtn.addEventListener('click', ()=> setAdmin(false))
 
-// recharge périodiquement depuis Supabase (pour les changements dans n'importe quelle fenêtre)
-window.setInterval(async ()=>{
-  try{
-    if(window.supabaseClient && window.supabaseClient.fetchVehicles){
-      const { data } = await window.supabaseClient.fetchVehicles()
-      const newVehicles = data || []
-      // compare pour éviter des rendus inutiles
-      if(JSON.stringify(newVehicles) !== JSON.stringify(vehicles)){
-        vehicles = newVehicles
-        render()
-      }
-    }
-  }catch(e){
-    // ignore errors
+// Supabase Realtime — écoute les changements en temps réel
+function setupRealtimeVehicles() {
+  try {
+    if (!window.supabase || !window.supabase.channel) return;
+    const channel = window.supabase
+      .channel('vehicles-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'vehicles' }, async () => {
+        // Recharger uniquement quand un changement est détecté
+        if (window.supabaseClient && window.supabaseClient.fetchVehicles) {
+          const { data } = await window.supabaseClient.fetchVehicles();
+          vehicles = data || [];
+          render();
+        }
+      })
+      .subscribe();
+  } catch(e) {
+    // Fallback polling léger si Realtime indisponible
+    window.setInterval(async () => {
+      try {
+        if (window.supabaseClient && window.supabaseClient.fetchVehicles) {
+          const { data } = await window.supabaseClient.fetchVehicles();
+          const newV = data || [];
+          if (JSON.stringify(newV) !== JSON.stringify(vehicles)) {
+            vehicles = newV;
+            render();
+          }
+        }
+      } catch(e) {}
+    }, 30000); // toutes les 30s au lieu de 2s
   }
-}, 2000)
+}
 
 // init
 (() => {
   const storedAdmin = localStorage.getItem(ADMIN_KEY)
   setAdmin(storedAdmin === '1')
-  loadVehicles()
+  loadVehicles().then(() => {
+    setupRealtimeVehicles();
+  });
 })()

@@ -1,0 +1,26 @@
+{
+  "name": "ZENOCCAZ Admin",
+  "short_name": "ZenAdmin",
+  "description": "Panneau d'administration ZENOCCAZ",
+  "start_url": "/admin.html",
+  "display": "standalone",
+  "background_color": "#0a0e1a",
+  "theme_color": "#10b981",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%230a0e1a'/%3E%3Cpath d='M40 88L56 52C59 43 67 38 76 38H116C125 38 133 43 136 52L152 88' stroke='%2310b981' stroke-width='10' stroke-linecap='round' fill='none'/%3E%3Crect x='28' y='88' width='136' height='56' rx='12' fill='rgba(16,185,129,0.15)' stroke='%2310b981' stroke-width='8'/%3E%3Ccircle cx='68' cy='116' r='14' fill='%2310b981'/%3E%3Ccircle cx='124' cy='116' r='14' fill='%2310b981'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%230a0e1a'/%3E%3Cpath d='M100 234L140 130C147 108 167 94 188 94H324C345 94 365 108 372 130L412 234' stroke='%2310b981' stroke-width='24' stroke-linecap='round' fill='none'/%3E%3Crect x='70' y='234' width='372' height='148' rx='28' fill='rgba(16,185,129,0.15)' stroke='%2310b981' stroke-width='20'/%3E%3Ccircle cx='178' cy='308' r='36' fill='%2310b981'/%3E%3Ccircle cx='334' cy='308' r='36' fill='%2310b981'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "fr"
+}

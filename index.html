@@ -4,37 +4,48 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ZENOCCAZ — Vente de véhicules d'occasion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="chatbox.css">
 </head>
 <body>
+  <!-- Scroll progress bar -->
+  <div class="scroll-indicator" id="scroll-indicator"></div>
+
   <header class="site-header">
     <div class="admin-header">
       <div class="admin-title">
-        <h1 style="margin:0;font-size:28px;font-weight:700;"><span style="color:white;">zen</span> <span style="color:#10b981;">occaz</span> <span style="color:#f97316;">.fr</span></h1>
+        <h1><span style="color:white;">zen</span> <span style="color:var(--primary);">occaz</span> <span style="color:var(--accent);">.com</span></h1>
         <p class="tag">Votre spécialiste en véhicules d'occasion premium</p>
       </div>
       <div class="admin-actions">
         <a href="index.html" class="btn">accueil</a>
         <a href="#vehicules" class="btn">véhicules</a>
         <a href="services.html" class="btn">services</a>
+        <a href="parrainage.html" class="btn" style="position:relative;">
+          parrainage
+          <span style="position:absolute;top:-6px;right:-6px;background:linear-gradient(135deg,#f59e0b,#f97316);color:white;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;text-transform:uppercase;letter-spacing:0.5px;">250€</span>
+        </a>
         <a href="#contact" class="btn">contact</a>
-        <a href="client-account.html" id="account-btn" class="btn" style="background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;">mon compte</a>
+        <a href="client-account.html" id="account-btn" class="btn primary">mon compte</a>
       </div>
     </div>
   </header>
 
   <!-- Hero Section -->
-  <section id="hero" class="hero-section" style="background:linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('hero-bg.jpg');background-size:cover;background-position:center;min-height:600px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:white;padding:40px 20px;">
-    <div style="max-width:800px;">
-      <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:30px;">
-        <img src="zenoccaz-logo.jpg" alt="ZENOCCAZ Logo" style="width:60px;height:60px;border-radius:14px;object-fit:cover;" />
-        <h1 style="font-size:48px;margin:0;font-weight:700;">zen <span style="color:#10b981;">occaz</span> <span style="color:#f97316;">.fr</span></h1>
+  <section id="hero" class="hero-section">
+    <div class="hero-content">
+      <div class="hero-logo-wrapper">
+        <img src="zenoccaz-logo.jpg" alt="ZENOCCAZ Logo" />
+        <h1 class="hero-title">zen <span style="color:var(--primary);">occaz</span> <span style="color:var(--accent);">.com</span></h1>
       </div>
-      <h2 style="font-size:36px;margin:0 0 20px;font-weight:600;">Achetez malin,<br><span style="color:#10b981;">roulez serein</span></h2>
-      <p style="font-size:16px;margin:0 0 40px;color:rgba(255,255,255,0.9);">Votre spécialiste en véhicules d'occasion premium</p>
-      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <h2 class="hero-subtitle">Achetez malin,<br><span class="highlight">roulez serein</span></h2>
+      <p class="hero-description">Votre spécialiste en véhicules d'occasion premium</p>
+      <div class="hero-buttons">
         <button class="btn primary" onclick="document.getElementById('vehicules').scrollIntoView({behavior:'smooth'})">découvrir nos véhicules</button>
-        <button class="btn" onclick="document.getElementById('avis').scrollIntoView({behavior:'smooth'})" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);">Laisser un avis</button>
+        <button class="btn secondary" onclick="document.getElementById('avis').scrollIntoView({behavior:'smooth'})">Laisser un avis</button>
       </div>
     </div>
   </section>
@@ -51,33 +62,33 @@
       </label>
       <div id="login-error" class="error hidden" role="alert"></div>
       <div class="modal-actions">
-        <button id="login-submit" class="btn">Se connecter</button>
+        <button id="login-submit" class="btn primary">Se connecter</button>
         <button id="login-cancel" class="btn">Annuler</button>
       </div>
     </div>
   </div>
 
-  <main style="max-width:1200px;margin:0 auto;padding:40px 20px;">
+  <main>
     <section id="vehicules" class="vehicles-section">
-      <h2 style="font-size:32px;margin:0 0 30px;color:var(--text);">Nos véhicules disponibles</h2>
+      <h2>Nos véhicules disponibles</h2>
       <div id="vehicles" class="vehicles-grid" aria-live="polite"></div>
     </section>
 
     <!-- Section Avis Clients -->
-    <section id="avis" class="reviews-section" style="margin-top:80px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:40px;border-radius:12px;">
-      <div style="text-align:center;margin-bottom:40px;">
-        <h2 style="font-size:36px;margin:0 0 12px;color:var(--text);">Avis de nos <span style="color:#10b981;">clients</span></h2>
-        <p style="color:var(--muted);font-size:16px;">Partagez votre expérience avec ZENOCCAZ</p>
+    <section id="avis" class="reviews-section">
+      <div style="text-align:center;margin-bottom:50px;">
+        <h2>Avis de nos <span style="color:var(--primary);">clients</span></h2>
+        <p style="color:var(--muted);font-size:18px;">Partagez votre expérience avec ZENOCCAZ</p>
       </div>
 
-      <div id="reviews-list" style="margin-bottom:40px;display:grid;gap:20px;"></div>
+      <div id="reviews-list"></div>
 
-      <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:32px;max-width:700px;margin:0 auto;">
-        <h3 style="margin:0 0 24px;color:var(--text);font-size:24px;text-align:center;">Laissez votre avis</h3>
-        <form id="review-form" style="display:flex;flex-direction:column;gap:20px;">
+      <div id="review-form-wrapper">
+        <h3 style="margin:0 0 32px;color:var(--text);font-size:28px;text-align:center;font-family:'Orbitron',sans-serif;">Laissez votre avis</h3>
+        <form id="review-form">
           <div>
-            <label style="display:block;margin-bottom:12px;color:var(--text);font-weight:600;">Votre note</label>
-            <div id="star-rating" style="display:flex;gap:8px;font-size:32px;cursor:pointer;justify-content:center;">
+            <label style="display:block;margin-bottom:16px;color:var(--text);font-weight:600;text-align:center;">Votre note</label>
+            <div id="star-rating">
               <span class="star" data-rating="1">☆</span>
               <span class="star" data-rating="2">☆</span>
               <span class="star" data-rating="3">☆</span>
@@ -86,68 +97,127 @@
             </div>
             <input type="hidden" id="rating-value" value="0">
           </div>
-          <div>
-            <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Votre nom</label>
-            <input type="text" id="review-name" placeholder="Jean Dupont" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+          <div style="margin-bottom:20px;">
+            <label style="display:block;margin-bottom:12px;color:var(--text);font-weight:600;">Votre nom</label>
+            <input type="text" id="review-name" placeholder="Jean Dupont" required />
           </div>
-          <div>
-            <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Votre commentaire</label>
-            <textarea id="review-comment" placeholder="Partagez votre expérience avec nous..." rows="5" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;resize:vertical;"></textarea>
+          <div style="margin-bottom:24px;">
+            <label style="display:block;margin-bottom:12px;color:var(--text);font-weight:600;">Votre commentaire</label>
+            <textarea id="review-comment" placeholder="Partagez votre expérience avec nous..." rows="5" required style="resize:vertical;"></textarea>
           </div>
-          <button type="submit" class="btn primary" style="padding:14px 32px;font-size:16px;font-weight:600;">✨ Publier mon avis</button>
+          <button type="submit" class="btn primary" style="width:100%;padding:16px;font-size:17px;font-weight:700;">✨ Publier mon avis</button>
         </form>
       </div>
     </section>
   </main>
 
+  <!-- Section Contact -->
+  <section id="contact" style="padding:80px 20px;max-width:800px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:50px;">
+      <h2 style="font-family:'Orbitron',sans-serif;font-size:36px;color:var(--text);margin-bottom:12px;">
+        Nous <span style="color:var(--primary);">contacter</span>
+      </h2>
+      <p style="color:var(--muted);font-size:16px;">Une question ? Un véhicule qui vous intéresse ? On vous répond rapidement.</p>
+    </div>
+    <div id="contact-success" style="display:none;text-align:center;padding:40px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.3);border-radius:16px;margin-bottom:32px;">
+      <div style="font-size:48px;margin-bottom:16px;">✅</div>
+      <h3 style="color:#10b981;font-family:'Orbitron',sans-serif;margin-bottom:8px;">Message envoyé !</h3>
+      <p style="color:var(--muted);">Nous vous répondrons dans les plus brefs délais.</p>
+    </div>
+    <form id="contact-form" style="display:flex;flex-direction:column;gap:20px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div>
+          <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;font-size:14px;">Nom complet *</label>
+          <input type="text" id="contact-name" placeholder="Jean Dupont" required
+            style="width:100%;padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:var(--text);font-size:15px;transition:border-color 0.2s;box-sizing:border-box;"
+            onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'" />
+        </div>
+        <div>
+          <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;font-size:14px;">Email *</label>
+          <input type="email" id="contact-email" placeholder="jean@exemple.fr" required
+            style="width:100%;padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:var(--text);font-size:15px;transition:border-color 0.2s;box-sizing:border-box;"
+            onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'" />
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div>
+          <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;font-size:14px;">Téléphone</label>
+          <input type="tel" id="contact-phone" placeholder="06 12 34 56 78"
+            style="width:100%;padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:var(--text);font-size:15px;transition:border-color 0.2s;box-sizing:border-box;"
+            onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'" />
+        </div>
+        <div>
+          <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;font-size:14px;">Sujet</label>
+          <select id="contact-subject"
+            style="width:100%;padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:var(--text);font-size:15px;box-sizing:border-box;cursor:pointer;">
+            <option value="vehicule">Renseignement véhicule</option>
+            <option value="zenscan">Service ZenScan</option>
+            <option value="reprise">Reprise / rachat</option>
+            <option value="autre">Autre demande</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;font-size:14px;">Message *</label>
+        <textarea id="contact-message" placeholder="Décrivez votre demande..." required rows="5"
+          style="width:100%;padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:var(--text);font-size:15px;resize:vertical;transition:border-color 0.2s;box-sizing:border-box;"
+          onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'"></textarea>
+      </div>
+      <button type="submit" id="contact-submit-btn" class="btn primary"
+        style="padding:16px;font-size:16px;font-weight:700;border-radius:10px;cursor:pointer;">
+        ✉️ Envoyer le message
+      </button>
+    </form>
+  </section>
+
   <footer class="site-footer">
     © ZENOCCAZ — Vente de véhicules d'occasion premium
     <span style="margin:0 8px;">|</span>
-    <a href="mentions-legales.html" style="color:var(--muted);text-decoration:none;transition:color 0.2s;">Mentions légales</a>
+    <a href="mentions-legales.html" style="color:var(--primary);text-decoration:none;transition:color 0.2s;">Mentions légales</a>
   </footer>
 
   <!-- Modal de connexion/inscription client -->
-  <div id="client-login-modal" class="modal hidden" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;z-index:10000;">
-    <div style="background:#1a1a2e;padding:40px;border-radius:16px;max-width:450px;width:90%;border:1px solid rgba(255,255,255,0.1);">
+  <div id="client-login-modal" class="modal hidden">
+    <div class="modal-content" style="max-width:450px;">
       <div style="text-align:center;margin-bottom:32px;">
-        <h2 id="client-modal-title" style="margin:0 0 8px;color:var(--text);font-size:28px;">🔐 Connexion Client</h2>
+        <h2 id="client-modal-title" style="margin:0 0 8px;color:var(--text);font-size:28px;font-family:'Orbitron',sans-serif;">🔐 Connexion Client</h2>
         <p style="color:var(--muted);font-size:14px;">Connectez-vous ou créez un compte pour publier votre avis</p>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:24px;">
-        <button id="tab-login" onclick="switchClientTab('login')" class="btn" style="flex:1;padding:12px;background:linear-gradient(135deg,#10b981,#059669);border:none;color:#fff;">Connexion</button>
-        <button id="tab-signup" onclick="switchClientTab('signup')" class="btn" style="flex:1;padding:12px;background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--text);">Inscription</button>
+        <button id="tab-login" onclick="switchClientTab('login')" class="btn primary" style="flex:1;">Connexion</button>
+        <button id="tab-signup" onclick="switchClientTab('signup')" class="btn" style="flex:1;">Inscription</button>
       </div>
       <form id="client-login-form" style="display:flex;flex-direction:column;gap:20px;">
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Email</label>
-          <input type="email" id="login-client-email" placeholder="votre@email.com" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+          <input type="email" id="login-client-email" placeholder="votre@email.com" required />
         </div>
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Mot de passe</label>
-          <input type="password" id="login-client-password" placeholder="••••••••" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+          <input type="password" id="login-client-password" placeholder="••••••••" required />
         </div>
         <button type="submit" class="btn primary" style="padding:14px;font-size:16px;font-weight:600;margin-top:8px;">✅ Se connecter</button>
-        <button type="button" onclick="closeLoginModal()" class="btn" style="padding:12px;font-size:14px;background:transparent;border:1px solid rgba(255,255,255,0.2);">Annuler</button>
+        <button type="button" onclick="closeLoginModal()" class="btn">Annuler</button>
       </form>
       <form id="client-signup-form" style="display:none;flex-direction:column;gap:20px;">
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Nom complet</label>
-          <input type="text" id="signup-client-name" placeholder="Jean Dupont" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+          <input type="text" id="signup-client-name" placeholder="Jean Dupont" required />
         </div>
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Email</label>
-          <input type="email" id="signup-client-email" placeholder="votre@email.com" required style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+          <input type="email" id="signup-client-email" placeholder="votre@email.com" required />
         </div>
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Mot de passe</label>
-          <input type="password" id="signup-client-password" placeholder="••••••••" required minlength="6" style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+          <input type="password" id="signup-client-password" placeholder="••••••••" required minlength="6" />
         </div>
         <div>
           <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Confirmer le mot de passe</label>
-          <input type="password" id="signup-client-password-confirm" placeholder="••••••••" required minlength="6" style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:inherit;" />
+          <input type="password" id="signup-client-password-confirm" placeholder="••••••••" required minlength="6" />
         </div>
         <button type="submit" class="btn primary" style="padding:14px;font-size:16px;font-weight:600;margin-top:8px;">✨ Créer mon compte</button>
-        <button type="button" onclick="closeLoginModal()" class="btn" style="padding:12px;font-size:14px;background:transparent;border:1px solid rgba(255,255,255,0.2);">Annuler</button>
+        <button type="button" onclick="closeLoginModal()" class="btn">Annuler</button>
       </form>
     </div>
   </div>
@@ -176,6 +246,36 @@
       console.log('✅ Supabase prêt pour index.html');
       window.dispatchEvent(new Event('supabaseReady'));
       
+      // ====== SCROLL EFFECTS ======
+      const scrollIndicator = document.getElementById('scroll-indicator');
+      let ticking = false;
+
+      function updateScrollEffects() {
+        const scrolled = window.scrollY;
+        const height = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = Math.min(scrolled / height, 1);
+        
+        // Update CSS variable
+        document.documentElement.style.setProperty('--scroll-progress', progress);
+        
+        // Update progress bar
+        if (scrollIndicator) {
+          scrollIndicator.style.width = `${progress * 100}%`;
+        }
+        
+        ticking = false;
+      }
+
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          window.requestAnimationFrame(updateScrollEffects);
+          ticking = true;
+        }
+      });
+
+      // Initial call
+      updateScrollEffects();
+      
       // ====== AVIS CLIENTS ======
       let selectedRating = 0;
       const stars = document.querySelectorAll('.star');
@@ -200,8 +300,16 @@
 
       function updateStars(rating) {
         stars.forEach((star, index) => {
-          if (index < rating) { star.textContent = '★'; star.style.color = '#f59e0b'; }
-          else { star.textContent = '☆'; star.style.color = '#6b7280'; }
+          if (index < rating) { 
+            star.textContent = '★'; 
+            star.style.color = '#f59e0b';
+            star.style.textShadow = '0 0 10px rgba(245, 158, 11, 0.5)';
+          }
+          else { 
+            star.textContent = '☆'; 
+            star.style.color = '#6b7280';
+            star.style.textShadow = 'none';
+          }
         });
       }
 
@@ -215,22 +323,22 @@
 
       function displayReviews(reviews) {
         if (reviews.length === 0) {
-          reviewsList.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);">Aucun avis pour le moment. Soyez le premier !</div>';
+          reviewsList.innerHTML = '<div style="text-align:center;padding:60px;color:var(--muted);font-size:16px;">Aucun avis pour le moment. Soyez le premier !</div>';
           return;
         }
         reviewsList.innerHTML = reviews.map(review => {
           const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
           const date = new Date(review.created_at).toLocaleDateString('fr-FR');
           return `
-            <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:24px;">
-              <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+            <div class="review-card">
+              <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:16px;">
                 <div>
-                  <div style="font-size:20px;color:#f59e0b;margin-bottom:4px;">${stars}</div>
-                  <div style="font-weight:600;color:var(--text);font-size:16px;">${escapeHtml(review.client_name)}</div>
+                  <div style="font-size:24px;color:#f59e0b;margin-bottom:8px;filter:drop-shadow(0 0 10px rgba(245,158,11,0.3));">${stars}</div>
+                  <div style="font-weight:700;color:var(--text);font-size:18px;">${escapeHtml(review.client_name)}</div>
                 </div>
                 <div style="color:var(--muted);font-size:13px;">${date}</div>
               </div>
-              <p style="color:var(--text);line-height:1.6;margin:0;">${escapeHtml(review.comment)}</p>
+              <p style="color:var(--muted);line-height:1.7;margin:0;font-size:15px;">${escapeHtml(review.comment)}</p>
             </div>
           `;
         }).join('');
@@ -247,10 +355,9 @@
         if (selectedRating === 0) { alert('⭐ Veuillez sélectionner une note'); return; }
         const name = document.getElementById('review-name').value.trim();
         const comment = document.getElementById('review-comment').value.trim();
-        // ✅ localStorage (cohérent avec le reste)
-        const clientData = sessionStorage.getItem('clientData');
+        const clientData = localStorage.getItem('clientData');
         if (!clientData) {
-          sessionStorage.setItem('pendingReview', JSON.stringify({ name, comment, rating: selectedRating }));
+          localStorage.setItem('pendingReview', JSON.stringify({ name, comment, rating: selectedRating }));
           openLoginModal();
           return;
         }
@@ -265,12 +372,41 @@
 
       loadReviews();
 
+      // ====== FORMULAIRE CONTACT ======
+      const contactForm = document.getElementById('contact-form');
+      if (contactForm) {
+        contactForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const btn = document.getElementById('contact-submit-btn');
+          btn.disabled = true;
+          btn.textContent = '⏳ Envoi en cours...';
+          const name    = document.getElementById('contact-name').value.trim();
+          const email   = document.getElementById('contact-email').value.trim();
+          const phone   = document.getElementById('contact-phone').value.trim();
+          const subject = document.getElementById('contact-subject').value;
+          const message = document.getElementById('contact-message').value.trim();
+          try {
+            const { error } = await supabaseClient.from('contact_messages').insert([{
+              id: Date.now(), name, email, phone: phone || null,
+              subject, message, read: false
+            }]);
+            if (error) { alert('❌ Erreur envoi : ' + error.message); return; }
+            contactForm.style.display = 'none';
+            document.getElementById('contact-success').style.display = 'block';
+          } catch(e) {
+            alert('❌ Erreur : ' + e.message);
+          } finally {
+            btn.disabled = false;
+            btn.textContent = '✉️ Envoyer le message';
+          }
+        });
+      }
+
       // ====== CONNEXION CLIENT ======
       const loginModalEl = document.getElementById('client-login-modal');
       const clientLoginForm = document.getElementById('client-login-form');
       const clientSignupForm = document.getElementById('client-signup-form');
 
-      // ✅ Mettre à jour le bouton "mon compte" avec le prénom si connecté
       function updateAccountButton() {
         const raw = localStorage.getItem('clientData');
         const btn = document.getElementById('account-btn');
@@ -285,7 +421,7 @@
             logoutBtn.id = 'logout-btn';
             logoutBtn.textContent = 'Déconnexion';
             logoutBtn.className = 'btn';
-            logoutBtn.style.cssText = 'background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);color:#fca5a5;font-size:13px;padding:6px 12px;';
+            logoutBtn.style.cssText = 'background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);color:#fca5a5;font-size:13px;padding:8px 16px;';
             logoutBtn.addEventListener('click', function() {
               localStorage.removeItem('clientData');
               window.dispatchEvent(new CustomEvent('clientLogout'));
@@ -303,13 +439,11 @@
 
       window.openLoginModal = function() {
         loginModalEl.classList.remove('hidden');
-        loginModalEl.style.display = 'flex';
         switchClientTab('login');
       }
 
       window.closeLoginModal = function() {
         loginModalEl.classList.add('hidden');
-        loginModalEl.style.display = 'none';
       }
 
       window.switchClientTab = function(tab) {
@@ -318,12 +452,12 @@
         const lf = document.getElementById('client-login-form');
         const sf = document.getElementById('client-signup-form');
         if (tab === 'login') {
-          tabLogin.style.cssText = 'flex:1;padding:12px;background:linear-gradient(135deg,#10b981,#059669);border:none;color:#fff;';
-          tabSignup.style.cssText = 'flex:1;padding:12px;background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--text);';
+          tabLogin.classList.add('primary');
+          tabSignup.classList.remove('primary');
           lf.style.display = 'flex'; sf.style.display = 'none';
         } else {
-          tabSignup.style.cssText = 'flex:1;padding:12px;background:linear-gradient(135deg,#10b981,#059669);border:none;color:#fff;';
-          tabLogin.style.cssText = 'flex:1;padding:12px;background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--text);';
+          tabSignup.classList.add('primary');
+          tabLogin.classList.remove('primary');
           sf.style.display = 'flex'; lf.style.display = 'none';
         }
       }
@@ -332,7 +466,6 @@
         if (e.target === loginModalEl) closeLoginModal();
       });
 
-      // ✅ CONNEXION — localStorage + event clientLogin pour le chatbot
       clientLoginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         const email = document.getElementById('login-client-email').value.trim();
@@ -342,20 +475,12 @@
           if (error || !data) { alert('❌ Email ou mot de passe incorrect'); return; }
 
           const clientData = { id: data.id, email: data.email, name: data.name, connectedAt: new Date().toISOString() };
-
-          // ✅ localStorage pour partager avec chatbot
-          sessionStorage.setItem('clientData', JSON.stringify(clientData));
-
-          // ✅ Notifier le chatbot instantanément
+          localStorage.setItem('clientData', JSON.stringify(clientData));
           window.dispatchEvent(new CustomEvent('clientLogin', { detail: clientData }));
-
-          // ✅ Mettre à jour le bouton compte
           updateAccountButton();
-
           closeLoginModal();
 
-          // Gérer avis en attente
-          const pendingReview = sessionStorage.getItem('pendingReview');
+          const pendingReview = localStorage.getItem('pendingReview');
           if (pendingReview) {
             const review = JSON.parse(pendingReview);
             document.getElementById('review-name').value = review.name;
@@ -363,7 +488,7 @@
             selectedRating = review.rating;
             ratingValue.value = review.rating;
             updateStars(review.rating);
-            sessionStorage.removeItem('pendingReview');
+            localStorage.removeItem('pendingReview');
             setTimeout(async () => {
               try {
                 const { error } = await supabaseClient.from('reviews').insert([{ id: Date.now(), client_name: review.name, comment: review.comment, rating: review.rating }]);
@@ -371,11 +496,9 @@
               } catch(e) { console.error(e); }
             }, 500);
           }
-
         } catch (e) { alert('❌ Erreur: ' + e.message); }
       });
 
-      // ✅ INSCRIPTION
       clientSignupForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         const name = document.getElementById('signup-client-name').value.trim();
@@ -400,44 +523,75 @@
     }
   </script>
 
-  <!-- Chatbot Widget -->
+  <!-- Chatbot Widget — ZENOCCAZ Premium v4 -->
   <div id="chat-widget" class="closed">
+
+    <!-- Chat Box -->
     <div id="chat-box">
+
+      <!-- Header -->
       <div class="chat-header">
-        <div>
-          <h3>• Assistant IA</h3>
-          <p id="chat-client-name" style="display:none;color:#f97316;font-weight:600;font-size:13px;margin:2px 0 0;"></p>
-          <p id="chat-subtitle" style="font-size:12px;color:#888;margin:0;">Posez vos questions</p>
+        <div class="chat-header-left">
+          <div class="zc-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="10" rx="2"/>
+              <path d="M9 11V7a3 3 0 016 0v4"/>
+              <circle cx="9" cy="16" r="1" fill="#10b981" stroke="none"/>
+              <circle cx="15" cy="16" r="1" fill="#10b981" stroke="none"/>
+              <path d="M12 3v2"/>
+            </svg>
+          </div>
+          <div class="chat-header-info">
+            <h3>Assistant ZenOccaz</h3>
+            <p id="chat-client-name"></p>
+            <div class="zc-status" id="chat-subtitle">
+              <span class="zc-status-dot"></span>
+              <span>En ligne · Expert automobile</span>
+            </div>
+          </div>
         </div>
-        <button id="chat-close-btn">✕</button>
-      </div>
-      <div id="chat-messages"></div>
-      <div class="chat-input-area">
-        <textarea 
-          id="chat-input" 
-          placeholder="Votre question..." 
-          rows="1"
-          maxlength="500"
-          style="max-height: 100px;"
-        ></textarea>
-        <button id="chat-send-btn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        <button id="chat-resize-btn" aria-label="Plein 'e9cran" onclick="window.chatBotInstance && window.chatBotInstance.toggleFullscreen()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        </button>
+        <button id="chat-close-btn" aria-label="Fermer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       </div>
+
+      <!-- Messages -->
+      <div id="chat-messages"></div>
+
+      <!-- Zone saisie -->
+      <div class="chat-input-area">
+        <textarea
+          id="chat-input"
+          placeholder="Posez votre question..."
+          rows="1"
+          maxlength="500"
+        ></textarea>
+        <button id="chat-send-btn" aria-label="Envoyer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+
     </div>
+
+    <!-- Bouton flottant -->
     <button id="chat-toggle-btn" aria-label="Ouvrir le chat">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M21 11.5C21.0034 12.8199 20.6951 14.1219 20.1 15.3C19.3944 16.7118 18.3098 17.8992 16.9674 18.7293C15.6251 19.5594 14.0782 19.9994 12.5 20C11.1801 20.0035 9.87812 19.6951 8.7 19.1L3 21L4.9 15.3C4.30493 14.1219 3.99656 12.8199 4 11.5C4.00061 9.92179 4.44061 8.37488 5.27072 7.03258C6.10083 5.69028 7.28825 4.6056 8.7 3.90003C9.87812 3.30496 11.1801 2.99659 12.5 3.00003H13C15.0843 3.11502 17.053 3.99479 18.5291 5.47089C20.0052 6.94699 20.885 8.91568 21 11V11.5Z" fill="white" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="9" cy="12" r="1" fill="#059669"/>
-        <circle cx="12.5" cy="12" r="1" fill="#059669"/>
-        <circle cx="16" cy="12" r="1" fill="#059669"/>
+        <circle cx="9" cy="12" r="1" fill="#059669"/><circle cx="12.5" cy="12" r="1" fill="#059669"/><circle cx="16" cy="12" r="1" fill="#059669"/>
       </svg>
     </button>
+
   </div>
 
   <script src="keep-alive.js"></script>
   <script src="diagnostic-engine.js"></script>
   <script src="app.js"></script>
+  <script src="offres.js"></script>
   <script src="chatbot.js"></script>
 </body>
 </html>

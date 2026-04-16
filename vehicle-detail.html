@@ -302,11 +302,41 @@
     function renderVehicleDetail(vehicle) {
       // Titre et prix
       document.getElementById('vehicle-title').textContent = `${vehicle.make} ${vehicle.model} (${vehicle.year})`;
-      document.getElementById('vehicle-price').textContent = `${vehicle.price} €`;
+
+      // Badge statut VENDU
+      const priceEl = document.getElementById('vehicle-price');
+      if (vehicle.status === 'Vendu') {
+        priceEl.innerHTML = `
+          <span style="text-decoration:line-through;color:var(--muted);font-size:20px;">${vehicle.price} €</span>
+          <span style="margin-left:12px;background:linear-gradient(135deg,#cc2200,#ff3311);color:#f0c040;font-family:'Courier New',monospace;font-weight:900;letter-spacing:0.15em;font-size:14px;padding:6px 16px;border-radius:4px;border:1px solid rgba(240,192,64,0.4);">VENDU</span>
+        `;
+        // Désactiver bouton contact
+        const contactBtn = document.querySelector('.contact-btn');
+        if (contactBtn) {
+          contactBtn.disabled = true;
+          contactBtn.style.opacity = '0.4';
+          contactBtn.style.cursor = 'not-allowed';
+          contactBtn.textContent = '⛔ Ce véhicule est vendu';
+        }
+        // Ruban diagonal sur la galerie
+        const gallery = document.querySelector('.gallery');
+        if (gallery) {
+          gallery.style.position = 'relative';
+          const ribbon = document.createElement('div');
+          ribbon.style.cssText = 'position:absolute;top:32px;right:-32px;width:160px;background:linear-gradient(135deg,#cc2200,#ff3311);color:#f0c040;text-align:center;font-family:Courier New,monospace;font-size:14px;font-weight:900;letter-spacing:0.2em;padding:8px 0;transform:rotate(35deg);box-shadow:0 2px 12px rgba(204,34,0,0.6);border-top:1px solid rgba(240,192,64,0.5);border-bottom:1px solid rgba(240,192,64,0.5);z-index:10;pointer-events:none;';
+          ribbon.textContent = 'VENDU';
+          gallery.appendChild(ribbon);
+        }
+      } else {
+        priceEl.textContent = `${vehicle.price} €`;
+      }
       
       // Images
       const images = vehicle.images || (vehicle.image ? [vehicle.image] : ['https://via.placeholder.com/800x600?text=Pas+d%27image']);
       const mainImage = document.getElementById('main-image');
+      if (vehicle.status === 'Vendu') {
+        mainImage.style.filter = 'grayscale(40%) brightness(0.7)';
+      }
       let currentImageIndex = 0; // Tracker l'index actuel
       mainImage.src = images[0];
       
