@@ -803,7 +803,8 @@
     // Envoyer une notification dans Supabase pour que l'admin le voit
     const sb = window.supabase;
     if (sb) {
-      sb.from('contacts').insert([{
+      // contacts supprimé
+      Promise.resolve({error:null}); //
         name: client.name || 'Client',
         email: client.email,
         message: '🎄 Demande chèque cadeau Noël 100€ — Client fidèle ' + new Date().getFullYear(),

@@ -5,6 +5,25 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Mentions légales — ZENOCCAZ</title>
   <link rel="stylesheet" href="styles.css">
+
+  <!-- Touch & Mobile improvements -->
+  <style>
+    /* Prevent horizontal scroll globally */
+    html, body { max-width: 100%; overflow-x: hidden; }
+    /* Fix background-attachment:fixed on iOS */
+    @media (max-width: 768px) {
+      .hero-section { background-attachment: scroll !important; }
+    }
+    /* Images responsive */
+    img { max-width: 100%; height: auto; }
+    /* Touch targets minimum 44px */
+    @media (max-width: 768px) {
+      .btn, button, a { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+      .admin-item { min-height: 44px !important; }
+    }
+    /* Smooth scroll mobile */
+    * { -webkit-tap-highlight-color: transparent; }
+  </style>
 </head>
 <body>
   <header class="site-header">

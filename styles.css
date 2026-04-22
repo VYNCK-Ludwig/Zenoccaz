@@ -836,3 +836,119 @@ input::placeholder, textarea::placeholder {
     font-size: 24px;
   }
 }
+/* ============================================
+   RESPONSIVE COMPLET — ZENOCCAZ
+   Breakpoints : 1200 / 900 / 768 / 480 / 360
+   ============================================ */
+
+/* ── TABLETTE LARGE (1200px) ── */
+@media (max-width: 1200px) {
+  .admin-header { padding: 16px 24px; gap: 24px; }
+  .vehicles-section, .reviews-section { padding: 80px 28px; }
+  .vehicles-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+}
+
+/* ── TABLETTE (900px) ── */
+@media (max-width: 900px) {
+  .admin-header { gap: 16px; padding: 14px 20px; }
+  .admin-actions { gap: 6px; }
+  .admin-actions .btn { padding: 8px 14px; font-size: 13px; }
+
+  .hero-section { background-attachment: scroll; padding: 100px 24px 60px; }
+  .hero-title { font-size: clamp(36px, 7vw, 56px); }
+  .hero-subtitle { font-size: clamp(24px, 4vw, 36px); }
+
+  .vehicles-section, .reviews-section { padding: 60px 24px; }
+  .vehicles-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+}
+
+/* ── MOBILE (768px) ── */
+@media (max-width: 768px) {
+  /* Header — empile logo + nav */
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 16px;
+    gap: 12px;
+  }
+  .admin-title { width: 100%; }
+  .admin-title h1 { font-size: 22px; }
+  .admin-actions {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-start;
+  }
+  .admin-actions .btn { padding: 9px 14px; font-size: 13px; flex-shrink: 0; }
+  .btn { width: auto; } /* reset du width:100% trop agressif */
+
+  /* Hero */
+  .hero-section { padding: 90px 16px 50px; background-attachment: scroll; }
+  .hero-logo-wrapper { flex-direction: column; gap: 12px; }
+  .hero-logo-wrapper img { width: 56px; height: 56px; }
+  .hero-title { font-size: clamp(32px, 9vw, 48px); letter-spacing: -1px; }
+  .hero-subtitle { font-size: clamp(20px, 5vw, 28px); margin: 16px 0; }
+  .hero-description { font-size: 15px; margin-bottom: 36px; }
+  .hero-buttons { flex-direction: column; align-items: center; gap: 12px; width: 100%; }
+  .hero-buttons .btn { width: 100%; max-width: 360px; text-align: center; }
+
+  /* Sections */
+  .vehicles-section, .reviews-section { padding: 50px 16px; }
+  .vehicles-section h2, .reviews-section h2 { font-size: clamp(28px, 6vw, 40px); margin-bottom: 40px; }
+  .vehicles-grid { grid-template-columns: 1fr; gap: 16px; }
+
+  /* Avis */
+  #review-form { padding: 24px 16px; }
+  #star-rating { font-size: 32px; gap: 8px; }
+
+  /* Modal */
+  .modal { padding: 0; align-items: flex-end; }
+  .modal-content {
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 24px 24px 0 0;
+    padding: 32px 20px 40px;
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+  .modal-content h2 { font-size: 22px; }
+  .modal-actions { flex-direction: column; gap: 8px; }
+  .modal-actions .btn { width: 100%; text-align: center; }
+
+  /* Footer */
+  .site-footer { padding: 32px 16px; margin-top: 60px; font-size: 13px; }
+}
+
+/* ── MOBILE PETIT (480px) ── */
+@media (max-width: 480px) {
+  .admin-header { padding: 12px; }
+  .admin-title h1 { font-size: 18px; }
+  .tag { display: none; }
+
+  /* Masquer certains liens nav sur très petit */
+  .admin-actions { justify-content: center; }
+
+  .hero-section { padding: 80px 12px 40px; }
+  .hero-title { font-size: clamp(28px, 10vw, 40px); }
+  .hero-subtitle { font-size: clamp(18px, 5vw, 24px); }
+  .hero-description { font-size: 14px; }
+
+  .vehicles-section, .reviews-section { padding: 40px 12px; }
+  #review-form { padding: 20px 12px; }
+
+  /* Vehicle card */
+  .vehicle-card { border-radius: 16px; }
+
+  /* Parrainage section */
+  .parrainage-section, .services-section, .contact-section { padding-top: 100px !important; }
+}
+
+/* ── TRÈS PETIT (360px) ── */
+@media (max-width: 360px) {
+  .admin-header { padding: 10px; }
+  .admin-title h1 { font-size: 16px; }
+  .hero-title { font-size: 26px; }
+  .hero-subtitle { font-size: 17px; }
+  .admin-actions .btn { padding: 7px 10px; font-size: 12px; }
+}

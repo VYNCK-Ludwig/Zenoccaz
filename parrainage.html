@@ -9,6 +9,25 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Touch & Mobile improvements -->
+  <style>
+    /* Prevent horizontal scroll globally */
+    html, body { max-width: 100%; overflow-x: hidden; }
+    /* Fix background-attachment:fixed on iOS */
+    @media (max-width: 768px) {
+      .hero-section { background-attachment: scroll !important; }
+    }
+    /* Images responsive */
+    img { max-width: 100%; height: auto; }
+    /* Touch targets minimum 44px */
+    @media (max-width: 768px) {
+      .btn, button, a { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+      .admin-item { min-height: 44px !important; }
+    }
+    /* Smooth scroll mobile */
+    * { -webkit-tap-highlight-color: transparent; }
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -153,23 +172,6 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script type="module">
-    try {
-      const config = await import('./supabase-config.js');
-      const { createClient } = window.supabase || supabase;
-      const supabaseClient = createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
-      
-      // Mettre à jour le bouton compte
-      const raw = localStorage.getItem('clientData');
-      const btn = document.getElementById('account-btn');
-      if (btn && raw) {
-        const client = JSON.parse(raw);
-        const prenom = client.name ? client.name.split(' ')[0] : 'Mon compte';
-        btn.textContent = '👤 ' + prenom;
-      }
-    } catch (e) {
-      console.error('Erreur Supabase:', e);
-    }
-  </script>
+  <script type="module" src="supabase-init.js"></script>
 </body>
 </html>

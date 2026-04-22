@@ -1382,3 +1382,104 @@ body {
     padding: 5px 12px;
   }
 }
+/* ============================================
+   RESPONSIVE COMPLET — SERVICES-PREMIUM
+   ============================================ */
+
+/* ── TABLETTE LARGE (1100px) ── */
+@media (max-width: 1100px) {
+  .admin-header { padding: 0 24px; gap: 16px; }
+  .admin-actions { gap: 3px; }
+  .admin-actions .btn { padding: 7px 12px; font-size: 12px; }
+  .page-badge { display: none; }
+}
+
+/* ── TABLETTE (900px) ── */
+@media (max-width: 900px) {
+  .admin-header { height: auto; padding: 12px 16px; flex-wrap: wrap; gap: 10px; }
+  .admin-title { flex: 1 1 auto; }
+  .admin-actions { flex: 1 1 100%; justify-content: center; gap: 4px; flex-wrap: wrap; }
+  .admin-actions .btn { padding: 7px 11px; font-size: 12px; }
+  .header-right { flex: 0 0 auto; }
+  .user-chip-link, .user-chip-sep { display: none; }
+
+  /* Hero */
+  .services-hero { padding: 120px 20px 60px; }
+  .services-hero h1 { font-size: clamp(32px, 6vw, 52px); }
+
+  /* Grille services */
+  .services-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+
+  /* ZenScan table */
+  .zenscan-section table { font-size: 13px; }
+  .zenscan-section table td, .zenscan-section table th { padding: 14px 12px; }
+}
+
+/* ── MOBILE (768px) ── */
+@media (max-width: 768px) {
+  /* Header */
+  .admin-header { height: auto; padding: 10px 14px; gap: 8px; }
+  .admin-actions { order: 3; width: 100%; justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+  .admin-actions .btn { flex-shrink: 0; white-space: nowrap; }
+  .header-right { order: 2; margin-left: auto; }
+
+  /* Hero */
+  .services-hero { padding: 100px 16px 50px; text-align: center; }
+  .services-hero h1 { font-size: clamp(28px, 8vw, 42px); }
+  .services-main { padding: 0 16px; }
+
+  /* Grille services — 1 colonne */
+  .services-section { padding: 40px 0; }
+  .services-grid { grid-template-columns: 1fr; gap: 16px; }
+  .service-card { padding: 28px 20px; }
+
+  /* ZenScan table scrollable */
+  .zenscan-section { padding: 40px 0 60px; }
+  .zenscan-section > div { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; }
+  .zenscan-section table { min-width: 700px; }
+  .zenscan-section h2 { font-size: 32px !important; }
+  .zenscan-section p { font-size: 14px !important; }
+
+  /* Bouton diagnostic */
+  #open-diagnostic-btn { width: 100%; max-width: 360px; justify-content: center; }
+
+  /* User chip simplifié */
+  .user-chip { padding: 6px 10px; }
+  .user-chip-name { display: none; }
+}
+
+/* ── MOBILE PETIT (480px) ── */
+@media (max-width: 480px) {
+  .admin-header { padding: 10px 12px; }
+  .admin-title .logo-icon { width: 30px; height: 30px; }
+  .admin-title h1 { font-size: 15px !important; }
+
+  .services-hero h1 { font-size: clamp(24px, 8vw, 34px); }
+  .services-hero p { font-size: 14px; }
+
+  .service-card { padding: 24px 16px; }
+  .service-card h3 { font-size: 20px; }
+  .service-icon { width: 64px !important; height: 64px !important; }
+  .service-features li { font-size: 13px; }
+
+  /* Modal diagnostic full-screen bottom sheet */
+  #diagnostic-modal { padding: 0; align-items: flex-end; }
+  #diagnostic-modal .modal-content {
+    border-radius: 20px 20px 0 0;
+    max-width: 100%;
+    width: 100%;
+    max-height: 92vh;
+    padding: 24px 16px 32px;
+  }
+  .diag-card { padding: 14px; gap: 10px; }
+  .card-title { font-size: 15px !important; }
+  .card-price { font-size: 15px !important; min-width: 60px !important; }
+  #price-total { font-size: 26px; }
+}
+
+/* ── TRÈS PETIT (360px) ── */
+@media (max-width: 360px) {
+  .admin-title h1 { font-size: 13px !important; }
+  .service-card h3 { font-size: 18px; }
+  .admin-actions .btn { padding: 6px 9px; font-size: 11px; }
+}

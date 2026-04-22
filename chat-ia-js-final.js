@@ -1,3 +1,4 @@
+document.addEventListener('DOMContentLoaded', function() {
 // ====== GESTION DES CHOIX CHAT IA ======
       const chatSection = document.getElementById('chat');
       const chatLink    = document.querySelector('a[href="#chat"]');
@@ -291,3 +292,4 @@
           await renderChatLeadsTable();
         });
       }
+});

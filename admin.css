@@ -1992,3 +1992,156 @@ input::placeholder, textarea::placeholder { color: var(--muted); }
   .veh-grid { grid-template-columns: 1fr; }
   .veh-header { flex-direction: column; align-items: flex-start; }
 }
+/* ============================================
+   RESPONSIVE ADMIN — COMPLÉMENTS
+   ============================================ */
+
+/* ── GRAND ÉCRAN (1400px+) ── */
+@media (min-width: 1400px) {
+  .admin-nav-inner { padding: 0 40px; }
+  main { padding: 28px 40px; }
+}
+
+/* ── TABLETTE LARGE (1024px) ── */
+@media (max-width: 1024px) {
+  .admin-header { padding: 12px 16px; }
+  .admin-nav-inner { padding: 0 16px; }
+  main { padding: 16px; }
+
+  /* Section contacts — grid → 1 col */
+  #contacts .admin-main > div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+  #contact-detail-panel { position: static !important; }
+}
+
+/* ── MOBILE AMÉLIORÉ (768px) ── */
+@media (max-width: 768px) {
+  /* Nav scrollable horizontalement */
+  .admin-nav { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .admin-nav-inner { 
+    flex-direction: column !important; 
+    flex-wrap: nowrap; 
+    padding: 0; 
+    gap: 0; 
+  }
+  .admin-nav-row { 
+    flex-wrap: nowrap !important; 
+    overflow-x: auto; 
+    -webkit-overflow-scrolling: touch; 
+    border-bottom: 1px solid rgba(255,255,255,0.04) !important;
+    padding: 0 10px;
+    justify-content: flex-start !important;
+    scrollbar-width: none;
+  }
+  .admin-nav-row::-webkit-scrollbar { display: none; }
+  .admin-nav-marketing { display: none; }
+  .admin-nav-row .admin-item { 
+    flex-shrink: 0; 
+    white-space: nowrap; 
+    font-size: 11px !important; 
+    padding: 10px 10px !important; 
+  }
+
+  /* Header */
+  .admin-header { flex-wrap: wrap; padding: 10px 14px; gap: 8px; }
+  .admin-title h1 { font-size: 14px; }
+  .admin-actions { flex-wrap: nowrap; gap: 6px; }
+  .admin-actions .btn { padding: 7px 12px; font-size: 12px; white-space: nowrap; }
+
+  /* Dashboard */
+  .dashboard-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-card { padding: 12px; }
+
+  /* Contacts — 1 colonne */
+  #contacts .admin-main > div[style*="grid-template-columns:1fr 400px"] {
+    grid-template-columns: 1fr !important;
+  }
+  #contact-detail-panel { display: none !important; } /* Panel latéral → modal uniquement */
+
+  /* Section header */
+  .section-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+  .section-header > div { width: 100%; }
+  #contacts-search { width: 100%; }
+
+  /* Modal fidelité */
+  #fidelite-modal .modal-content {
+    border-radius: 20px 20px 0 0;
+    max-width: 100%;
+    width: 100%;
+    max-height: 92vh;
+    overflow-y: auto;
+    margin: 0;
+  }
+
+  /* Reprises */
+  #estimations-reprises-list > div { padding: 14px; }
+
+  /* Finances */
+  .kpi-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+}
+
+/* ── MOBILE PETIT (480px) ── */
+@media (max-width: 480px) {
+  .admin-header { padding: 8px 12px; }
+  .admin-title h1 { font-size: 13px; }
+
+  /* Modal full bottom sheet */
+  .modal { padding: 0 !important; align-items: flex-end !important; }
+  .modal-content {
+    margin: 0 !important;
+    max-width: 100vw !important;
+    width: 100% !important;
+    border-radius: 20px 20px 0 0 !important;
+    max-height: 92vh !important;
+    overflow-y: auto !important;
+    padding: 24px 16px 36px !important;
+  }
+  .modal-content h2 { font-size: 18px !important; }
+
+  /* Dashboard */
+  .dashboard-grid { grid-template-columns: 1fr 1fr; }
+  .stat-value { font-size: 18px !important; }
+  .stat-icon { width: 32px !important; height: 32px !important; }
+
+  /* Contacts table */
+  .contacts-table thead th:nth-child(3),
+  .contacts-table tbody td:nth-child(3) { display: none; } /* Masque téléphone */
+  .contacts-table thead th:nth-child(5),
+  .contacts-table tbody td:nth-child(5) { display: none; } /* Masque date */
+  .contact-name { font-size: 12px; }
+  .btn-open-fiche { font-size: 11px; padding: 4px 8px; }
+
+  /* Véhicules */
+  .veh-grid { grid-template-columns: 1fr !important; }
+  .veh-card-name { font-size: 15px; }
+
+  /* Section contact search */
+  .section-header { gap: 8px; }
+  #contacts-search { font-size: 13px; padding: 7px 12px; }
+
+  /* Fiche fidélité dans modal */
+  #fidelite-modal-body { font-size: 13px; }
+  #fidelite-modal-body > div[style*="grid-template-columns:1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Chat IA */
+  .cia-filter-tabs { gap: 4px; flex-wrap: wrap; }
+  .cia-tab { padding: 6px 9px; font-size: 11px; }
+
+  /* KPI finances */
+  .kpi-grid { grid-template-columns: 1fr; }
+  .kpi-value { font-size: 20px; }
+}
+
+/* ── TRÈS PETIT (360px) ── */
+@media (max-width: 360px) {
+  .admin-header { padding: 8px 10px; }
+  .admin-title h1 { font-size: 12px; }
+  .admin-nav-row .admin-item { font-size: 9px !important; padding: 8px 7px !important; }
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .stat-value { font-size: 20px !important; }
+  .contacts-table thead th:nth-child(2),
+  .contacts-table tbody td:nth-child(2) { display: none; } /* Masque email */
+}

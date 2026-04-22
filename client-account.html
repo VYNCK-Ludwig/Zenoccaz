@@ -6,940 +6,190 @@
   <title>Mon Compte — ZENOCCAZ</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="client-account.css">
 </head>
 <body>
-  
-  <!-- Header -->
-  <header class="site-header">
-    <div class="admin-header">
-      <div class="admin-title">
-        <h1 style="margin:0;font-size:28px;font-weight:700;">
-          <span style="color:white;">zen</span> 
-          <span style="color:#10b981;">occaz</span> 
-          <span style="color:#f97316;">.com</span>
-        </h1>
-        <p class="tag">Votre spécialiste en véhicules d'occasion premium</p>
-      </div>
-      <div class="admin-actions">
-        <a href="index.html" class="btn">accueil</a>
-        <a href="index.html#vehicules" class="btn">véhicules</a>
-        <a href="services.html" class="btn">services</a>
-        <a href="index.html#contact" class="btn">contact</a>
-        <a href="client-account.html" class="btn primary">mon compte</a>
-      </div>
+
+  <header class="ca-header">
+    <div class="ca-header-inner">
+      <a href="index.html" class="ca-logo">
+        <span class="logo-zen">zen</span><span class="logo-occaz">occaz</span><span class="logo-dot">.com</span>
+      </a>
+      <nav class="ca-nav">
+        <a href="index.html">Accueil</a>
+        <a href="index.html#vehicules">Véhicules</a>
+        <a href="services.html">Services</a>
+        <a href="index.html#contact">Contact</a>
+      </nav>
+      <button id="ca-hamburger" class="ca-hamburger" style="display:none;" aria-label="Menu">☰</button>
+      <button id="btn-open-login" class="ca-btn-connect"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Se connecter</button>
     </div>
   </header>
 
-  <!-- Login prompt (quand pas connecté) -->
-  <div id="login-prompt" class="login-prompt">
-    <div style="font-size:80px;margin-bottom:24px;">🔐</div>
-    <h2>Connectez-vous à votre compte</h2>
-    <p>Pour accéder à votre espace client, consulter vos demandes, votre code de parrainage et bénéficier de récompenses exclusives, veuillez vous connecter.</p>
-    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
-      <button onclick="openLoginModal()" class="btn primary" style="padding:16px 40px;font-size:16px;">
-        ✨ Se connecter
-      </button>
-      <a href="index.html" class="btn secondary" style="padding:16px 40px;font-size:16px;text-decoration:none;">
-        ← Retour à l'accueil
-      </a>
+  <!-- Overlay mobile sidebar -->
+  <div id="ca-sidebar-overlay" class="ca-sidebar-overlay"></div>
+
+  <div id="login-prompt" class="login-screen">
+    <div class="login-screen-bg"></div>
+    <div class="login-card">
+      <div class="login-card-glow"></div>
+      <div class="login-icon"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--green)"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+      <h2 class="login-title">Espace Client</h2>
+      <p class="login-sub">Connectez-vous pour accéder à votre tableau de bord personnel</p>
+      <div class="login-actions">
+        <button id="btn-open-login-2" class="ca-btn-primary">✨ Se connecter</button>
+        <a href="index.html" class="ca-btn-ghost">← Retour</a>
+      </div>
     </div>
   </div>
 
-  <!-- Contenu du compte (quand connecté) -->
-  <div id="account-content" class="account-container" style="display:none;">
-    
-    <!-- Header du compte -->
-    <div class="account-header">
-      <div class="account-info">
-        <h1>👋 Bonjour <span id="client-name">Client</span></h1>
-        <p id="client-email" style="font-size:16px;margin-top:8px;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e88d85898184a88d90898598848dc68b8785">[email&#160;protected]</a></p>
-      </div>
-      <div class="account-actions">
-        <button onclick="logout()" class="btn" style="padding:12px 24px;">
-          🚪 Déconnexion
-        </button>
-      </div>
-    </div>
+  <div id="account-content" class="ca-dashboard" style="display:none;">
 
-    <!-- Section Parrainage -->
-    <div class="parrainage-container">
-      <div class="parrainage-header">
-        <h2>🎁 Programme de Parrainage</h2>
-        <p class="parrainage-subtitle">Parrainez vos amis et gagnez jusqu'à 250€ de récompenses !</p>
-      </div>
-
-      <!-- Code de parrainage -->
-      <div class="code-container">
-        <div class="code-label">Votre code de parrainage unique</div>
-        <div id="parrainage-code" class="code-display">ZENXXXXX</div>
-        <div class="code-actions">
-          <button onclick="copyCode()" class="copy-btn">
-            <span>📋</span>
-            <span>Copier le code</span>
-          </button>
-          <button onclick="shareCode()" class="share-btn">
-            <span>📤</span>
-            <span>Partager</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Stats de parrainage -->
-      <div class="parrainage-stats">
-        <div class="stat-item">
-          <div class="stat-icon">👥</div>
-          <div class="stat-label">Filleuls actifs</div>
-          <div id="stat-filleuls" class="stat-value">0</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-icon">✅</div>
-          <div class="stat-label">Conversions</div>
-          <div id="stat-conversions" class="stat-value">0</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-icon">💰</div>
-          <div class="stat-label">Récompenses gagnées</div>
-          <div id="stat-rewards" class="stat-value">0€</div>
-        </div>
-      </div>
-
-      <!-- Liste des filleuls -->
-      <div class="filleuls-list">
-        <h3 style="color:var(--text);margin:0 0 20px;font-size:20px;font-family:'Orbitron',sans-serif;">
-          👥 Mes filleuls
-        </h3>
-        <div id="filleuls-container">
-          <div class="empty-state">
-            <div class="empty-state-icon">🎯</div>
-            <p style="font-size:16px;margin:0 0 8px;">Aucun filleul pour le moment</p>
-            <p style="font-size:14px;margin:0;">Partagez votre code et commencez à gagner des récompenses !</p>
+    <aside class="ca-sidebar" id="ca-sidebar">
+      <div class="ca-sidebar-profile">
+        <div class="ca-avatar-wrap">
+          <div class="ca-avatar" id="ca-avatar">👤</div>
+          <div class="ca-profile-info">
+            <div class="ca-profile-name" id="client-name">Client</div>
+            <div class="ca-profile-email" id="client-email">—</div>
+            <div class="ca-vip-badge hidden" id="sidebar-vip-badge">👑 Ambassadeur</div>
           </div>
         </div>
       </div>
-    </div>
+      <nav class="ca-sidebar-nav">
+        <button class="ca-nav-item active" data-tab="overview"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span>Vue d'ensemble</span></button>
+        <button class="ca-nav-item" data-tab="fidelite"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><span>Fidélité</span><span class="nav-badge hidden" id="badge-fidelite">!</span></button>
+        <button class="ca-nav-item" data-tab="parrainage"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg></span><span>Parrainage</span></button>
+        <button class="ca-nav-item" data-tab="reprises"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg></span><span>Mes reprises</span></button>
+        <button class="ca-nav-item" data-tab="zenscan"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></span><span>ZenScan</span></button>
+        <button class="ca-nav-item" data-tab="offres"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></span><span>Mes offres</span></button>
+        <button class="ca-nav-item" data-tab="conversations"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><line x1="9" y1="10" x2="9" y2="10"/><line x1="12" y1="10" x2="12" y2="10"/><line x1="15" y1="10" x2="15" y2="10"/></svg></span><span>IA</span></button>
+        <button class="ca-nav-item" data-tab="avis"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span><span>Mes avis</span></button>
+      </nav>
+      <button id="btn-logout" class="ca-btn-logout"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span> Déconnexion</button>
+    </aside>
 
-    <!-- Conversations IA -->
-    <div class="section-card">
-      <h2 class="section-title">
-        <span style="font-size:32px;">💬</span>
-        <span>Mes conversations avec l'IA</span>
-      </h2>
-      <div id="conversations-list">
-        <div class="empty-state">
-          <div class="empty-state-icon">💬</div>
-          <p style="font-size:16px;margin:0 0 8px;">Aucune conversation</p>
-          <p style="font-size:14px;margin:0;">Vos conversations avec l'assistant IA apparaîtront ici.</p>
+    <main class="ca-main">
+
+      <div class="ca-tab active" id="tab-overview">
+        <div class="ca-tab-header">
+          <h1 class="ca-tab-title">Bonjour <span id="overview-name">—</span> 👋</h1>
+          <p class="ca-tab-sub">Votre tableau de bord personnel ZENOCCAZ</p>
+        </div>
+        <div class="vip-banner hidden" id="vip-banner">
+          <div class="vip-banner-glow"></div>
+          <div class="vip-banner-left">
+            <span class="vip-crown"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20"/><path d="M5 20l2-9 5 4 5-4 2 9"/><path d="M12 11V4"/><circle cx="12" cy="3" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="10" r="1.5" fill="currentColor" stroke="none"/><circle cx="20" cy="10" r="1.5" fill="currentColor" stroke="none"/></svg></span>
+            <div>
+              <div class="vip-banner-title">Ambassadeur ZENOCCAZ</div>
+              <div class="vip-banner-sub" id="vip-banner-label">—</div>
+            </div>
+          </div>
+          <div class="vip-banner-right">
+            <div class="vip-counter-label">Acheteurs amenés</div>
+            <div class="vip-counter" id="vip-counter">0</div>
+          </div>
+        </div>
+        <div class="ca-quick-stats">
+          <div class="qs-card" data-tab-target="fidelite"><div class="qs-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div class="qs-label">Carte fidélité</div><div class="qs-value" id="qs-fidelite-val">—</div></div>
+          <div class="qs-card" data-tab-target="parrainage"><div class="qs-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div><div class="qs-label">Code parrainage</div><div class="qs-value" id="qs-code-val">—</div></div>
+          <div class="qs-card" data-tab-target="reprises"><div class="qs-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3m-3 12h8a2 2 0 002-2v-5a2 2 0 00-2-2h-8"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="17.5" cy="17.5" r="1.5"/></svg></div><div class="qs-label">Reprises</div><div class="qs-value" id="qs-reprises-val">0</div></div>
+          <div class="qs-card" data-tab-target="offres"><div class="qs-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div><div class="qs-label">Offres actives</div><div class="qs-value" id="qs-offres-val">0</div></div>
+        </div>
+        <div id="vip-section" style="display:none;"></div>
+      </div>
+
+      <div class="ca-tab" id="tab-fidelite">
+        <div class="ca-tab-header"><h1 class="ca-tab-title">⭐ Ma Carte Fidélité</h1><p class="ca-tab-sub">Vos services et avantages cumulés chez ZENOCCAZ</p></div>
+        <div id="fidelite-carte-section"><div class="ca-empty"><div class="ca-empty-icon">⭐</div><p>Carte fidélité non encore activée</p><span>Elle s'active après votre premier service chez ZENOCCAZ</span><a href="fidelite.html" class="ca-btn-primary" style="margin-top:20px;display:inline-block;text-decoration:none;">Voir le programme →</a></div></div>
+      </div>
+
+      <div class="ca-tab" id="tab-parrainage">
+        <div class="ca-tab-header"><h1 class="ca-tab-title">🎁 Programme Parrainage</h1><p class="ca-tab-sub">Parrainez vos proches, gagnez jusqu'à 250 € cash par acheteur</p></div>
+        <div class="parrainage-container">
+          <div class="code-container">
+            <div class="code-label">Votre code unique</div>
+            <div id="parrainage-code" class="code-display">ZENXXXXX</div>
+            <div class="code-actions">
+              <button id="btn-copy-code" class="copy-btn"><span>📋</span> Copier</button>
+              <button id="btn-share-code" class="share-btn"><span>📤</span> Partager</button>
+            </div>
+          </div>
+          <div class="parrainage-stats">
+            <div class="stat-item"><div class="stat-icon">👥</div><div class="stat-label">Filleuls actifs</div><div id="stat-filleuls" class="stat-value">0</div></div>
+            <div class="stat-item"><div class="stat-icon">✅</div><div class="stat-label">Conversions</div><div id="stat-conversions" class="stat-value">0</div></div>
+            <div class="stat-item"><div class="stat-icon">💰</div><div class="stat-label">Récompenses</div><div id="stat-rewards" class="stat-value">0€</div></div>
+          </div>
+          <div class="filleuls-list">
+            <h3>👥 Mes filleuls</h3>
+            <div id="filleuls-container"><div class="ca-empty"><div class="ca-empty-icon">🎯</div><p>Aucun filleul pour le moment</p><span>Partagez votre code et commencez à gagner !</span></div></div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Demandes de Reprise -->
-    <div class="section-card">
-      <h2 class="section-title">
-        <span style="font-size:32px;">🚗</span>
-        <span>Mes demandes de reprise</span>
-      </h2>
-      <div id="reprises-list">
-        <div class="empty-state">
-          <div class="empty-state-icon">🚗</div>
-          <p style="font-size:16px;margin:0 0 8px;">Aucune demande de reprise</p>
-          <p style="font-size:14px;margin:0 0 24px;">Vous n'avez pas encore fait de demande de reprise.</p>
-          <a href="services.html" class="btn primary" style="display:inline-block;text-decoration:none;padding:12px 32px;">
-            Faire une demande
-          </a>
-        </div>
+      <div class="ca-tab" id="tab-reprises">
+        <div class="ca-tab-header"><h1 class="ca-tab-title">🚗 Mes Demandes de Reprise</h1><p class="ca-tab-sub">Suivez l'avancement de vos demandes de rachat</p></div>
+        <div id="reprises-list"><div class="ca-empty"><div class="ca-empty-icon">🚗</div><p>Aucune demande de reprise</p><span>Vous n'avez pas encore soumis de véhicule à l'estimation.</span><a href="services.html" class="ca-btn-primary" style="margin-top:20px;display:inline-block;text-decoration:none;">Faire une demande →</a></div></div>
       </div>
-    </div>
 
-    <!-- Demandes ZenScan -->
-    <div class="section-card">
-      <h2 class="section-title">
-        <span style="font-size:32px;">🔍</span>
-        <span>Mes demandes ZenScan</span>
-      </h2>
-      <div id="zenscan-list">
-        <div class="empty-state">
-          <div class="empty-state-icon">🔍</div>
-          <p style="font-size:16px;margin:0 0 8px;">Aucune demande ZenScan</p>
-          <p style="font-size:14px;margin:0 0 24px;">Le diagnostic à distance n'a jamais été aussi simple.</p>
-          <a href="services.html" class="btn primary" style="display:inline-block;text-decoration:none;padding:12px 32px;">
-            Demander un ZenScan
-          </a>
-        </div>
+      <div class="ca-tab" id="tab-zenscan">
+        <div class="ca-tab-header"><h1 class="ca-tab-title">🔍 Mes Demandes ZenScan</h1><p class="ca-tab-sub">Historique de vos diagnostics à distance</p></div>
+        <div id="zenscan-list"><div class="ca-empty"><div class="ca-empty-icon">🔍</div><p>Aucune demande ZenScan</p><span>Le diagnostic à distance n'a jamais été aussi simple.</span><a href="services.html" class="ca-btn-primary" style="margin-top:20px;display:inline-block;text-decoration:none;">Demander un ZenScan →</a></div></div>
       </div>
-    </div>
 
-    <!-- Avis -->
-    <div class="section-card">
-      <h2 class="section-title">
-        <span style="font-size:32px;">⭐</span>
-        <span>Mes avis</span>
-      </h2>
-      <div id="reviews-list">
-        <div class="empty-state">
-          <div class="empty-state-icon">⭐</div>
-          <p style="font-size:16px;margin:0 0 8px;">Aucun avis publié</p>
-          <p style="font-size:14px;margin:0 0 24px;">Partagez votre expérience avec la communauté.</p>
-          <a href="index.html#avis" class="btn primary" style="display:inline-block;text-decoration:none;padding:12px 32px;">
-            Laisser un avis
-          </a>
-        </div>
+      <div class="ca-tab" id="tab-offres">
+        <div class="ca-tab-header"><h1 class="ca-tab-title">💎 Mes Offres & Avantages</h1><p class="ca-tab-sub">Vos offres saisonnières et avantages exclusifs</p></div>
+        <div id="offres-client-list"><div class="ca-empty"><div class="ca-empty-icon">💎</div><p>Aucune offre activée</p><span>Les offres que vous activez apparaîtront ici.</span><a href="index.html" class="ca-btn-primary" style="margin-top:20px;display:inline-block;text-decoration:none;">Voir les offres →</a></div></div>
       </div>
-    </div>
 
-    <!-- Mes Offres Saisonnières -->
-    <div class="section-card" id="offres-section-card">
-      <h2 class="section-title">
-        <span style="font-size:32px;">🎁</span>
-        <span>Mes Offres &amp; Avantages</span>
-      </h2>
-      <div id="offres-client-list">
-        <div class="empty-state">
-          <div class="empty-state-icon">🎁</div>
-          <p style="font-size:16px;margin:0 0 8px;">Aucune offre activée</p>
-          <p style="font-size:14px;margin:0 0 24px;">Les offres saisonnières que vous activez apparaîtront ici.</p>
-          <a href="index.html" class="btn primary" style="display:inline-block;text-decoration:none;padding:12px 32px;">
-            Voir les offres en cours
-          </a>
-        </div>
+      <div class="ca-tab" id="tab-conversations">
+        <div class="ca-tab-header"><h1 class="ca-tab-title">💬 Mes Conversations IA</h1><p class="ca-tab-sub">Historique de vos échanges avec l'assistant ZENOCCAZ</p></div>
+        <div id="conversations-list"><div class="ca-empty"><div class="ca-empty-icon">💬</div><p>Aucune conversation</p><span>Vos échanges avec l'assistant IA apparaîtront ici.</span></div></div>
       </div>
-    </div>
 
+      <div class="ca-tab" id="tab-avis">
+        <div class="ca-tab-header"><h1 class="ca-tab-title">✍️ Mes Avis</h1><p class="ca-tab-sub">Vos retours d'expérience partagés avec la communauté</p></div>
+        <div id="reviews-list"><div class="ca-empty"><div class="ca-empty-icon">✍️</div><p>Aucun avis publié</p><span>Partagez votre expérience avec la communauté.</span><a href="index.html#avis" class="ca-btn-primary" style="margin-top:20px;display:inline-block;text-decoration:none;">Laisser un avis →</a></div></div>
+      </div>
+
+    </main>
   </div>
 
-  <!-- Modal connexion/inscription -->
-  <div id="client-login-modal" class="modal hidden">
-    <div class="modal-content" style="max-width:500px;">
-      <div style="text-align:center;margin-bottom:32px;">
-        <h2 style="margin:0 0 8px;color:var(--text);font-size:32px;font-family:'Orbitron',sans-serif;">
-          🔐 Espace Client
-        </h2>
-        <p style="color:var(--muted);font-size:14px;margin:0;">Connectez-vous ou créez un compte</p>
+  <div id="client-login-modal" class="ca-modal hidden">
+    <div class="ca-modal-content">
+      <div class="ca-modal-header">
+        <div class="ca-modal-logo"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <h2>Espace Client</h2>
+        <p>Connectez-vous ou créez votre compte</p>
       </div>
-
-      <!-- Tabs -->
-      <div style="display:flex;gap:8px;margin-bottom:32px;">
-        <button id="tab-login" onclick="switchClientTab('login')" class="btn primary" style="flex:1;padding:12px;">
-          Connexion
-        </button>
-        <button id="tab-signup" onclick="switchClientTab('signup')" class="btn" style="flex:1;padding:12px;">
-          Inscription
-        </button>
+      <div class="ca-modal-tabs">
+        <button id="tab-login" class="ca-modal-tab active">Connexion</button>
+        <button id="tab-signup" class="ca-modal-tab">Inscription</button>
       </div>
-
-      <!-- Formulaire connexion -->
-      <form id="client-login-form" style="display:flex;flex-direction:column;gap:20px;">
-        <div>
-          <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Email</label>
-          <input type="email" id="login-client-email" placeholder="votre@email.com" required style="width:100%;padding:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--text);font-family:inherit;font-size:15px;" />
-        </div>
-        <div>
-          <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Mot de passe</label>
-          <input type="password" id="login-client-password" placeholder="••••••••" required style="width:100%;padding:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--text);font-family:inherit;font-size:15px;" />
-        </div>
-        <button type="submit" class="btn primary" style="padding:16px;font-size:16px;font-weight:600;margin-top:8px;">
-          ✅ Se connecter
-        </button>
-        <button type="button" onclick="closeLoginModal()" class="btn" style="padding:12px;font-size:14px;">
-          Annuler
-        </button>
+      <form id="client-login-form" class="ca-modal-form">
+        <div class="ca-field"><label>Email</label><input type="email" id="login-client-email" placeholder="votre@email.com" required /></div>
+        <div class="ca-field"><label>Mot de passe</label><input type="password" id="login-client-password" placeholder="••••••••" required /></div>
+        <button type="submit" class="ca-btn-primary full">✅ Se connecter</button>
+        <button type="button" id="btn-cancel-login" class="ca-btn-ghost full">Annuler</button>
       </form>
-
-      <!-- Formulaire inscription -->
-      <form id="client-signup-form" style="display:none;flex-direction:column;gap:20px;">
-        <div>
-          <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Nom complet</label>
-          <input type="text" id="signup-client-name" placeholder="Jean Dupont" required style="width:100%;padding:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--text);font-family:inherit;font-size:15px;" />
-        </div>
-        <div>
-          <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Email</label>
-          <input type="email" id="signup-client-email" placeholder="votre@email.com" required style="width:100%;padding:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--text);font-family:inherit;font-size:15px;" />
-        </div>
-        <div>
-          <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Mot de passe</label>
-          <input type="password" id="signup-client-password" placeholder="••••••••" required minlength="6" style="width:100%;padding:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--text);font-family:inherit;font-size:15px;" />
-        </div>
-        <div>
-          <label style="display:block;margin-bottom:8px;color:var(--text);font-weight:600;">Confirmer le mot de passe</label>
-          <input type="password" id="signup-client-password-confirm" placeholder="••••••••" required minlength="6" style="width:100%;padding:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--text);font-family:inherit;font-size:15px;" />
-        </div>
-        <button type="submit" class="btn primary" style="padding:16px;font-size:16px;font-weight:600;margin-top:8px;">
-          ✨ Créer mon compte
-        </button>
-        <button type="button" onclick="closeLoginModal()" class="btn" style="padding:12px;font-size:14px;">
-          Annuler
-        </button>
+      <form id="client-signup-form" class="ca-modal-form" style="display:none;">
+        <div class="ca-field"><label>Nom complet</label><input type="text" id="signup-client-name" placeholder="Jean Dupont" required /></div>
+        <div class="ca-field"><label>Email</label><input type="email" id="signup-client-email" placeholder="votre@email.com" required /></div>
+        <div class="ca-field"><label>Mot de passe</label><input type="password" id="signup-client-password" placeholder="••••••••" required minlength="6" /></div>
+        <div class="ca-field"><label>Confirmer le mot de passe</label><input type="password" id="signup-client-password-confirm" placeholder="••••••••" required minlength="6" /></div>
+        <button type="submit" class="ca-btn-primary full">✨ Créer mon compte</button>
+        <button type="button" id="btn-cancel-signup" class="ca-btn-ghost full">Annuler</button>
       </form>
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="site-footer">
-    © ZENOCCAZ — Vente de véhicules d'occasion premium
-    <span style="margin:0 8px;">|</span>
-    <a href="mentions-legales.html" style="color:var(--muted);text-decoration:none;">Mentions légales</a>
+  <footer class="ca-footer">
+    © ZENOCCAZ — Véhicules d'occasion premium <span>|</span>
+    <a href="mentions-legales.html">Mentions légales</a>
   </footer>
 
-  <!-- Scripts -->
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    // Configuration Supabase
-    const SUPABASE_URL = 'https://zxnnzpzujmjzhnfqndle.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4bm56cHp1am1qemhuZnFuZGxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNjc5NzQsImV4cCI6MjA3Nzg0Mzk3NH0.rHvMKPDV_3H_vpt-9HUORANLrqQ_Yvq_y1GD2RGD8_k';
-    let supabaseClient = null;
-
-    try {
-      const { createClient } = window.supabase || supabase;
-      supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      console.log('✅ Supabase initialisé');
-    } catch (e) {
-      console.error('❌ Erreur Supabase:', e);
-    }
-
-    // Au chargement de la page
-    window.addEventListener('DOMContentLoaded', async function() {
-      await loadClientData();
-    });
-
-    // Vérification authentification
-    function checkAuth() {
-      let raw = localStorage.getItem('clientData');
-
-      // Cloudflare encode parfois les emails — on nettoie
-      if (raw) {
-        raw = raw.replace(/\[email protected\]/g, '')
-                 .replace(/\[email protected\]/g, '');
-      }
-
-      if (!raw) {
-        document.getElementById('login-prompt').style.display = 'block';
-        document.getElementById('account-content').style.display = 'none';
-        return null;
-      }
-
-      let client;
-      try {
-        client = JSON.parse(raw);
-      } catch(e) {
-        // JSON corrompu — effacer et redemander connexion
-        localStorage.removeItem('clientData');
-        document.getElementById('login-prompt').style.display = 'block';
-        document.getElementById('account-content').style.display = 'none';
-        return null;
-      }
-
-      if (!client || !client.id) {
-        document.getElementById('login-prompt').style.display = 'block';
-        document.getElementById('account-content').style.display = 'none';
-        return null;
-      }
-
-      document.getElementById('login-prompt').style.display = 'none';
-      document.getElementById('account-content').style.display = 'block';
-      document.getElementById('client-name').textContent = client.name || 'Client';
-      document.getElementById('client-email').textContent = client.email || '';
-
-      return client;
-    }
-
-    // Chargement des données
-    async function loadClientData() {
-      const client = checkAuth();
-      if (!client) return;
-
-      await Promise.all([
-        loadParrainageData(client),
-        loadConversations(client.id),
-        loadReprises(client.email),
-        loadZenScan(client.email),
-        loadReviews(client),
-        loadOffresClient(client)
-      ]);
-    }
-
-    // ═══════════════════════════════════════════════════════
-    // SECTION PARRAINAGE
-    // ═══════════════════════════════════════════════════════
-
-    async function loadParrainageData(client) {
-      try {
-        // Charger le client complet avec son code de parrainage
-        const { data: clientData, error: clientError } = await supabaseClient
-          .from('clients')
-          .select('code_parrainage')
-          .eq('id', client.id)
-          .single();
-
-        if (clientError) throw clientError;
-
-        // Afficher le code de parrainage
-        const code = clientData.code_parrainage || 'ZEN' + String(client.id).padStart(5, '0');
-        document.getElementById('parrainage-code').textContent = code;
-
-        // Charger les stats de parrainage
-        const { data: parrainages, error: parrainagesError } = await supabaseClient
-          .from('parrainages')
-          .select('*')
-          .eq('parrain_email', client.email);
-
-        if (parrainagesError) throw parrainagesError;
-
-        const total = parrainages?.length || 0;
-        const conversions = parrainages?.filter(p => p.status === 'fini').length || 0;
-        const rewards = parrainages?.reduce((sum, p) => sum + (parseFloat(p.commission) || 0), 0) || 0;
-
-        document.getElementById('stat-filleuls').textContent = total;
-        document.getElementById('stat-conversions').textContent = conversions;
-        document.getElementById('stat-rewards').textContent = rewards.toFixed(0) + '€';
-
-        // Afficher la liste des filleuls
-        if (total > 0) {
-          const container = document.getElementById('filleuls-container');
-          container.innerHTML = parrainages.map(p => {
-            const date = new Date(p.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-            const isCompleted = p.status === 'fini';
-            
-            return `
-              <div class="filleul-card">
-                <div class="filleul-info">
-                  <h4>👤 ${p.filleul || 'Filleul anonyme'}</h4>
-                  <div class="filleul-date">📅 Parrainé le ${date}</div>
-                </div>
-                <div class="reward-badge ${isCompleted ? '' : 'pending'}">
-                  ${isCompleted ? '✅' : '⏳'}
-                  ${isCompleted ? p.commission + '€ gagnés' : 'En attente'}
-                </div>
-              </div>
-            `;
-          }).join('');
-        }
-
-      } catch (e) {
-        console.error('❌ Erreur parrainage:', e);
-      }
-    }
-
-    // Copier le code
-    window.copyCode = async function() {
-      const code = document.getElementById('parrainage-code').textContent;
-      try {
-        await navigator.clipboard.writeText(code);
-        alert('✅ Code copié : ' + code);
-      } catch (e) {
-        // Fallback pour navigateurs ne supportant pas clipboard API
-        const input = document.createElement('input');
-        input.value = code;
-        document.body.appendChild(input);
-        input.select();
-        document.execCommand('copy');
-        document.body.removeChild(input);
-        alert('✅ Code copié : ' + code);
-      }
-    };
-
-    // Partager le code
-    window.shareCode = async function() {
-      const code = document.getElementById('parrainage-code').textContent;
-      const text = `Rejoignez ZENOCCAZ avec mon code parrain ${code} et bénéficiez d'avantages exclusifs ! 🚗✨`;
-      const url = 'https://zen-occaz.com';
-
-      if (navigator.share) {
-        try {
-          await navigator.share({ title: 'ZENOCCAZ - Code Parrainage', text: text, url: url });
-        } catch (e) {
-          console.log('Partage annulé');
-        }
-      } else {
-        // Fallback: copier le texte
-        try {
-          await navigator.clipboard.writeText(text + '\n' + url);
-          alert('✅ Message de parrainage copié !');
-        } catch (e) {
-          alert('📋 Partagez ce message:\n\n' + text + '\n' + url);
-        }
-      }
-    };
-
-    // ═══════════════════════════════════════════════════════
-    // CONVERSATIONS IA
-    // ═══════════════════════════════════════════════════════
-
-    async function loadConversations(clientId) {
-      const div = document.getElementById('conversations-list');
-      try {
-        const { data, error } = await supabaseClient
-          .from('conversations')
-          .select('*')
-          .eq('client_id', clientId)
-          .order('updated_at', { ascending: false })
-          .limit(20);
-
-        if (error) throw error;
-
-        if (!data || data.length === 0) {
-          div.innerHTML = `
-            <div class="empty-state">
-              <div class="empty-state-icon">💬</div>
-              <p style="font-size:16px;margin:0 0 8px;">Aucune conversation</p>
-              <p style="font-size:14px;margin:0;">Vos conversations avec l'assistant IA apparaîtront ici.</p>
-            </div>`;
-          return;
-        }
-
-        div.innerHTML = data.map(conv => {
-          const messages = conv.messages || [];
-          const date = new Date(conv.updated_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-          const heure = new Date(conv.updated_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-          const lastMsg = messages.slice(-1)[0];
-          const preview = lastMsg ? lastMsg.content.substring(0, 100) + '...' : '';
-          const msgCount = messages.length;
-
-          const msgsHtml = messages.map(m => `
-            <div class="conv-msg ${m.role === 'user' ? 'user' : 'bot'}">
-              <div class="conv-msg-label">${m.role === 'user' ? '👤 Vous' : '🤖 Assistant'}</div>
-              ${m.content.substring(0, 300)}${m.content.length > 300 ? '...' : ''}
-            </div>
-          `).join('');
-
-          return `
-            <div class="conv-card" onclick="toggleConv('conv-${conv.id}')">
-              <div class="conv-subject">💬 ${conv.sujet || 'Discussion'}</div>
-              <div class="conv-meta">
-                <span>📅 ${date} à ${heure}</span>
-                <span>💬 ${msgCount} message${msgCount > 1 ? 's' : ''}</span>
-              </div>
-              <div class="conv-preview">${preview}</div>
-              <div id="conv-${conv.id}" class="conv-messages">${msgsHtml}</div>
-            </div>
-          `;
-        }).join('');
-
-      } catch (e) {
-        console.error('❌ Conversations:', e);
-        div.innerHTML = `<div class="empty-state"><p style="color:#ef4444;">Erreur de chargement</p></div>`;
-      }
-    }
-
-    function toggleConv(id) {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.style.display = el.style.display === 'block' ? 'none' : 'block';
-    }
-
-    // ═══════════════════════════════════════════════════════
-    // REPRISES
-    // ═══════════════════════════════════════════════════════
-
-    async function loadReprises(email) {
-      const div = document.getElementById('reprises-list');
-      try {
-        const { data, error } = await supabaseClient
-          .from('contacts')
-          .select('*')
-          .eq('email', email)
-          .or('name.ilike.%DEMANDE REPRISE%,name.ilike.%EXPERTISE ACHAT%');
-
-        if (error) throw error;
-
-        if (!data || data.length === 0) {
-          div.innerHTML = `
-            <div class="empty-state">
-              <div class="empty-state-icon">🚗</div>
-              <p style="font-size:16px;margin:0 0 8px;">Aucune demande de reprise</p>
-              <p style="font-size:14px;margin:0 0 24px;">Vous n'avez pas encore fait de demande de reprise.</p>
-              <a href="services.html" class="btn primary" style="display:inline-block;text-decoration:none;padding:12px 32px;">Faire une demande</a>
-            </div>`;
-          return;
-        }
-
-        div.innerHTML = data.map(c => {
-          const date = new Date(c.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-          const isAccomp = (c.name||'').includes('EXPERTISE ACHAT');
-          const icon  = isAccomp ? '🔍' : '🚗';
-          const titre = isAccomp ? 'Expertise Achat' : 'Demande de Reprise';
-          const plates = c.plates?.join(', ') || null;
-          return `
-            <div class="demand-card">
-              <div class="demand-header">
-                <div>
-                  <div class="demand-title">${icon} ${titre}</div>
-                  <div class="demand-date">📅 Le ${date}</div>
-                </div>
-                <span class="demand-status status-pending">⏳ En attente</span>
-              </div>
-              <div class="demand-details">
-                ${plates ? `<div class="detail-item"><span class="detail-label">Immatriculation</span><span class="detail-value">${plates}</span></div>` : ''}
-                <div class="detail-item"><span class="detail-label">Téléphone</span><span class="detail-value">${c.phone || '—'}</span></div>
-                ${c.name ? `<div class="detail-item" style="grid-column:1/-1"><span class="detail-label">Détails</span><span class="detail-value" style="font-size:13px;">${c.name.replace(/^[^—]*—\s*/,'')}</span></div>` : ''}
-              </div>
-            </div>`;
-        }).join('');
-
-      } catch (e) {
-        console.error('❌ Reprises:', e);
-        div.innerHTML = `<div class="empty-state"><p style="color:#ef4444;">Erreur de chargement</p></div>`;
-      }
-    }
-
-    // ═══════════════════════════════════════════════════════
-    // ZENSCAN
-    // ═══════════════════════════════════════════════════════
-
-    async function loadZenScan(email) {
-      const div = document.getElementById('zenscan-list');
-      try {
-        // Trouver le contact lié à cet email
-        const { data: contacts } = await supabaseClient
-          .from('contacts')
-          .select('id')
-          .eq('email', email);
-
-        const client = JSON.parse(localStorage.getItem('clientData') || '{}');
-        const ids = [...new Set([
-          ...(contacts || []).map(c => c.id),
-          client.id
-        ].filter(Boolean))];
-
-        if (!ids.length) {
-          div.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🔍</div><p style="font-size:16px;margin:0 0 8px;">Aucune demande ZenScan</p><p style="font-size:14px;margin:0 0 24px;">Le diagnostic à distance n'a jamais été aussi simple.</p><a href="services.html" class="btn primary" style="display:inline-block;text-decoration:none;padding:12px 32px;">Demander un ZenScan</a></div>`;
-          return;
-        }
-
-        const { data, error } = await supabaseClient
-          .from('zenscan_requests')
-          .select('*')
-          .in('contact_id', ids)
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        if (!data || data.length === 0) {
-          div.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🔍</div><p style="font-size:16px;margin:0 0 8px;">Aucune demande ZenScan</p><p style="font-size:14px;margin:0 0 24px;">Le diagnostic à distance n'a jamais été aussi simple.</p><a href="services.html" class="btn primary" style="display:inline-block;text-decoration:none;padding:12px 32px;">Demander un ZenScan</a></div>`;
-          return;
-        }
-
-        div.innerHTML = data.map(z => {
-          const date = new Date(z.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-          const services = Array.isArray(z.services) ? z.services.join(', ') : (z.services || '—');
-          return `
-            <div class="demand-card">
-              <div class="demand-header">
-                <div>
-                  <div class="demand-title">🔍 Demande ZenScan</div>
-                  <div class="demand-date">📅 Le ${date}</div>
-                </div>
-                <span class="demand-status status-pending">⏳ En attente</span>
-              </div>
-              <div class="demand-details">
-                <div class="detail-item">
-                  <span class="detail-label">Services</span>
-                  <span class="detail-value" style="font-size:13px;">${services}</span>
-                </div>
-                ${z.dest ? `<div class="detail-item"><span class="detail-label">Destination</span><span class="detail-value">${z.dest}</span></div>` : ''}
-                ${z.total ? `<div class="detail-item"><span class="detail-label">Total estimé</span><span class="detail-value" style="color:#10b981;font-weight:700;">${z.total}</span></div>` : ''}
-              </div>
-            </div>`;
-        }).join('');
-
-      } catch (e) {
-        console.error('❌ ZenScan:', e);
-        div.innerHTML = `<div class="empty-state"><p style="color:#ef4444;">Erreur de chargement</p></div>`;
-      }
-    }
-
-    // ═══════════════════════════════════════════════════════
-    // AVIS
-    // ═══════════════════════════════════════════════════════
-
-    async function loadReviews(client) {
-      const div = document.getElementById('reviews-list');
-      try {
-        const { data, error } = await supabaseClient
-          .from('reviews')
-          .select('*')
-          .eq('client_name', client.name)
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        if (!data || data.length === 0) {
-          div.innerHTML = `
-            <div class="empty-state">
-              <div class="empty-state-icon">⭐</div>
-              <p style="font-size:16px;margin:0 0 8px;">Aucun avis publié</p>
-              <p style="font-size:14px;margin:0 0 24px;">Partagez votre expérience avec la communauté.</p>
-              <a href="index.html#avis" class="btn primary" style="display:inline-block;text-decoration:none;padding:12px 32px;">Laisser un avis</a>
-            </div>`;
-          return;
-        }
-
-        div.innerHTML = data.map(r => {
-          const date = new Date(r.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-          return `
-            <div class="demand-card">
-              <div class="demand-header">
-                <div>
-                  <div class="demand-title">${'⭐'.repeat(r.rating || 5)}</div>
-                  <div class="demand-date">📅 Le ${date}</div>
-                </div>
-              </div>
-              <div style="color:var(--text);margin-top:16px;line-height:1.6;font-size:15px;">${r.comment || ''}</div>
-            </div>
-          `;
-        }).join('');
-
-      } catch (e) {
-        console.error('❌ Avis:', e);
-        div.innerHTML = `<div class="empty-state"><p style="color:#ef4444;">Erreur de chargement</p></div>`;
-      }
-    }
-
-    // ═══════════════════════════════════════════════════════
-    // AUTHENTIFICATION
-    // ═══════════════════════════════════════════════════════
-
-    window.logout = function() {
-      localStorage.removeItem('clientData');
-      window.dispatchEvent(new CustomEvent('clientLogout'));
-      window.location.href = 'index.html';
-    };
-
-    window.openLoginModal = function() {
-      const m = document.getElementById('client-login-modal');
-      m.classList.remove('hidden');
-      switchClientTab('login');
-    };
-
-    window.closeLoginModal = function() {
-      const m = document.getElementById('client-login-modal');
-      m.classList.add('hidden');
-    };
-
-
-    // ═══════════════════════════════════════════════════════
-    // SECTION OFFRES SAISONNIÈRES
-    // ═══════════════════════════════════════════════════════
-
-    const OFFRES_DATA = {
-      printemps: {
-        id: 'printemps', emoji: '🌸', nom: 'Réveil de Printemps',
-        saison: 'Offre Printemps', couleur: '#f472b6',
-        gradient: 'linear-gradient(135deg,#f472b6,#fb923c)',
-        services: ['Contrôle sortie d\'hiver complet','Scan OBD diagnostic électronique','−10 % sur les filtres habitacle','Vérification courroies & durites','Contrôle fuites moteur'],
-      },
-      ete: {
-        id: 'ete', emoji: '☀️', nom: 'Prêt pour les Vacances',
-        saison: 'Offre Été', couleur: '#f59e0b',
-        gradient: 'linear-gradient(135deg,#f59e0b,#f97316)',
-        services: ['Test batterie & alternateur','Contrôle refroidissement visuel','−10 % sur les LDR (ampoules)','Pack vacances sécurité complet','Contrôle pression & état pneus'],
-      },
-      noel: {
-        id: 'noel', emoji: '🎄', nom: 'Cadeau Fidélité',
-        saison: 'Offre Noël', couleur: '#10b981',
-        gradient: 'linear-gradient(135deg,#10b981,#3b82f6)',
-        services: ['Chèque cadeau 100 € sur n\'importe quel site','Livré par email personnalisé'],
-      },
-    };
-
-    async function loadOffresClient(client) {
-      const container = document.getElementById('offres-client-list');
-      if (!container) return;
-      try {
-        const { data, error } = await supabaseClient
-          .from('client_offers')
-          .select('*')
-          .eq('client_id', client.id)
-          .order('activated_at', { ascending: false });
-
-        if (error) throw error;
-        if (!data || data.length === 0) return;
-
-        container.innerHTML = data.map(offer => {
-          const o = OFFRES_DATA[offer.offer_id] || {};
-          const date = new Date(offer.activated_at).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
-          const used = offer.used;
-          return `
-            <div style="
-              background:rgba(255,255,255,0.03);
-              border:1px solid ${used ? 'rgba(107,114,128,0.2)' : (o.couleur || '#10b981') + '44'};
-              border-radius:16px; padding:22px; margin-bottom:16px;
-              position:relative; overflow:hidden;
-              ${used ? 'opacity:0.6;' : ''}
-            ">
-              ${!used ? `<div style="position:absolute;top:0;left:0;right:0;height:2px;background:${o.gradient || 'var(--primary)'};"></div>` : ''}
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
-                <div style="display:flex;align-items:center;gap:12px;">
-                  <span style="font-size:32px;">${o.emoji || '🎁'}</span>
-                  <div>
-                    <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:${o.couleur || '#10b981'};margin-bottom:3px;">${o.saison || offer.offer_id}</div>
-                    <div style="font-size:17px;font-weight:800;color:var(--text);">${o.nom || 'Offre activée'}</div>
-                    <div style="font-size:12px;color:var(--muted);margin-top:2px;">Activée le ${date} · Année ${offer.offer_year}</div>
-                  </div>
-                </div>
-                <span style="padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;${used ? 'background:rgba(107,114,128,0.15);color:#9ca3af;border:1px solid rgba(107,114,128,0.3);' : 'background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.3);'}">${used ? '✓ Utilisée' : '● Active'}</span>
-              </div>
-              ${o.services ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;">${o.services.map(s => `<span style="padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);">${s}</span>`).join('')}</div>` : ''}
-              
-              ${!used && offer.offer_id === 'noel' ? `<button onclick="demanderCadeauNoel(${offer.id})" style="margin-top:16px;padding:10px 20px;border-radius:10px;background:${o.gradient};border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">🎁 Recevoir mon chèque cadeau</button>` : ''}
-            </div>`;
-        }).join('');
-
-      } catch(e) { console.error('❌ loadOffresClient:', e); }
-    }
-
-    window.marquerOffreUtilisee = async function(offerId) {
-      if (!confirm('Confirmer que vous avez utilisé cette offre ?')) return;
-      try {
-        await supabaseClient.from('client_offers').update({ used: true }).eq('id', offerId);
-        const client = JSON.parse(localStorage.getItem('clientData'));
-        await loadOffresClient(client);
-      } catch(e) { alert('❌ Erreur: ' + e.message); }
-    };
-
-    window.demanderCadeauNoel = async function(offerId) {
-      const client = JSON.parse(localStorage.getItem('clientData'));
-      if (!client) return;
-      try {
-        await supabaseClient.from('contacts').insert([{
-          name: client.name || 'Client',
-          email: client.email,
-          message: '🎄 Demande chèque cadeau Noël 100€ — Client fidèle ' + new Date().getFullYear(),
-        }]);
-        await supabaseClient.from('client_offers').update({ used: true }).eq('id', offerId);
-        await loadOffresClient(client);
-        alert('🎁 Demande envoyée ! Vous recevrez votre chèque cadeau 100€ par email sous 48h.\nJoyeux Noël ! 🎄');
-      } catch(e) { alert('❌ Erreur: ' + e.message); }
-    };
-
-    window.switchClientTab = function(tab) {
-      const tl = document.getElementById('tab-login');
-      const ts = document.getElementById('tab-signup');
-      const fl = document.getElementById('client-login-form');
-      const fs = document.getElementById('client-signup-form');
-
-      if (tab === 'login') {
-        tl.classList.add('primary');
-        ts.classList.remove('primary');
-        fl.style.display = 'flex';
-        fs.style.display = 'none';
-      } else {
-        ts.classList.add('primary');
-        tl.classList.remove('primary');
-        fs.style.display = 'flex';
-        fl.style.display = 'none';
-      }
-    };
-
-    // Connexion
-    document.getElementById('client-login-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const email = document.getElementById('login-client-email').value.trim();
-      const password = document.getElementById('login-client-password').value;
-
-      try {
-        const { data, error } = await supabaseClient
-          .from('clients')
-          .select('*')
-          .eq('email', email)
-          .eq('password', password)
-          .single();
-
-        if (error || !data) {
-          alert('❌ Email ou mot de passe incorrect');
-          return;
-        }
-
-        const clientData = {
-          id: data.id,
-          email: data.email,
-          name: data.name,
-          connectedAt: new Date().toISOString()
-        };
-        localStorage.setItem('clientData', JSON.stringify(clientData));
-
-        // Notifier le chatbot
-        window.dispatchEvent(new CustomEvent('clientLogin', { detail: clientData }));
-
-        closeLoginModal();
-        checkAuth();
-        loadClientData();
-
-      } catch (e) {
-        alert('❌ Erreur: ' + e.message);
-      }
-    });
-
-    // Inscription
-    document.getElementById('client-signup-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const name = document.getElementById('signup-client-name').value.trim();
-      const email = document.getElementById('signup-client-email').value.trim();
-      const password = document.getElementById('signup-client-password').value;
-      const confirm = document.getElementById('signup-client-password-confirm').value;
-
-      if (password !== confirm) {
-        alert('❌ Les mots de passe ne correspondent pas');
-        return;
-      }
-
-      if (password.length < 6) {
-        alert('❌ Le mot de passe doit contenir au moins 6 caractères');
-        return;
-      }
-
-      try {
-        // Vérifier si l'email existe
-        const { data: existing } = await supabaseClient
-          .from('clients')
-          .select('email')
-          .eq('email', email)
-          .single();
-
-        if (existing) {
-          alert('❌ Cet email est déjà utilisé');
-          switchClientTab('login');
-          return;
-        }
-
-        // Générer un code de parrainage unique
-        const newId = Date.now();
-        const prenom = name.split(' ')[0].toUpperCase().replace(/[^A-Z]/g, '').substring(0, 8);
-        const chiffres = String(Math.floor(1000 + Math.random() * 9000));
-        const codeParrainage = prenom + chiffres;
-
-        // Créer le compte
-        const { error } = await supabaseClient
-          .from('clients')
-          .insert([{
-            id: newId,
-            name: name,
-            email: email,
-            password: password,
-            code_parrainage: codeParrainage
-          }]);
-
-        if (error) {
-          alert('❌ Erreur lors de la création du compte');
-          return;
-        }
-
-        alert('✅ Compte créé avec succès ! Vous pouvez maintenant vous connecter !');
-        switchClientTab('login');
-        document.getElementById('login-client-email').value = email;
-
-      } catch (e) {
-        alert('❌ Erreur: ' + e.message);
-      }
-    });
-
-    // Fermer modal en cliquant dehors
-    document.getElementById('client-login-modal').addEventListener('click', function(e) {
-      if (e.target === this) closeLoginModal();
-    });
-
-  </script>
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="client-account.js"></script>
 </body>
 </html>

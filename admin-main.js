@@ -29,22 +29,19 @@ window.deleteReview = async function(id) {
 
 // ── Initialisation ──
 document.addEventListener('DOMContentLoaded', () => {
-  if (window.supabaseClient) {
-    console.log('✅ Supabase déjà disponible');
-    initAdmin();
-  } else {
-    console.log('⏳ Attente du chargement de Supabase...');
-    window.addEventListener('supabaseReady', () => {
-      console.log('✅ Événement supabaseReady reçu');
+  // admin-inline.js est chargé avant et appelle déjà initAdmin()
+  // On attend qu'il ait fini pour appeler le nôtre sans doublon
+  if (window._adminMainInitDone) return;
+  window._adminMainInitDone = true;
+
+  function tryInit() {
+    if (window._adminInlineInitDone && window.supabase && window.supabase.from) {
       initAdmin();
-    }, { once: true });
-    setTimeout(() => {
-      if (!window.supabaseClient) {
-        console.error('❌ Timeout: Supabase non chargé');
-        alert('⚠️ Erreur de chargement Supabase.\n\nOuvrez la console (F12) pour voir les détails.');
-      }
-    }, 5000);
+    } else {
+      setTimeout(tryInit, 50);
+    }
   }
+  tryInit();
 });
 
 function initAdmin() {
@@ -373,37 +370,643 @@ function initAdmin() {
   }
 
   // ── CONTACTS ──
-  const contactsTbody = document.getElementById('contacts-table-body');
-  const addContactBtn = document.getElementById('add-contact-admin');
+  const contactsTbody  = document.getElementById('contacts-table-body');
+  const clientsTbody   = document.getElementById('clients-table-body');
+  const addContactBtn  = document.getElementById('add-contact-admin');
   const contactsSection = document.getElementById('contacts');
+  const clientsSection  = document.getElementById('clients');
   const contactsLink    = document.querySelector('a[href="#contacts"]');
+  const clientsLink     = document.querySelector('a[href="#clients"]');
 
-  async function loadContacts() {
+  // ── Charger CONTACTS (table contacts — demandes) ──
+  async function loadContacts() { return []; } // table contacts supprimée
+
+  // ── Charger CLIENTS (table clients — comptes) ──
+  async function loadClients() {
     try {
       if (!window.supabase) return [];
-      const { data, error } = await window.supabase.from('contacts').select('*').order('created_at', { ascending: false });
-      if (error) { console.error('❌ Erreur chargement contacts:', error); return []; }
+      const { data, error } = await window.supabase
+        .from('clients')
+        .select('id, name, email, phone, adresse, created_at, vip_status, nb_apporteurs, vip_note, vip_validated_at')
+        .order('created_at', { ascending: false });
+      if (error) return [];
       return data || [];
     } catch(e) { return []; }
   }
 
-  async function renderContactsTable() {
+  // ── Recherche contacts ──
+  const searchInput = document.getElementById('contacts-search');
+  if (searchInput) searchInput.addEventListener('input', () => renderContactsTable(searchInput.value));
+
+  // ── Recherche clients ──
+  const clientsSearchInput = document.getElementById('clients-search');
+  if (clientsSearchInput) clientsSearchInput.addEventListener('input', () => renderClientsTable(clientsSearchInput.value));
+
+  // Exposé globalement
+  window.renderContactsTableGlobal = async (f) => renderContactsTable(f);
+  window.renderClientsTableGlobal   = async (f) => renderClientsTable(f);
+
+  async function renderContactsTable(filter = '') {
+    if (!contactsTbody) return;
     const arr = await loadContacts();
     contactsTbody.innerHTML = '';
-    if (arr.length === 0) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = '<td colspan="5" class="activity-empty">Aucun contact.</td>';
-      contactsTbody.appendChild(tr);
+
+    const filtered = filter
+      ? arr.filter(c => (c.name||'').toLowerCase().includes(filter.toLowerCase()) || (c.email||'').toLowerCase().includes(filter.toLowerCase()))
+      : arr;
+
+    if (filtered.length === 0) {
+      contactsTbody.innerHTML = '<tr><td colspan="5" class="activity-empty">Aucun contact.</td></tr>';
       return;
     }
-    arr.forEach(c => {
+
+    filtered.forEach(c => {
       const tr = document.createElement('tr');
       tr.className = 'contact-row';
       const dateStr = new Date(c.created_at || c.date).toLocaleDateString('fr-FR');
-      tr.innerHTML = `<td><div class="contact-cell-title"><div class="contact-avatar">👤</div><div><div class="contact-name">${escapeHtml(c.name||'—')}</div></div></div></td><td>${escapeHtml(c.email||'—')}</td><td>${escapeHtml(c.phone||'—')}</td><td>${dateStr}</td><td><div class="action-links"><span class="edit-contact" data-id="${c.id}" style="cursor:pointer;padding:6px 10px;background:rgba(239,68,68,0.1);border-radius:6px;font-size:16px;">🗑️</span></div></td>`;
+      const nomPropre = escapeHtml((c.name||'—').split('|')[0].trim());
+      tr.innerHTML = `
+        <td><div class="contact-cell-title">
+          <div class="contact-avatar">👤</div>
+          <div><div class="contact-name">${nomPropre}</div></div>
+        </div></td>
+        <td style="font-size:13px;">${escapeHtml(c.email||'—')}</td>
+        <td style="font-size:13px;">${escapeHtml(c.phone||'—')}</td>
+        <td style="font-size:12px;color:var(--muted);">${dateStr}</td>
+        <td><span class="edit-contact" data-id="${c.id}" style="cursor:pointer;padding:6px 10px;background:rgba(239,68,68,0.1);border-radius:6px;font-size:14px;">🗑️</span></td>`;
       contactsTbody.appendChild(tr);
     });
-    contactsTbody.querySelectorAll('.edit-contact').forEach(el => el.addEventListener('click', e => deleteContact(Number(e.target.dataset.id))));
+
+    contactsTbody.querySelectorAll('.edit-contact').forEach(el =>
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        deleteContactOnly(Number(e.target.dataset.id));
+      })
+    );
+  }
+
+  // ── Supprimer uniquement dans contacts (pas dans clients) ──
+  async function deleteContactOnly(id) {
+    // Table contacts supprimée — rien à supprimer
+    showToast('ℹ️ La table contacts a été supprimée');
+  }
+
+  // ══════════════════════════════════════════════════════
+  // ONGLET CLIENTS — renderClientsTable
+  // ══════════════════════════════════════════════════════
+
+  async function renderClientsTable(filter = '') {
+    if (!clientsTbody) return;
+    const arr = await loadClients();
+    clientsTbody.innerHTML = '';
+
+    const filtered = filter
+      ? arr.filter(c => (c.name||'').toLowerCase().includes(filter.toLowerCase()) || (c.email||'').toLowerCase().includes(filter.toLowerCase()))
+      : arr;
+
+    if (filtered.length === 0) {
+      clientsTbody.innerHTML = '<tr><td colspan="6" class="activity-empty">Aucun client.</td></tr>';
+      return;
+    }
+
+    // Charger les cartes fidélité
+    let carteMap = {};
+    try {
+      const { data: cartes } = await window.supabase.from('fidelite_carte')
+        .select('client_id,nb_vehicules_achetes,nb_zenscan,nb_montages_pneus,vidange_offerte,zenscan_offert');
+      (cartes || []).forEach(ca => { carteMap[ca.client_id] = ca; });
+    } catch(e) {}
+
+    filtered.forEach(c => {
+      const tr = document.createElement('tr');
+      tr.className = 'contact-row';
+      tr.style.cursor = 'pointer';
+      const dateStr = new Date(c.created_at).toLocaleDateString('fr-FR');
+      const isVip = c.vip_status;
+      const nbApp = c.nb_apporteurs || 0;
+
+      let statusBadge = '<span style="font-size:11px;color:var(--muted);">Client</span>';
+      if (isVip && nbApp >= 4) statusBadge = '<span style="padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);">🏆 Elite</span>';
+      else if (isVip && nbApp === 3) statusBadge = '<span style="padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);">🥇 Gold</span>';
+      else if (isVip && nbApp === 2) statusBadge = '<span style="padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(59,130,246,0.15);color:#3b82f6;border:1px solid rgba(59,130,246,0.3);">🥈 Confirmé</span>';
+      else if (isVip && nbApp >= 1) statusBadge = '<span style="padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(168,85,247,0.15);color:#a855f7;border:1px solid rgba(168,85,247,0.3);">👑 Ambassadeur</span>';
+      else if (isVip) statusBadge = '<span style="padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);">⭐ VIP</span>';
+
+      const rowKey = 'cl_' + String(c.id);
+      window._contactRowMap = window._contactRowMap || {};
+      window._contactRowMap[rowKey] = { contact: c, client: c, carte: carteMap[c.id] };
+
+      tr.innerHTML = `
+        <td><div class="contact-cell-title">
+          <div class="contact-avatar" style="${isVip ? 'background:rgba(245,158,11,0.15);' : ''}">${isVip ? '👑' : '👤'}</div>
+          <div><div class="contact-name">${escapeHtml(c.name||'—')}</div></div>
+        </div></td>
+        <td style="font-size:13px;">${escapeHtml(c.email||'—')}</td>
+        <td style="font-size:13px;">${escapeHtml(c.phone||'—')}</td>
+        <td>${statusBadge}</td>
+        <td style="font-size:12px;color:var(--muted);">${dateStr}</td>
+        <td><div style="display:flex;gap:6px;">
+          <button class="btn-open-fiche" data-rowkey="${rowKey}" style="padding:5px 10px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:6px;color:#10b981;font-size:12px;cursor:pointer;white-space:nowrap;">✏️ Fiche</button>
+          <span class="del-client" data-id="${c.id}" data-email="${escapeHtml(c.email||'')}" style="cursor:pointer;padding:6px 10px;background:rgba(239,68,68,0.1);border-radius:6px;font-size:14px;">🗑️</span>
+        </div></td>`;
+
+      tr.addEventListener('click', e => {
+        if (e.target.closest('.del-client') || e.target.closest('.btn-open-fiche')) return;
+        const row = window._contactRowMap?.[rowKey];
+        if (row) openContactFiche(row.contact, row.client, row.carte);
+      });
+      clientsTbody.appendChild(tr);
+    });
+
+    clientsTbody.querySelectorAll('.btn-open-fiche').forEach(el =>
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        const row = window._contactRowMap?.[el.dataset.rowkey];
+        if (row) openContactFiche(row.contact, row.client, row.carte);
+      })
+    );
+    clientsTbody.querySelectorAll('.del-client').forEach(el =>
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        deleteClient(Number(el.dataset.id), el.dataset.email);
+      })
+    );
+  }
+
+  // ── Supprimer un client (clients + contacts + fidelite_carte) ──
+  async function deleteClient(id, email) {
+    if (!confirm(`Supprimer le compte client${email ? ' (' + email + ')' : ''} ?\n\nCette action est irréversible.`)) return;
+    try {
+      // Convertir en number pour éviter les problèmes de type avec Supabase bigint
+      const numId = Number(id);
+
+      // Vérifier les erreurs sur chaque suppression
+      const { error: e1 } = await window.supabase.from('fidelite_carte').delete().eq('client_id', numId);
+      if (e1) console.warn('fidelite_carte:', e1.message);
+
+      // Supprimer par id ET par email pour couvrir les éventuels doublons
+      const { error: e2 } = await window.supabase.from('clients').delete().eq('id', numId);
+      if (e2) { showToast('❌ Erreur suppression client : ' + e2.message, 'error'); return; }
+
+      // Supprimer aussi les autres entrées avec le même email (doublons)
+      if (email) {
+        await window.supabase.from('clients').delete().eq('email', email);
+        // (suppression contacts ignorée — table supprimée)
+      }
+
+      showToast('✅ Client supprimé');
+      await renderClientsTable();
+    } catch(e) { showToast('❌ ' + e.message, 'error'); }
+  }
+
+    // ══════════════════════════════════════════════════════
+  // FICHE CLIENT — panneau latéral + modal
+  // ══════════════════════════════════════════════════════
+
+  // ══════════════════════════════════════════════════════
+  // FICHE CLIENT — redesignée avec auto-activation paliers
+  // ══════════════════════════════════════════════════════
+
+  // Calcule les avantages ambassadeur débloqués selon le nb d'acheteurs
+  function getAmbassadeurAvantages(nb) {
+    return {
+      badge:    nb >= 1,
+      zenscan:  nb >= 2,
+      pneus:    nb >= 3,
+      tarif:    nb >= 4,
+    };
+  }
+
+  function getPalierLabel(nb) {
+    if (nb === 0) return '';
+    if (nb === 1) return '🥉 Ambassadeur';
+    if (nb === 2) return '🥈 Ambassadeur Confirmé';
+    if (nb === 3) return '🥇 Ambassadeur Gold';
+    return '🏆 Ambassadeur Elite';
+  }
+
+  function getPalierColor(nb) {
+    if (nb === 1) return '#a855f7';
+    if (nb === 2) return '#3b82f6';
+    if (nb === 3) return '#10b981';
+    if (nb >= 4) return '#f59e0b';
+    return 'var(--muted)';
+  }
+
+  function openContactFiche(contact, client, carte) {
+    const modal = document.getElementById('fidelite-modal');
+    const body  = document.getElementById('fidelite-modal-body');
+    if (!modal || !body) return;
+
+    const isVip    = client?.vip_status || false;
+    const nbApp    = client?.nb_apporteurs || 0;
+    const clientId = client?.id || null;
+    const avantages = getAmbassadeurAvantages(nbApp);
+
+    const hasAchete  = (carte?.nb_vehicules_achetes || 0) > 0;
+    const hasZenscan = (carte?.nb_zenscan || 0) > 0;
+    const hasPneus   = (carte?.nb_montages_pneus || 0) > 0;
+
+    // ── Badge niveau ──
+    const palierLabel = getPalierLabel(nbApp);
+    const palierColor = getPalierColor(nbApp);
+
+    // ── Activité pills ──
+    const activiteHtml = `
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        ${hasAchete  ? '<span style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.25);">🚗 Véhicule acheté</span>' : ''}
+        ${hasZenscan ? '<span style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(59,130,246,0.12);color:#3b82f6;border:1px solid rgba(59,130,246,0.25);">🔍 ZenScan effectué</span>' : ''}
+        ${hasPneus   ? '<span style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(249,115,22,0.12);color:#f97316;border:1px solid rgba(249,115,22,0.25);">🛞 Montage pneus</span>' : ''}
+        ${!hasAchete && !hasZenscan && !hasPneus ? '<span style="font-size:12px;color:var(--muted);">Aucune activité enregistrée</span>' : ''}
+      </div>`;
+
+    // ── Paliers visuels ──
+    const paliersHtml = [
+      { nb:1, color:'#a855f7', icon:'🥉', label:'1er acheteur', gain:'250 € cash + badge Ambassadeur' },
+      { nb:2, color:'#3b82f6', icon:'🥈', label:'2e acheteur',  gain:'250 € cash + ZenScan offert' },
+      { nb:3, color:'#10b981', icon:'🥇', label:'3e acheteur',  gain:'250 € pour ce 3e acheteur (750 € cumulés) + ZenScan + montage 4 pneus offerts' },
+      { nb:4, color:'#f59e0b', icon:'🏆', label:'4e+ acheteur', gain:'250 € cash + Tarif préférentiel à vie' },
+    ].map(p => {
+      const unlocked = nbApp >= p.nb;
+      return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;
+        background:${unlocked ? `rgba(255,255,255,0.04)` : 'rgba(255,255,255,0.01)'};
+        border:1px solid ${unlocked ? p.color+'55' : 'rgba(255,255,255,0.05)'};
+        opacity:${unlocked ? '1' : '0.45'};">
+        <span style="font-size:18px;">${p.icon}</span>
+        <div style="flex:1;">
+          <div style="font-size:12px;font-weight:700;color:${unlocked ? p.color : 'var(--muted)'};">${p.label}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:1px;">${p.gain}</div>
+        </div>
+        ${unlocked ? `<span style="font-size:16px;">✅</span>` : `<span style="font-size:13px;color:var(--muted);">🔒</span>`}
+      </div>`;
+    }).join('');
+
+    // ── Avantages ambassadeur auto-calculés ──
+    const avantagesAmbassadeurHtml = [
+      { key:'zenscan',  icon:'🔍', label:'ZenScan offert',           unlocked: avantages.zenscan, desc:'Débloqué au 2e acheteur' },
+      { key:'pneus',    icon:'🛞', label:'ZenScan + montage 4 pneus offerts',   unlocked: avantages.pneus,   desc:'ZenScan complet + pose/équilibrage — débloqué au 3e acheteur' },
+      { key:'tarif',    icon:'🤝', label:'Tarif préférentiel à vie', unlocked: avantages.tarif,   desc:'Débloqué au 4e acheteur' },
+    ].map(a => `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;
+        background:${a.unlocked ? 'rgba(245,158,11,0.06)' : 'rgba(255,255,255,0.01)'};
+        border:1px solid ${a.unlocked ? 'rgba(245,158,11,0.25)' : 'rgba(255,255,255,0.05)'};
+        opacity:${a.unlocked ? '1' : '0.4'};">
+        <span style="font-size:18px;">${a.icon}</span>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:600;color:${a.unlocked ? '#f1f5f9' : 'var(--muted)'};">${a.label}</div>
+          <div style="font-size:11px;color:var(--muted);">${a.desc}</div>
+        </div>
+        ${a.unlocked ? '<span style="font-size:16px;">✅</span>' : '<span style="font-size:13px;color:var(--muted);">🔒</span>'}
+      </div>`).join('');
+
+    body.innerHTML = `
+      <!-- ══ HEADER CLIENT ══ -->
+      <div style="display:flex;align-items:center;gap:16px;padding:20px;
+        background:linear-gradient(135deg,rgba(245,158,11,0.06),rgba(255,255,255,0.02));
+        border:1px solid rgba(245,158,11,${isVip ? '0.25' : '0.08'});
+        border-radius:16px;margin-bottom:24px;">
+        <div style="width:56px;height:56px;border-radius:50%;flex-shrink:0;
+          background:${isVip ? 'linear-gradient(135deg,rgba(245,158,11,0.3),rgba(251,191,36,0.15))' : 'rgba(255,255,255,0.06)'};
+          border:2px solid ${isVip ? 'rgba(245,158,11,0.5)' : 'rgba(255,255,255,0.1)'};
+          display:flex;align-items:center;justify-content:center;font-size:24px;">
+          ${isVip ? '👑' : '👤'}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:18px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            ${escapeHtml(contact.name||'—')}
+          </div>
+          <div style="font-size:13px;color:var(--muted);margin-top:3px;">
+            ${escapeHtml(contact.email||'—')}${contact.phone ? ' · '+escapeHtml(contact.phone) : ''}
+          </div>
+          ${contact.adresse ? `<div style="font-size:12px;color:var(--muted);margin-top:2px;">📍 ${escapeHtml(contact.adresse)}</div>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+          ${isVip ? `<span style="padding:5px 14px;border-radius:20px;font-size:11px;font-weight:800;
+            background:linear-gradient(135deg,rgba(245,158,11,0.2),rgba(251,191,36,0.1));
+            color:#f59e0b;border:1px solid rgba(245,158,11,0.4);letter-spacing:.5px;">👑 AMBASSADEUR</span>` : ''}
+          ${palierLabel ? `<span style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;color:${palierColor};
+            background:${palierColor}18;border:1px solid ${palierColor}40;">${palierLabel}</span>` : ''}
+        </div>
+      </div>
+
+      <!-- ══ ACTIVITÉ ══ -->
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Activité détectée</div>
+      <div style="margin-bottom:24px;">${activiteHtml}</div>
+
+      ${clientId ? `
+      <!-- ══ SECTION AMBASSADEUR ══ -->
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Programme Ambassadeur</div>
+
+      <!-- Contrôle nb acheteurs -->
+      <div style="background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.15);border-radius:14px;padding:20px;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+          <div>
+            <div style="font-size:15px;font-weight:800;color:var(--text);">
+              Acheteurs amenés : <span id="display-nb-apporteurs" style="color:#f59e0b;font-family:'Orbitron',sans-serif;">${nbApp}</span>
+            </div>
+            <div id="display-palier-label" style="font-size:12px;font-weight:600;color:${palierColor};margin-top:4px;">
+              ${palierLabel || 'Pas encore ambassadeur'}
+            </div>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;
+            padding:8px 14px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);">
+            <input type="checkbox" id="chk-vip-status" ${isVip ? 'checked' : ''} style="width:16px;height:16px;accent-color:#f59e0b;" />
+            <span style="font-size:13px;font-weight:600;color:var(--text);">Badge Ambassadeur actif</span>
+          </label>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <label style="font-size:13px;color:var(--muted);white-space:nowrap;">Acheteurs amenés :</label>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <button id="btn-nb-minus" style="width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text);font-size:18px;cursor:pointer;line-height:1;">−</button>
+            <input type="number" id="input-nb-apporteurs" value="${nbApp}" min="0" max="99"
+              style="width:60px;padding:6px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);
+              border-radius:8px;color:var(--text);font-size:16px;font-weight:700;text-align:center;font-family:'Orbitron',sans-serif;" />
+            <button id="btn-nb-plus" style="width:32px;height:32px;border-radius:8px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);color:#f59e0b;font-size:18px;cursor:pointer;line-height:1;">+</button>
+          </div>
+          <button id="btn-save-vip" data-clientid="${clientId}"
+            style="margin-left:auto;padding:8px 20px;background:linear-gradient(135deg,#f59e0b,#d97706);
+            border:none;border-radius:10px;color:#000;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;">
+            💾 Enregistrer
+          </button>
+        </div>
+
+        <!-- Paliers visuels -->
+        <div style="display:flex;flex-direction:column;gap:6px;">${paliersHtml}</div>
+      </div>
+
+      <!-- Avantages ambassadeur auto -->
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Avantages Ambassadeur débloqués</div>
+      <div id="avantages-ambassadeur-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:24px;">
+        ${avantagesAmbassadeurHtml}
+      </div>
+
+      <!-- ══ CARTE FIDÉLITÉ ══ -->
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Carte de Fidélité</div>
+      <div style="background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.15);border-radius:14px;padding:20px;margin-bottom:24px;">
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+          ${[
+            ['nb_vehicules_achetes','🚗','Véhicules achetés'],
+            ['nb_vidanges','🛢️','Vidanges'],
+            ['nb_distributions','⚙️','Distributions'],
+            ['nb_montages_pneus','🛞','Montages pneus'],
+          ].map(([field, icon, label]) => `
+            <div style="display:flex;align-items:center;justify-content:space-between;
+              padding:10px 12px;background:rgba(255,255,255,0.02);
+              border:1px solid rgba(255,255,255,0.05);border-radius:10px;">
+              <span style="font-size:12px;color:var(--muted);">${icon} ${label}</span>
+              <input type="number" id="carte-${field}" value="${carte?.[field]||0}" min="0"
+                style="width:50px;padding:4px 6px;background:rgba(255,255,255,0.06);
+                border:1px solid rgba(255,255,255,0.1);border-radius:6px;
+                color:var(--text);font-size:13px;font-weight:700;text-align:center;" />
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+          ${[
+            ['nb_zenscan','🔍','ZenScan'],
+            ['nb_parrainages_valides','👥','Parrainages']
+          ].map(([field, icon, label]) => `
+            <div style="display:flex;align-items:center;justify-content:space-between;
+              padding:10px 12px;background:rgba(255,255,255,0.01);
+              border:1px solid rgba(255,255,255,0.04);border-radius:10px;opacity:0.8;">
+              <span style="font-size:12px;color:var(--muted);">${icon} ${label}</span>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;
+                  color:var(--text);min-width:24px;text-align:center;">${carte?.[field]||0}</span>
+                <span style="font-size:10px;color:var(--muted);font-style:italic;">auto</span>
+                <input type="hidden" id="carte-${field}" value="${carte?.[field]||0}" />
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Avantages fidélité débloqués</div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;">
+          ${[
+            ['vidange_offerte','vidange_offerte_used','🛢️','Vidange offerte'],
+            ['service_apres_distrib','service_apres_distrib_used','🔧','Service après distribution'],
+            ['remise_15_pneus','remise_15_pneus_used','🛞','−15% prochaine prestation'],
+            ['zenscan_offert','zenscan_offert_used','🔍','ZenScan offert']
+          ].map(([field, usedField, icon, label]) => `
+            <div style="display:flex;align-items:center;justify-content:space-between;
+              padding:10px 14px;background:rgba(255,255,255,0.02);
+              border:1px solid rgba(255,255,255,0.05);border-radius:10px;">
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                <input type="checkbox" id="carte-${field}" ${carte?.[field] ? 'checked' : ''} style="accent-color:#10b981;" />
+                <span style="font-size:13px;color:var(--text);">${icon} ${label}</span>
+              </label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                <input type="checkbox" id="carte-${usedField}" ${carte?.[usedField] ? 'checked' : ''} style="accent-color:#6b7280;" />
+                <span style="font-size:11px;color:var(--muted);">Utilisé</span>
+              </label>
+            </div>
+          `).join('')}
+        </div>
+
+        <textarea id="carte-notes-admin" placeholder="Note admin (optionnel)..." rows="2"
+          style="width:100%;padding:10px;background:rgba(255,255,255,0.03);
+          border:1px solid rgba(255,255,255,0.07);border-radius:10px;
+          color:var(--text);font-size:13px;resize:none;box-sizing:border-box;margin-bottom:10px;">${carte?.notes_admin||''}</textarea>
+        <button id="btn-save-carte" data-clientid="${clientId}"
+          style="width:100%;padding:12px;background:linear-gradient(135deg,#10b981,#059669);
+          border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;">
+          💾 Enregistrer la carte fidélité
+        </button>
+      </div>
+
+      <!-- ══ NOTE ADMIN ══ -->
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Note personnalisée (visible client)</div>
+      <div style="margin-bottom:24px;">
+        <textarea id="input-vip-note" placeholder="Message personnalisé visible dans le compte client..."
+          rows="3" style="width:100%;padding:12px;background:rgba(59,130,246,0.03);
+          border:1px solid rgba(59,130,246,0.12);border-radius:10px;
+          color:var(--text);font-size:13px;resize:none;box-sizing:border-box;">${client?.vip_note||''}</textarea>
+      </div>
+
+      ` : `
+      <div style="padding:16px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:10px;font-size:13px;color:#fca5a5;margin-bottom:16px;">
+        ⚠️ Ce client n'a pas encore de compte. Les options VIP sont disponibles une fois le compte créé.
+      </div>
+      `}
+    `;
+
+    modal.classList.remove('hidden');
+    modal.setAttribute('aria-hidden', 'false');
+
+    // ── Boutons +/- nb acheteurs ──
+    const inputNb   = document.getElementById('input-nb-apporteurs');
+    const btnMinus  = document.getElementById('btn-nb-minus');
+    const btnPlus   = document.getElementById('btn-nb-plus');
+    const chkVip    = document.getElementById('chk-vip-status');
+    const dispNb    = document.getElementById('display-nb-apporteurs');
+    const dispLabel = document.getElementById('display-palier-label');
+
+    function updatePreview() {
+      if (!inputNb) return;
+      const val = parseInt(inputNb.value) || 0;
+      if (dispNb) dispNb.textContent = val;
+      if (dispLabel) {
+        const lbl = getPalierLabel(val);
+        dispLabel.textContent = lbl || 'Pas encore ambassadeur';
+        dispLabel.style.color = getPalierColor(val);
+      }
+      // Auto-cocher badge si >= 1
+      if (chkVip) chkVip.checked = val >= 1;
+      // Mettre à jour avantages visuels
+      const listEl = document.getElementById('avantages-ambassadeur-list');
+      if (listEl) {
+        const av = getAmbassadeurAvantages(val);
+        const items = [
+          { key:'zenscan', icon:'🔍', label:'ZenScan offert',           unlocked: av.zenscan, desc:'Débloqué au 2e acheteur' },
+          { key:'pneus',   icon:'🛞', label:'ZenScan + montage 4 pneus offerts',   unlocked: av.pneus,   desc:'ZenScan complet + pose/équilibrage — débloqué au 3e acheteur' },
+          { key:'tarif',   icon:'🤝', label:'Tarif préférentiel à vie', unlocked: av.tarif,   desc:'Débloqué au 4e acheteur' },
+        ];
+        listEl.innerHTML = items.map(a => `
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;
+            background:${a.unlocked ? 'rgba(245,158,11,0.06)' : 'rgba(255,255,255,0.01)'};
+            border:1px solid ${a.unlocked ? 'rgba(245,158,11,0.25)' : 'rgba(255,255,255,0.05)'};
+            opacity:${a.unlocked ? '1' : '0.4'};transition:all .3s;">
+            <span style="font-size:18px;">${a.icon}</span>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:600;color:${a.unlocked ? '#f1f5f9' : 'var(--muted)'};">${a.label}</div>
+              <div style="font-size:11px;color:var(--muted);">${a.desc}</div>
+            </div>
+            ${a.unlocked ? '<span style="font-size:16px;">✅</span>' : '<span style="font-size:13px;color:var(--muted);">🔒</span>'}
+          </div>`).join('');
+      }
+    }
+
+    if (btnMinus) btnMinus.addEventListener('click', () => {
+      if (inputNb) { inputNb.value = Math.max(0, (parseInt(inputNb.value)||0) - 1); updatePreview(); }
+    });
+    if (btnPlus) btnPlus.addEventListener('click', () => {
+      if (inputNb) { inputNb.value = (parseInt(inputNb.value)||0) + 1; updatePreview(); }
+    });
+    if (inputNb) inputNb.addEventListener('input', updatePreview);
+
+    // ── Save VIP ──
+    const btnSaveVip = document.getElementById('btn-save-vip');
+    if (btnSaveVip) btnSaveVip.addEventListener('click', () => saveVipStatus(parseInt(btnSaveVip.dataset.clientid)));
+
+    // ── Save carte ──
+    const btnSaveCarte = document.getElementById('btn-save-carte');
+    if (btnSaveCarte) btnSaveCarte.addEventListener('click', () =>
+      saveCarteFidelite(parseInt(btnSaveCarte.dataset.clientid), contact.name||'', contact.email||'')
+    );
+  }
+
+  // Exposer openContactFiche globalement pour admin-inline.js
+  window.openContactFicheGlobal = openContactFiche;
+
+  // Fermer le modal fidélité
+  const fideliteModalClose = document.getElementById('fidelite-modal-close');
+  const fideliteModal = document.getElementById('fidelite-modal');
+  if (fideliteModalClose) fideliteModalClose.addEventListener('click', () => {
+    fideliteModal.classList.add('hidden');
+    fideliteModal.setAttribute('aria-hidden', 'true');
+  });
+  if (fideliteModal) fideliteModal.addEventListener('click', e => {
+    if (e.target === fideliteModal) { fideliteModal.classList.add('hidden'); fideliteModal.setAttribute('aria-hidden', 'true'); }
+  });
+
+  // ── Sauvegarder statut ambassadeur — auto-calcul avantages selon paliers ──
+  window.saveVipStatus = async function(clientId) {
+    const nb   = parseInt(document.getElementById('input-nb-apporteurs')?.value) || 0;
+    const note = document.getElementById('input-vip-note')?.value || null;
+    const isVip = nb >= 1 || (document.getElementById('chk-vip-status')?.checked || false);
+    const av = getAmbassadeurAvantages(nb);
+
+    try {
+      // ── 1. Mettre à jour la table clients ──
+      // clientId peut être string ou number selon la source — on force les deux formats
+      const idNum = Number(clientId);
+
+      const { error: errClient } = await window.supabase
+        .from('clients')
+        .update({
+          vip_status:       isVip,
+          nb_apporteurs:    nb,
+          vip_note:         note || null,
+          vip_validated_at: isVip ? new Date().toISOString() : null
+        })
+        .eq('id', idNum);
+
+      if (errClient) {
+        showToast('❌ Erreur : ' + errClient.message, 'error');
+        return;
+      }
+
+      // ── 2. Mettre à jour zenscan_offert dans fidelite_carte si palier atteint ──
+      // On ne met à jour QUE si la carte existe déjà (elle est créée via saveCarteFidelite)
+      if (av.zenscan) {
+        const { data: carte } = await window.supabase
+          .from('fidelite_carte').select('id, zenscan_offert_used').eq('client_id', idNum).maybeSingle();
+        if (carte && !carte.zenscan_offert_used) {
+          await window.supabase.from('fidelite_carte')
+            .update({ zenscan_offert: true })
+            .eq('client_id', idNum);
+        }
+      }
+
+      showToast('✅ Statut ambassadeur enregistré');
+
+      // Recharger le tableau ET rouvrir la fiche avec données fraîches
+      await renderClientsTable(document.getElementById('clients-search')?.value || '');
+
+      // Recharger les données fraîches du client depuis Supabase et rouvrir la fiche
+      const { data: clientFrais } = await window.supabase
+        .from('clients')
+        .select('id, name, email, phone, adresse, created_at, vip_status, nb_apporteurs, vip_note, vip_validated_at')
+        .eq('id', idNum)
+        .single();
+      const { data: carteFraiche } = await window.supabase
+        .from('fidelite_carte').select('*').eq('client_id', idNum).maybeSingle();
+      if (clientFrais) {
+        openContactFiche(clientFrais, clientFrais, carteFraiche || null);
+      }
+    } catch(e) {
+      console.error('Exception saveVipStatus:', e);
+      showToast('❌ Erreur : ' + e.message, 'error');
+    }
+  };
+
+  // ── Sauvegarder carte fidélité ──
+  window.saveCarteFidelite = async function(clientId, clientName, clientEmail) {
+    const fields = ['nb_vehicules_achetes','nb_vidanges','nb_distributions','nb_montages_pneus']; // nb_zenscan et nb_parrainages_valides sont auto-gérés
+    const bools  = ['vidange_offerte','vidange_offerte_used','service_apres_distrib','service_apres_distrib_used','remise_15_pneus','remise_15_pneus_used','zenscan_offert','zenscan_offert_used'];
+    const payload = { client_id: clientId, client_name: clientName, client_email: clientEmail };
+    fields.forEach(f => { payload[f] = parseInt(document.getElementById('carte-' + f)?.value) || 0; });
+    bools.forEach(f  => { payload[f] = document.getElementById('carte-' + f)?.checked || false; });
+    payload.notes_admin = document.getElementById('carte-notes-admin')?.value || null;
+    try {
+      const { error } = await window.supabase.from('fidelite_carte').upsert([payload], { onConflict: 'client_id' });
+      if (error) throw error;
+      showToast('✅ Carte fidélité enregistrée');
+
+      // Rouvrir la fiche avec données fraîches
+      const { data: clientFrais } = await window.supabase
+        .from('clients')
+        .select('id, name, email, phone, adresse, created_at, vip_status, nb_apporteurs, vip_note, vip_validated_at')
+        .eq('id', clientId).single();
+      const { data: carteFraiche } = await window.supabase
+        .from('fidelite_carte').select('*').eq('client_id', clientId).maybeSingle();
+      if (clientFrais) openContactFiche(clientFrais, clientFrais, carteFraiche || null);
+    } catch(e) { showToast('❌ Erreur : ' + e.message, 'error'); }
+  };
+
+  // ── Toast helper ──
+  function showToast(msg, type = 'success') {
+    const existing = document.getElementById('admin-toast');
+    if (existing) existing.remove();
+    const t = document.createElement('div');
+    t.id = 'admin-toast';
+    t.style.cssText = `position:fixed;bottom:28px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:12px;font-size:13px;font-weight:700;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,0.4);background:${type==='error'?'#ef4444':'#10b981'};color:#fff;`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity .4s'; setTimeout(() => t.remove(), 400); }, 3000);
   }
 
   const contactModal  = document.getElementById('contact-modal');
@@ -415,35 +1018,27 @@ function initAdmin() {
   contactCancel.addEventListener('click', closeContactModal);
   contactModal.addEventListener('click', e => { if (e.target === contactModal) closeContactModal(); });
 
-  contactForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name  = document.getElementById('cont-name').value.trim();
-    const email = document.getElementById('cont-email').value.trim();
-    const phone = document.getElementById('cont-phone').value.trim();
-    if (!name) { alert('❌ Le nom est requis'); return; }
-    try {
-      const { error } = await window.supabase.from('contacts').insert([{ id: Date.now(), name, email, phone }]);
-      if (error) { alert('❌ Erreur lors de l\'ajout du contact'); return; }
-      await renderContactsTable();
-      closeContactModal();
-    } catch(e) { alert('❌ Erreur: ' + e.message); }
-  });
+  // submit géré par admin-inline.js uniquement — pas de double listener ici
 
-  async function deleteContact(id) {
-    if (!confirm('Supprimer ce contact ?')) return;
-    try {
-      const { error } = await window.supabase.from('contacts').delete().eq('id', id);
-      if (error) { alert('❌ Erreur lors de la suppression'); return; }
-      await renderContactsTable();
-    } catch(e) { console.error('❌ Exception:', e); }
-  }
+  window.deleteContact = async (id) => deleteContactOnly(id);
 
   if (contactsLink) {
     contactsLink.addEventListener('click', async (e) => {
       e.preventDefault();
       hideAllSections();
       contactsSection.classList.remove('hidden');
+      // Marquer comme lus
+      setBadge('#contacts', 0);
       await renderContactsTable();
+    });
+  }
+
+  if (clientsLink) {
+    clientsLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      hideAllSections();
+      clientsSection.classList.remove('hidden');
+      await renderClientsTable();
     });
   }
 

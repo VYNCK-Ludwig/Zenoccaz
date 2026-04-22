@@ -20,7 +20,7 @@ async function insertContact(contact){
     plates: contact.plates || [],
     created_at: contact.date || new Date().toISOString()
   };
-  return await supabase.from('contacts').insert([payload]);
+  return await supabase.from('clients') /* contacts supprimé */.insert([payload]);
 }
 
 async function insertZenscan(req){
@@ -119,7 +119,7 @@ async function fetchVehicles(){
 }
 
 async function fetchContacts(){
-  const { data, error } = await supabase.from('contacts').select('*').order('created_at', { ascending: false });
+  const { data, error } = await supabase.from('clients') /* contacts supprimé */.select('*').order('created_at', { ascending: false });
   return { data: data || [], error };
 }
 
@@ -174,7 +174,7 @@ async function deleteVehicle(id){
 }
 
 async function deleteContact(id){
-  return await supabase.from('contacts').delete().eq('id', id);
+  return await supabase.from('clients') /* contacts supprimé */.delete().eq('id', id);
 }
 
 async function deleteTask(id){

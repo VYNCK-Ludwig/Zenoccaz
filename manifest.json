@@ -2,7 +2,7 @@
   "name": "ZENOCCAZ Admin",
   "short_name": "ZenAdmin",
   "description": "Panneau d'administration ZENOCCAZ",
-  "start_url": "/admin.html",
+  "start_url": "https://zen-occaz.com/admin.html",
   "display": "standalone",
   "background_color": "#0a0e1a",
   "theme_color": "#10b981",
@@ -21,6 +21,10 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["business", "productivity"],
-  "lang": "fr"
+  "categories": [
+    "business",
+    "productivity"
+  ],
+  "lang": "fr",
+  "scope": "https://zen-occaz.com/"
 }

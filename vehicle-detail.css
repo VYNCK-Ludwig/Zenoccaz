@@ -1,0 +1,181 @@
+/* ── VEHICLE DETAIL PAGE ── */
+
+.detail-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+  text-decoration: none;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+.back-link:hover { text-decoration: underline; }
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 20px;
+}
+@media (max-width: 768px) {
+  .detail-grid { grid-template-columns: 1fr; }
+}
+
+.gallery {
+  position: sticky;
+  top: 20px;
+}
+
+.main-image {
+  width: 100%;
+  height: 400px;
+  object-fit: contain;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  background: rgba(0,0,0,0.05);
+}
+
+.thumbnails {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 8px;
+}
+
+.thumbnail {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+.thumbnail:hover, .thumbnail.active { border-color: var(--primary); }
+
+.detail-content h1 {
+  font-size: 32px;
+  margin: 0 0 8px;
+  color: var(--text);
+}
+
+.price-tag {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 24px;
+}
+
+.specs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin: 24px 0;
+  padding: 24px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.spec-label { color: var(--muted); font-size: 13px; }
+.spec-value  { color: var(--text);  font-weight: 600; }
+
+.features-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 24px 0;
+}
+
+.feature-badge {
+  background: rgba(16,185,129,0.1);
+  color: var(--primary);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.description-section {
+  margin: 24px 0;
+  padding: 24px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.description-section h3 { margin: 0 0 16px; color: var(--text); }
+
+.contact-btn { width: 100%; margin-top: 24px; }
+
+/* ── LIGHTBOX ── */
+.image-lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.95);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+.image-lightbox.active { display: flex; }
+
+.lightbox-image {
+  max-width: 95%;
+  max-height: 95vh;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px; right: 30px;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10001;
+  transition: transform 0.2s;
+}
+.lightbox-close:hover { transform: scale(1.2); }
+
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.1);
+  color: white;
+  font-size: 30px;
+  padding: 20px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+  z-index: 10001;
+}
+.lightbox-nav:hover  { background: rgba(255,255,255,0.2); }
+.lightbox-nav.prev   { left: 20px; }
+.lightbox-nav.next   { right: 20px; }
+
+.lightbox-counter {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 16px;
+  background: rgba(0,0,0,0.5);
+  padding: 8px 16px;
+  border-radius: 20px;
+  z-index: 10001;
+}

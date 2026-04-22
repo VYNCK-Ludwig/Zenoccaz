@@ -1,0 +1,333 @@
+/* ── SERVICES PAGE CSS ── */
+
+/* ── Modaux premium animés ── */
+@keyframes svc-border-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes svc-in {
+  from { opacity:0; transform:scale(.94) translateY(16px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
+@keyframes svc-glow-pulse {
+  0%,100% { opacity:.6; }
+  50%      { opacity:1; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes auth-in {
+  from { opacity:0; transform:translateY(20px) scale(.97); }
+  to   { opacity:1; transform:none; }
+}
+@keyframes hdr-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+@keyframes hdr-dot-pulse {
+  0%,100% { transform:scale(1); opacity:1; }
+  50%      { transform:scale(1.4); opacity:.6; }
+}
+@keyframes hdr-fade-in {
+  from { opacity:0; transform:translateY(-8px); }
+  to   { opacity:1; transform:none; }
+}
+
+/* ── Modal wrapper avec bordure tournante ── */
+.svc-modal-wrapper {
+  position: relative;
+  max-width: 480px;
+  width: 100%;
+  border-radius: 30px;
+  animation: svc-in .35s cubic-bezier(.4,0,.2,1) both;
+}
+
+.svc-modal-box {
+  position: relative;
+  background: linear-gradient(160deg, #0a0e1a, #060910);
+  border-radius: 28px;
+  padding: 36px 30px 30px;
+  width: 100%;
+  box-sizing: border-box;
+  max-height: 88vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-family: 'Inter', -apple-system, sans-serif;
+  scrollbar-width: none;
+  z-index: 2;
+}
+.svc-modal-box::-webkit-scrollbar { display: none; }
+
+.svc-border-wrap {
+  position: absolute;
+  inset: -2px;
+  border-radius: 30px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.svc-border-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -100%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 60deg,
+    currentColor 120deg,
+    transparent 180deg,
+    transparent 240deg,
+    currentColor 300deg,
+    transparent 360deg
+  );
+  animation: svc-border-spin 3s linear infinite;
+}
+.svc-border-inner {
+  position: absolute;
+  inset: 2px;
+  border-radius: 28px;
+  background: linear-gradient(160deg, #0a0e1a, #060910);
+  z-index: 1;
+}
+.svc-modal-content { position: relative; z-index: 2; }
+
+/* ── Icône SVG premium ── */
+.svc-icon-wrap {
+  width: 72px; height: 72px;
+  margin: 0 auto 20px;
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.svc-icon-wrap svg { width: 36px; height: 36px; position: relative; z-index: 1; }
+.svc-icon-glow {
+  position: absolute; inset: 0;
+  border-radius: 20px;
+  opacity: .5;
+  filter: blur(12px);
+  animation: svc-glow-pulse 2s ease-in-out infinite;
+}
+
+/* ── Champs de formulaire ── */
+.svc-field label {
+  display: block;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: .8px; text-transform: uppercase;
+  color: #64748b; margin-bottom: 7px;
+}
+.svc-field input, .svc-field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 13px;
+  color: #e2e8f0; font-size: 14px; font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color .2s, background .2s, box-shadow .2s;
+}
+.svc-field input:focus, .svc-field textarea:focus {
+  outline: none;
+  border-color: rgba(var(--svc-rgb), .5);
+  background: rgba(var(--svc-rgb), .04);
+  box-shadow: 0 0 0 3px rgba(var(--svc-rgb), .1);
+}
+.svc-field input::placeholder, .svc-field textarea::placeholder { color: #334155; }
+
+/* ── Carte client ── */
+.svc-client-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px; border-radius: 14px;
+  margin-bottom: 22px; border: 1px solid;
+}
+.svc-client-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.svc-client-avatar svg { width: 18px; height: 18px; }
+.svc-client-name { font-size: 14px; font-weight: 700; color: #fff; }
+.svc-client-sub  { font-size: 12px; color: #64748b; margin-top: 1px; }
+
+.svc-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ── Boutons ── */
+.svc-btn-primary {
+  padding: 13px 28px; border: none; border-radius: 14px;
+  color: #fff; font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  transition: all .2s; position: relative; overflow: hidden;
+}
+.svc-btn-primary::before {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(255,255,255,.12); opacity: 0; transition: opacity .2s;
+}
+.svc-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+.svc-btn-primary:hover::before { opacity: 1; }
+
+.svc-btn-cancel {
+  padding: 13px 20px;
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 14px; color: #64748b; font-size: 14px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: all .2s;
+}
+.svc-btn-cancel:hover { background: rgba(255,255,255,.1); color: #fff; }
+
+.svc-error {
+  display: none;
+  background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3);
+  border-radius: 11px; padding: 11px 14px;
+  font-size: 13px; color: #fca5a5; margin-bottom: 16px;
+}
+
+/* ── Selects dark theme ── */
+select.rep-select-dark { color-scheme: dark; }
+select.rep-select-dark option {
+  background: #0d1117; color: #e2e8f0; padding: 8px;
+}
+select.rep-select-dark option:hover,
+select.rep-select-dark option:checked { background: #10b981; color: #fff; }
+
+/* ── Auth modal ── */
+#auth-modal {
+  position: fixed; inset: 0; margin: 0; padding: 16px;
+  background: rgba(5,8,18,0.88); backdrop-filter: blur(16px);
+  z-index: 9999; display: flex; align-items: center; justify-content: center;
+  overflow-y: auto; box-sizing: border-box; width: 100vw; height: 100vh;
+}
+#auth-modal.hidden { display: none; }
+#auth-form, #reg-fields, #login-fields { width: 100%; box-sizing: border-box; }
+.auth-box { margin: auto; flex-shrink: 0; }
+
+.auth-box {
+  background: linear-gradient(160deg, #0d1220, #080c18);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px; padding: 32px 28px;
+  max-width: 480px; width: calc(100vw - 40px);
+  box-sizing: border-box;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
+  position: relative; overflow: hidden;
+  font-family: 'Inter', -apple-system, sans-serif;
+  animation: auth-in .3s cubic-bezier(.4,0,.2,1);
+  max-height: 90vh; overflow-y: auto;
+}
+.auth-box::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, #10b981, #3b82f6, transparent);
+}
+.auth-icon { font-size: 48px; text-align: center; margin-bottom: 16px; }
+.auth-title { font-size: 22px; font-weight: 800; color: #fff; text-align: center; margin: 0 0 6px; letter-spacing: -.3px; }
+.auth-sub   { font-size: 13px; color: #94a3b8; text-align: center; margin: 0 0 28px; line-height: 1.6; }
+.auth-tabs  { display: flex; gap: 6px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 4px; margin-bottom: 24px; }
+.auth-tab   { flex:1; padding: 10px; border-radius: 10px; border: none; background: transparent; color: #94a3b8; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .2s; }
+.auth-tab.active { background: linear-gradient(135deg, #10b981, #059669); color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,0.35); }
+.auth-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.auth-field label { font-size: 12px; font-weight: 700; color: #94a3b8; letter-spacing: .5px; text-transform: uppercase; }
+.auth-field input {
+  padding: 12px 14px; background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff;
+  font-size: 14px; font-family: inherit;
+  transition: border-color .2s, background .2s;
+  width: 100%; box-sizing: border-box;
+}
+.auth-field input:focus { outline: none; border-color: rgba(16,185,129,0.5); background: rgba(16,185,129,0.04); box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
+.auth-field input::placeholder { color: #4b5563; }
+.auth-2col  { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; box-sizing: border-box; }
+.auth-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+.auth-btn-primary { padding: 12px 28px; background: linear-gradient(135deg, #10b981, #059669); border: none; border-radius: 12px; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .2s; box-shadow: 0 4px 14px rgba(16,185,129,0.3); }
+.auth-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(16,185,129,0.4); }
+.auth-btn-cancel { padding: 12px 20px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #94a3b8; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .2s; }
+.auth-btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.auth-required { color: #f472b6; margin-left: 2px; }
+
+@media (max-width: 520px) {
+  .auth-box { padding: 24px 18px; }
+  .auth-2col { grid-template-columns: 1fr; }
+  .svc-2col { grid-template-columns: 1fr; }
+}
+
+/* ── Service card Fidélité (gold) ── */
+.service-icon-gold {
+  background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(251,191,36,0.1));
+  border: 1px solid rgba(245,158,11,0.3);
+}
+.service-icon-gold svg { stroke: #f59e0b; }
+
+.service-btn-gold {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #000;
+  font-weight: 800;
+  box-shadow: 0 4px 20px rgba(245,158,11,0.35);
+}
+.service-btn-gold:hover {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(245,158,11,0.5);
+}
+
+.service-badge-gold {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  color: #000;
+}
+
+.service-card-fidelite {
+  border-color: rgba(245,158,11,0.2);
+  transition: transform .25s, box-shadow .25s, border-color .25s;
+}
+.service-card-fidelite:hover {
+  border-color: rgba(245,158,11,0.4);
+  box-shadow: 0 0 0 1px rgba(245,158,11,0.2), 0 20px 50px rgba(245,158,11,0.1);
+}
+
+/* ============================================
+   RESPONSIVE — MODAUX SERVICES (reprise, accompagnement)
+   ============================================ */
+
+/* ── MOBILE (768px) ── */
+@media (max-width: 768px) {
+  /* Overlay modaux → bottom sheet */
+  #reprise-modal-overlay,
+  #accomp-modal-overlay,
+  #auth-modal {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+  .svc-modal-wrapper {
+    max-width: 100% !important;
+    border-radius: 24px 24px 0 0 !important;
+    animation: svc-in-mobile .3s cubic-bezier(.4,0,.2,1) both;
+  }
+  .svc-modal-box {
+    border-radius: 22px 22px 0 0 !important;
+    padding: 28px 20px 40px !important;
+    max-height: 92vh !important;
+  }
+  .svc-border-wrap { border-radius: 24px 24px 0 0 !important; }
+  .svc-border-inner { border-radius: 22px 22px 0 0 !important; }
+
+  /* Auth box */
+  .auth-box {
+    border-radius: 22px 22px 0 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 28px 16px 40px !important;
+    max-height: 92vh !important;
+  }
+
+  /* Grilles 2col → 1col dans les modaux */
+  .svc-2col { grid-template-columns: 1fr !important; gap: 10px !important; }
+  .auth-2col { grid-template-columns: 1fr !important; }
+  .auth-actions { flex-direction: column !important; }
+  .auth-btn-primary, .auth-btn-cancel { width: 100% !important; }
+}
+
+/* ── MOBILE PETIT (480px) ── */
+@media (max-width: 480px) {
+  .svc-modal-box { padding: 24px 14px 36px !important; }
+  .svc-icon-wrap { width: 56px !important; height: 56px !important; }
+  .svc-icon-wrap svg { width: 28px !important; height: 28px !important; }
+  .svc-btn-primary { padding: 12px 20px !important; font-size: 13px !important; }
+  .svc-btn-cancel  { padding: 12px 16px !important; font-size: 13px !important; }
+}
+
+@keyframes svc-in-mobile {
+  from { opacity:0; transform:translateY(40px); }
+  to   { opacity:1; transform:translateY(0); }
+}
